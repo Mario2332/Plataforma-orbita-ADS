@@ -166,7 +166,7 @@ export default function GestorHome() {
       <Card>
         <CardHeader>
           <CardTitle>Visão Geral</CardTitle>
-          <CardDescription>Resumo da plataforma Órbita</CardDescription>
+          <CardDescription>Resumo da Mentoria Mário Machado</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">

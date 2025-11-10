@@ -174,7 +174,7 @@ export default function LoginGestor() {
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-900">
                 <p className="font-medium mb-1">🔒 Acesso Restrito</p>
                 <p>
-                  Esta área é exclusiva para gestores da plataforma Órbita. Acesso não autorizado é proibido.
+                  Esta área é exclusiva para gestores da Mentoria Mário Machado. Acesso não autorizado é proibido.
                 </p>
               </div>
             </div>

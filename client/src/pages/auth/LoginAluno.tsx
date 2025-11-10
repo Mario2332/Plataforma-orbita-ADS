@@ -114,7 +114,7 @@ export default function LoginAluno() {
         <div className="text-center md:text-left space-y-6">
           <div className="flex items-center justify-center md:justify-start gap-3">
             <GraduationCap className="w-12 h-12 text-blue-600" />
-            <h1 className="text-4xl font-bold text-gray-900">Órbita Plataforma</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Mentoria Mário Machado</h1>
           </div>
           
           <h2 className="text-2xl font-semibold text-gray-800">
