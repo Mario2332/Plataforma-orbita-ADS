@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { trpc } from "@/lib/trpc";
+// import { trpc } from "@/lib/trpc"; // TODO: Implementar com alunoApi
 import { BarChart3, Calendar, TrendingUp, PieChart, Activity } from "lucide-react";
 import { useState, useMemo } from "react";
 import {

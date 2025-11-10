@@ -40,6 +40,13 @@ export const gestorApi = {
 
   // Alunos
   getAllAlunos: () => callFunction("gestor_getAllAlunos"),
+  updateAluno: (data: {
+    alunoId: string;
+    nome?: string;
+    email?: string;
+    mentorId?: string;
+  }) => callFunction("gestor_updateAluno", data),
+  deleteAluno: (alunoId: string) => callFunction("gestor_deleteAluno", { alunoId }),
 };
 
 // ============================================

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { trpc } from "@/lib/trpc";
+// import { trpc } from "@/lib/trpc"; // TODO: Implementar com alunoApi
 import { FileText, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
