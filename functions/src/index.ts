@@ -1,11 +1,9 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as serviceAccount from "../serviceAccountKey.json";
 
 // Inicializar Firebase Admin
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount)
-});
+// Em produção, as credenciais são obtidas automaticamente do ambiente Firebase
+// Em desenvolvimento local com emuladores, não precisa de credenciais
+admin.initializeApp();
 
 // Exportar todas as funções
 export { onUserCreated } from "./triggers/onUserCreated";
