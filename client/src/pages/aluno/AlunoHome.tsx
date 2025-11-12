@@ -18,7 +18,7 @@ import {
 import { useLocation } from "wouter";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 // Matérias padronizadas do ENEM
 const MATERIAS_ENEM = [
@@ -206,45 +206,45 @@ export default function AlunoHome() {
   
   const mapaCalor = gerarMapaCalor();
   
-  // Análise por matéria (pontos fortes e fracos)
-  const analisePorMateria = useMemo(() => {
-    // Verificar se estudos está disponível
-    if (!estudos || !Array.isArray(estudos)) {
-      return { pontosFortes: [], pontosFracos: [], todasMaterias: [] };
+  // Análise por matéria (pontos fortes e fracos) - Cálculo direto
+  const calcularAnalisePorMateria = () => {
+    if (!estudos || estudos.length === 0) {
+      return { pontosFortes: [], pontosFracos: [] };
     }
     
-    const porMateria: Record<string, { questoes: number; acertos: number; tempo: number }> = {};
-    
-    // Inicializar todas as matérias
-    MATERIAS_ENEM.forEach(materia => {
-      porMateria[materia] = { questoes: 0, acertos: 0, tempo: 0 };
-    });
+    const porMateria: Record<string, { questoes: number; acertos: number }> = {};
     
     // Agregar dados dos estudos
-    estudos.forEach(estudo => {
+    for (const estudo of estudos) {
       const materia = estudo.materia;
       if (!porMateria[materia]) {
-        porMateria[materia] = { questoes: 0, acertos: 0, tempo: 0 };
+        porMateria[materia] = { questoes: 0, acertos: 0 };
       }
       porMateria[materia].questoes += estudo.questoesFeitas || 0;
       porMateria[materia].acertos += estudo.questoesAcertadas || 0;
-      porMateria[materia].tempo += estudo.tempoMinutos || 0;
-    });
+    }
     
-    // Calcular percentuais e classificar
-    const materias = Object.entries(porMateria)
-      .map(([materia, dados]) => ({
-        materia,
-        ...dados,
-        percentual: dados.questoes > 0 ? Math.round((dados.acertos / dados.questoes) * 100) : null,
-      }))
-      .filter(m => m.questoes >= 5); // Apenas matérias com pelo menos 5 questões
+    const pontosFortes: Array<{ materia: string; percentual: number; acertos: number; questoes: number }> = [];
+    const pontosFracos: Array<{ materia: string; percentual: number; acertos: number; questoes: number }> = [];
     
-    const pontosFortes = materias.filter(m => m.percentual !== null && m.percentual >= 80);
-    const pontosFracos = materias.filter(m => m.percentual !== null && m.percentual < 60);
+    // Classificar matérias
+    for (const [materia, dados] of Object.entries(porMateria)) {
+      if (dados.questoes >= 5) {
+        const percentual = Math.round((dados.acertos / dados.questoes) * 100);
+        const item = { materia, percentual, acertos: dados.acertos, questoes: dados.questoes };
+        
+        if (percentual >= 80) {
+          pontosFortes.push(item);
+        } else if (percentual < 60) {
+          pontosFracos.push(item);
+        }
+      }
+    }
     
-    return { pontosFortes, pontosFracos, todasMaterias: materias };
-  }, [estudos]);
+    return { pontosFortes, pontosFracos };
+  };
+  
+  const analisePorMateria = calcularAnalisePorMateria();
   
   // Função para determinar a cor baseada na contagem
   const getCorIntensidade = (count: number) => {
