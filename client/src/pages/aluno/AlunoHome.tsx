@@ -208,6 +208,11 @@ export default function AlunoHome() {
   
   // Análise por matéria (pontos fortes e fracos)
   const analisePorMateria = useMemo(() => {
+    // Verificar se estudos está disponível
+    if (!estudos || !Array.isArray(estudos)) {
+      return { pontosFortes: [], pontosFracos: [], todasMaterias: [] };
+    }
+    
     const porMateria: Record<string, { questoes: number; acertos: number; tempo: number }> = {};
     
     // Inicializar todas as matérias
