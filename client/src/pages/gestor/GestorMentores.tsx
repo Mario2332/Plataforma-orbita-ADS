@@ -17,6 +17,7 @@ export default function GestorMentores() {
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
+    senha: "",
     nomePlataforma: "",
     logoUrl: "",
     corPrincipal: "#3b82f6",
@@ -42,6 +43,7 @@ export default function GestorMentores() {
     setFormData({
       nome: "",
       email: "",
+      senha: "",
       nomePlataforma: "",
       logoUrl: "",
       corPrincipal: "#3b82f6",
@@ -54,6 +56,7 @@ export default function GestorMentores() {
       setFormData({
         nome: mentor.nome,
         email: mentor.email,
+        senha: "",
         nomePlataforma: mentor.nomePlataforma,
         logoUrl: mentor.logoUrl || "",
         corPrincipal: mentor.corPrincipal || "#3b82f6",
@@ -73,6 +76,16 @@ export default function GestorMentores() {
       return;
     }
 
+    if (!editingMentor && !formData.senha) {
+      toast.error("A senha é obrigatória para novos mentores");
+      return;
+    }
+
+    if (!editingMentor && formData.senha.length < 6) {
+      toast.error("A senha deve ter no mínimo 6 caracteres");
+      return;
+    }
+
     try {
       setIsSaving(true);
       
@@ -83,7 +96,10 @@ export default function GestorMentores() {
         });
         toast.success("Mentor atualizado com sucesso!");
       } else {
-        await gestorApi.createMentor(formData);
+        await gestorApi.createMentor({
+          ...formData,
+          password: formData.senha,
+        });
         toast.success("Mentor adicionado com sucesso!");
       }
       
@@ -247,6 +263,24 @@ export default function GestorMentores() {
                   </p>
                 )}
               </div>
+
+              {!editingMentor && (
+                <div className="space-y-2">
+                  <Label htmlFor="senha">Senha Inicial *</Label>
+                  <Input
+                    id="senha"
+                    type="password"
+                    value={formData.senha}
+                    onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                    placeholder="Mínimo 6 caracteres"
+                    required
+                    minLength={6}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    O mentor poderá alterar esta senha nas configurações
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="nomePlataforma">Nome da Plataforma *</Label>

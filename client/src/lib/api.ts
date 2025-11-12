@@ -18,6 +18,7 @@ export const gestorApi = {
   createMentor: (data: {
     nome: string;
     email: string;
+    password: string;
     nomePlataforma: string;
     logoUrl?: string;
     corPrincipal?: string;
