@@ -24,9 +24,11 @@ import Filosofia from "./pages/aluno/conteudos/Filosofia";
 import Sociologia from "./pages/aluno/conteudos/Sociologia";
 import MentorHome from "./pages/mentor/MentorHome";
 import MentorAlunos from "./pages/mentor/MentorAlunos";
+import MentorConfiguracoes from "./pages/mentor/MentorConfiguracoes";
 import GestorHome from "./pages/gestor/GestorHome";
 import GestorMentores from "./pages/gestor/GestorMentores";
 import GestorAlunos from "./pages/gestor/GestorAlunos";
+import GestorConfiguracoes from "./pages/gestor/GestorConfiguracoes";
 import DashboardLayout from "./components/DashboardLayout";
 import LoginAluno from "./pages/auth/LoginAluno";
 import LoginMentor from "./pages/auth/LoginMentor";
@@ -137,6 +139,11 @@ function Router() {
           <MentorAlunos />
         </DashboardLayout>
       </Route>
+      <Route path="/mentor/configuracoes">
+        <DashboardLayout>
+          <MentorConfiguracoes />
+        </DashboardLayout>
+      </Route>
       
       {/* Rotas do Gestor */}
       <Route path="/gestor">
@@ -152,6 +159,11 @@ function Router() {
       <Route path="/gestor/alunos">
         <DashboardLayout>
           <GestorAlunos />
+        </DashboardLayout>
+      </Route>
+      <Route path="/gestor/configuracoes">
+        <DashboardLayout>
+          <GestorConfiguracoes />
         </DashboardLayout>
       </Route>
       
