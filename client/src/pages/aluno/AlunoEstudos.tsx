@@ -24,6 +24,7 @@ export default function AlunoEstudos() {
   const [estudos, setEstudos] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [formData, setFormData] = useState({
@@ -117,12 +118,25 @@ export default function AlunoEstudos() {
     e.preventDefault();
     try {
       setIsSaving(true);
-      await alunoApi.createEstudo({
-        ...formData,
-        data: new Date(formData.data),
-      });
-      toast.success("Estudo registrado com sucesso!");
+      
+      if (editandoId) {
+        // Modo de edição
+        await alunoApi.updateEstudo(editandoId, {
+          ...formData,
+          data: new Date(formData.data),
+        });
+        toast.success("Estudo atualizado com sucesso!");
+      } else {
+        // Modo de criação
+        await alunoApi.createEstudo({
+          ...formData,
+          data: new Date(formData.data),
+        });
+        toast.success("Estudo registrado com sucesso!");
+      }
+      
       setDialogOpen(false);
+      setEditandoId(null);
       setFormData({
         data: new Date().toISOString().split("T")[0],
         materia: "",
@@ -134,10 +148,40 @@ export default function AlunoEstudos() {
       });
       await loadEstudos();
     } catch (error: any) {
-      toast.error(error.message || "Erro ao registrar estudo");
+      toast.error(error.message || "Erro ao salvar estudo");
     } finally {
       setIsSaving(false);
     }
+  };
+  
+  const handleEdit = (estudo: any) => {
+    // Converter data para formato do input
+    let dataFormatada: string;
+    try {
+      let data: Date;
+      if (estudo.data?.seconds) {
+        data = new Date(estudo.data.seconds * 1000);
+      } else if (estudo.data?.toDate) {
+        data = estudo.data.toDate();
+      } else {
+        data = new Date(estudo.data);
+      }
+      dataFormatada = data.toISOString().split('T')[0];
+    } catch (error) {
+      dataFormatada = new Date().toISOString().split('T')[0];
+    }
+    
+    setFormData({
+      data: dataFormatada,
+      materia: estudo.materia,
+      conteudo: estudo.conteudo || "",
+      tempoMinutos: estudo.tempoMinutos,
+      questoesFeitas: estudo.questoesFeitas || 0,
+      questoesAcertadas: estudo.questoesAcertadas || 0,
+      flashcardsRevisados: estudo.flashcardsRevisados || 0,
+    });
+    setEditandoId(estudo.id);
+    setDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -219,8 +263,10 @@ export default function AlunoEstudos() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Registrar Sessão de Estudo</DialogTitle>
-              <DialogDescription>Preencha os detalhes da sua sessão de estudo</DialogDescription>
+              <DialogTitle>{editandoId ? "Editar Sessão de Estudo" : "Registrar Sessão de Estudo"}</DialogTitle>
+              <DialogDescription>
+                {editandoId ? "Atualize os detalhes da sua sessão de estudo" : "Preencha os detalhes da sua sessão de estudo"}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
@@ -399,9 +445,27 @@ export default function AlunoEstudos() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {estudos.map((estudo) => (
+                  {estudos.map((estudo) => {
+                    // Lidar com diferentes formatos de data
+                    let dataFormatada = "Data inválida";
+                    try {
+                      if (estudo.data?.seconds) {
+                        // Timestamp do Firestore
+                        dataFormatada = new Date(estudo.data.seconds * 1000).toLocaleDateString("pt-BR");
+                      } else if (estudo.data?.toDate) {
+                        // Timestamp do Firestore (método toDate)
+                        dataFormatada = estudo.data.toDate().toLocaleDateString("pt-BR");
+                      } else if (estudo.data) {
+                        // String ou Date
+                        dataFormatada = new Date(estudo.data).toLocaleDateString("pt-BR");
+                      }
+                    } catch (error) {
+                      console.error("Erro ao formatar data:", error);
+                    }
+                    
+                    return (
                     <TableRow key={estudo.id}>
-                      <TableCell>{new Date(estudo.data.seconds * 1000).toLocaleDateString("pt-BR")}</TableCell>
+                      <TableCell>{dataFormatada}</TableCell>
                       <TableCell className="font-medium">{estudo.materia}</TableCell>
                       <TableCell>{estudo.conteudo || "-"}</TableCell>
                       <TableCell>{estudo.tempoMinutos} min</TableCell>
@@ -409,16 +473,28 @@ export default function AlunoEstudos() {
                       <TableCell>{estudo.questoesAcertadas || 0}</TableCell>
                       <TableCell>{estudo.flashcardsRevisados || 0}</TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(estudo.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(estudo)}
+                            title="Editar"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(estudo.id)}
+                            title="Excluir"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>

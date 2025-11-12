@@ -103,13 +103,15 @@ export const alunoApi = {
     observacoes?: string;
   }) => callFunction("alunoFunctions-createEstudo", data),
   
-  updateEstudo: (data: {
-    estudoId: string;
+  updateEstudo: (estudoId: string, data: {
+    data?: Date;
     materia?: string;
-    topico?: string;
+    conteudo?: string;
     tempoMinutos?: number;
-    observacoes?: string;
-  }) => callFunction("alunoFunctions-updateEstudo", data),
+    questoesFeitas?: number;
+    questoesAcertadas?: number;
+    flashcardsRevisados?: number;
+  }) => callFunction("alunoFunctions-updateEstudo", { estudoId, ...data }),
   
   deleteEstudo: (estudoId: string) => callFunction("alunoFunctions-deleteEstudo", { estudoId }),
 

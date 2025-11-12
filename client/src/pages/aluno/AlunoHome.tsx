@@ -79,21 +79,49 @@ export default function AlunoHome() {
     
     const datasEstudo = estudos
       .map(e => {
-        const data = new Date(e.data);
+        let data: Date;
+        
+        // Lidar com diferentes formatos de data
+        if (e.data?.seconds) {
+          // Timestamp do Firestore
+          data = new Date(e.data.seconds * 1000);
+        } else if (e.data?.toDate) {
+          // Timestamp do Firestore (método toDate)
+          data = e.data.toDate();
+        } else {
+          // String ou Date
+          data = new Date(e.data);
+        }
+        
         data.setHours(0, 0, 0, 0);
         return data.getTime();
       })
-      .filter((v, i, a) => a.indexOf(v) === i)
-      .sort((a, b) => b - a);
+      .filter((v, i, a) => a.indexOf(v) === i) // Remover duplicatas
+      .sort((a, b) => b - a); // Ordenar do mais recente para o mais antigo
     
     let streak = 0;
     let dataEsperada = hoje.getTime();
     
+    // Verificar se estudou hoje ou ontem (para não quebrar a sequência)
+    const ontem = hoje.getTime() - 24 * 60 * 60 * 1000;
+    const estudouHoje = datasEstudo.includes(hoje.getTime());
+    const estudouOntem = datasEstudo.includes(ontem);
+    
+    if (!estudouHoje && !estudouOntem) {
+      return 0; // Sequência quebrada
+    }
+    
+    // Começar a contar do dia mais recente
+    if (!estudouHoje) {
+      dataEsperada = ontem;
+    }
+    
     for (const data of datasEstudo) {
       if (data === dataEsperada) {
         streak++;
-        dataEsperada -= 24 * 60 * 60 * 1000;
-      } else {
+        dataEsperada -= 24 * 60 * 60 * 1000; // Voltar 1 dia
+      } else if (data < dataEsperada) {
+        // Pulou um dia, quebrou a sequência
         break;
       }
     }
@@ -102,6 +130,55 @@ export default function AlunoHome() {
   };
 
   const streak = calcularStreak();
+
+  // Gerar dados para o mapa de calor (últimos 150 dias)
+  const gerarMapaCalor = () => {
+    const dias: { data: Date; count: number; }[] = [];
+    const hoje = new Date();
+    
+    // Criar um mapa de contagem de estudos por dia
+    const contagemPorDia = new Map<string, number>();
+    
+    estudos.forEach(e => {
+      let data: Date;
+      
+      if (e.data?.seconds) {
+        data = new Date(e.data.seconds * 1000);
+      } else if (e.data?.toDate) {
+        data = e.data.toDate();
+      } else {
+        data = new Date(e.data);
+      }
+      
+      const dataStr = data.toISOString().split('T')[0];
+      contagemPorDia.set(dataStr, (contagemPorDia.get(dataStr) || 0) + 1);
+    });
+    
+    // Gerar últimos 150 dias
+    for (let i = 149; i >= 0; i--) {
+      const data = new Date(hoje);
+      data.setDate(data.getDate() - i);
+      const dataStr = data.toISOString().split('T')[0];
+      
+      dias.push({
+        data: data,
+        count: contagemPorDia.get(dataStr) || 0,
+      });
+    }
+    
+    return dias;
+  };
+  
+  const mapaCalor = gerarMapaCalor();
+  
+  // Função para determinar a cor baseada na contagem
+  const getCorIntensidade = (count: number) => {
+    if (count === 0) return 'bg-gray-100 dark:bg-gray-800';
+    if (count === 1) return 'bg-green-200 dark:bg-green-900';
+    if (count === 2) return 'bg-green-400 dark:bg-green-700';
+    if (count >= 3) return 'bg-green-600 dark:bg-green-500';
+    return 'bg-gray-100 dark:bg-gray-800';
+  };
 
   return (
     <div className="space-y-6">
@@ -169,6 +246,40 @@ export default function AlunoHome() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Mapa de Calor - Últimos 150 dias */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Atividade de Estudos
+          </CardTitle>
+          <CardDescription>Últimos 150 dias de estudo - Quanto mais escuro, mais sessões registradas</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <div className="grid grid-cols-30 gap-1 min-w-[800px]">
+              {mapaCalor.map((dia, index) => (
+                <div
+                  key={index}
+                  className={`w-3 h-3 rounded-sm ${getCorIntensidade(dia.count)} hover:ring-2 hover:ring-primary transition-all cursor-pointer`}
+                  title={`${dia.data.toLocaleDateString('pt-BR')}: ${dia.count} sessões`}
+                />
+              ))}
+            </div>
+            <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
+              <span>Menos</span>
+              <div className="flex gap-1">
+                <div className="w-3 h-3 rounded-sm bg-gray-100 dark:bg-gray-800" />
+                <div className="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900" />
+                <div className="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-700" />
+                <div className="w-3 h-3 rounded-sm bg-green-600 dark:bg-green-500" />
+              </div>
+              <span>Mais</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Ações Rápidas */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -143,12 +143,29 @@ export default function AlunoMetricas() {
     const acertosTotal = estudosFiltrados.reduce((acc, e) => acc + e.questoesAcertadas, 0);
     const percentualAcerto = questoesTotal > 0 ? Math.round((acertosTotal / questoesTotal) * 100) : 0;
     
+    // Calcular dias únicos de estudo (lidar com Timestamps do Firestore)
+    const diasUnicos = new Set(
+      estudosFiltrados.map(e => {
+        let data: Date;
+        
+        if (e.data?.seconds) {
+          data = new Date(e.data.seconds * 1000);
+        } else if (e.data?.toDate) {
+          data = e.data.toDate();
+        } else {
+          data = new Date(e.data);
+        }
+        
+        return data.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+      })
+    );
+    
     return {
       tempoTotal,
       questoesTotal,
       acertosTotal,
       percentualAcerto,
-      diasEstudo: new Set(estudosFiltrados.map(e => new Date(e.data).toDateString())).size,
+      diasEstudo: diasUnicos.size,
     };
   }, [estudosFiltrados]);
 
