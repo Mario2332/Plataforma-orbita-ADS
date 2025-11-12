@@ -36,6 +36,9 @@ export default function AlunoEstudos() {
     flashcardsRevisados: 0,
   });
 
+  const tempoInicioRef = useRef<number | null>(null);
+  const tempoAcumuladoRef = useRef<number>(0);
+
   // Carregar estado do cronômetro do localStorage
   useEffect(() => {
     const estadoSalvo = localStorage.getItem(CRONOMETRO_STORAGE_KEY);
@@ -43,11 +46,10 @@ export default function AlunoEstudos() {
       try {
         const estado: CronometroEstado = JSON.parse(estadoSalvo);
         
+        tempoInicioRef.current = estado.tempoInicio;
+        tempoAcumuladoRef.current = estado.tempoAcumulado;
+        
         if (estado.ativo && estado.tempoInicio) {
-          // Calcular tempo decorrido desde o início
-          const agora = Date.now();
-          const tempoTotal = estado.tempoAcumulado + Math.floor((agora - estado.tempoInicio) / 1000);
-          setTempoDecorrido(tempoTotal);
           setCronometroAtivo(true);
         } else {
           setTempoDecorrido(estado.tempoAcumulado);
@@ -63,8 +65,12 @@ export default function AlunoEstudos() {
   useEffect(() => {
     if (cronometroAtivo) {
       intervalRef.current = setInterval(() => {
-        setTempoDecorrido((prev) => prev + 1);
-      }, 1000);
+        if (tempoInicioRef.current) {
+          const agora = Date.now();
+          const tempoDecorridoAtual = Math.floor((agora - tempoInicioRef.current) / 1000) + tempoAcumuladoRef.current;
+          setTempoDecorrido(tempoDecorridoAtual);
+        }
+      }, 100); // Atualiza a cada 100ms para maior precisão
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -79,14 +85,16 @@ export default function AlunoEstudos() {
     };
   }, [cronometroAtivo]);
 
-  // Salvar estado do cronômetro no localStorage
+  // Salvar estado do cronômetro no localStorage quando mudar
   useEffect(() => {
-    const estado: CronometroEstado = {
-      ativo: cronometroAtivo,
-      tempoInicio: cronometroAtivo ? Date.now() - (tempoDecorrido * 1000) : null,
-      tempoAcumulado: tempoDecorrido,
-    };
-    localStorage.setItem(CRONOMETRO_STORAGE_KEY, JSON.stringify(estado));
+    if (cronometroAtivo || tempoDecorrido > 0) {
+      const estado: CronometroEstado = {
+        ativo: cronometroAtivo,
+        tempoInicio: tempoInicioRef.current,
+        tempoAcumulado: tempoAcumuladoRef.current,
+      };
+      localStorage.setItem(CRONOMETRO_STORAGE_KEY, JSON.stringify(estado));
+    }
   }, [cronometroAtivo, tempoDecorrido]);
 
   const loadEstudos = async () => {
@@ -146,16 +154,22 @@ export default function AlunoEstudos() {
 
   // Funções do cronômetro
   const iniciarCronometro = () => {
+    tempoInicioRef.current = Date.now();
+    tempoAcumuladoRef.current = tempoDecorrido;
     setCronometroAtivo(true);
   };
 
   const pausarCronometro = () => {
+    tempoAcumuladoRef.current = tempoDecorrido;
+    tempoInicioRef.current = null;
     setCronometroAtivo(false);
   };
 
   const resetarCronometro = () => {
     setCronometroAtivo(false);
     setTempoDecorrido(0);
+    tempoInicioRef.current = null;
+    tempoAcumuladoRef.current = 0;
     localStorage.removeItem(CRONOMETRO_STORAGE_KEY);
   };
 
