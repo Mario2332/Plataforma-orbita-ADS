@@ -345,6 +345,58 @@ const getAlunoDashboard = functions
     };
   });
 
+/**
+ * Obter configurações da plataforma do mentor
+ */
+const getConfig = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "mentor");
+
+    const mentorDoc = await db.collection("mentores").doc(auth.uid).get();
+
+    if (!mentorDoc.exists) {
+      throw new functions.https.HttpsError("not-found", "Mentor não encontrado");
+    }
+
+    const mentorData = mentorDoc.data()!;
+    return {
+      nomePlataforma: mentorData.nomePlataforma || "",
+      logoUrl: mentorData.logoUrl || "",
+      corPrincipal: mentorData.corPrincipal || "#3b82f6",
+    };
+  });
+
+/**
+ * Atualizar configurações da plataforma do mentor
+ */
+const updateConfig = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "mentor");
+
+    const { nomePlataforma, logoUrl, corPrincipal } = data;
+
+    try {
+      const updates: any = {
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      if (nomePlataforma !== undefined) updates.nomePlataforma = nomePlataforma;
+      if (logoUrl !== undefined) updates.logoUrl = logoUrl;
+      if (corPrincipal !== undefined) updates.corPrincipal = corPrincipal;
+
+      await db.collection("mentores").doc(auth.uid).update(updates);
+
+      return { success: true };
+    } catch (error: any) {
+      functions.logger.error("Erro ao atualizar configurações do mentor:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
+
 // Exportar todas as funções do mentor
 export const mentorFunctions = {
   getMe,
@@ -356,4 +408,6 @@ export const mentorFunctions = {
   getAlunoEstudos,
   getAlunoSimulados,
   getAlunoDashboard,
+  getConfig,
+  updateConfig,
 };
