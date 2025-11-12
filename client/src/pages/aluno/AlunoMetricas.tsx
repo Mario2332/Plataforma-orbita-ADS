@@ -23,6 +23,19 @@ import { toast } from "sonner";
 
 type PeriodoFiltro = "7d" | "30d" | "3m" | "6m" | "1a" | "all";
 
+// Matérias padronizadas do ENEM
+const MATERIAS_ENEM = [
+  "Matemática",
+  "Biologia",
+  "Física",
+  "Química",
+  "História",
+  "Geografia",
+  "Filosofia",
+  "Sociologia",
+  "Linguagens",
+] as const;
+
 const CORES_GRAFICOS = [
   "#3b82f6", // blue
   "#10b981", // green
@@ -137,33 +150,42 @@ export default function AlunoMetricas() {
 
   // Dados para gráfico por matéria
   const dadosPorMateria = useMemo(() => {
-    if (!estudosFiltrados.length) return [];
+    // Inicializar todas as matérias com valores zero
+    const porMateria: Record<string, any> = {};
+    MATERIAS_ENEM.forEach(materia => {
+      porMateria[materia] = { materia, tempo: 0, questoes: 0, acertos: 0 };
+    });
     
-    const porMateria = estudosFiltrados.reduce((acc, estudo) => {
-      if (!acc[estudo.materia]) {
-        acc[estudo.materia] = { materia: estudo.materia, tempo: 0, questoes: 0, acertos: 0 };
+    // Adicionar dados dos estudos
+    estudosFiltrados.forEach(estudo => {
+      const materia = estudo.materia;
+      if (!porMateria[materia]) {
+        porMateria[materia] = { materia, tempo: 0, questoes: 0, acertos: 0 };
       }
-      acc[estudo.materia].tempo += estudo.tempoMinutos;
-      acc[estudo.materia].questoes += estudo.questoesFeitas;
-      acc[estudo.materia].acertos += estudo.questoesAcertadas;
-      return acc;
-    }, {} as Record<string, any>);
+      porMateria[materia].tempo += estudo.tempoMinutos;
+      porMateria[materia].questoes += estudo.questoesFeitas;
+      porMateria[materia].acertos += estudo.questoesAcertadas;
+    });
     
-    return Object.values(porMateria).map((d: any) => ({
-      ...d,
-      percentual: d.questoes > 0 ? Math.round((d.acertos / d.questoes) * 100) : 0,
-    })).sort((a, b) => b.questoes - a.questoes);
+    // Retornar na ordem das matérias definidas
+    return MATERIAS_ENEM.map(materia => ({
+      ...porMateria[materia],
+      percentual: porMateria[materia].questoes > 0 
+        ? Math.round((porMateria[materia].acertos / porMateria[materia].questoes) * 100) 
+        : 0,
+    }));
   }, [estudosFiltrados]);
 
   // Dados para gráfico de pizza (distribuição de tempo)
   const dadosDistribuicaoTempo = useMemo(() => {
-    if (!estudosFiltrados.length) return [];
-    
-    return dadosPorMateria.map((d, index) => ({
-      name: d.materia,
-      value: d.tempo,
-      color: CORES_GRAFICOS[index % CORES_GRAFICOS.length],
-    }));
+    // Filtrar apenas matérias com tempo > 0 para o gráfico de pizza
+    return dadosPorMateria
+      .filter(d => d.tempo > 0)
+      .map((d, index) => ({
+        name: d.materia,
+        value: d.tempo,
+        color: CORES_GRAFICOS[index % CORES_GRAFICOS.length],
+      }));
   }, [dadosPorMateria]);
 
   // Métricas gerais

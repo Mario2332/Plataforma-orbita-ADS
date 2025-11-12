@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { alunoApi } from "@/lib/api";
 import { BookOpen, Clock, Edit, Play, Plus, Trash2, Pause, RotateCcw, Save } from "lucide-react";
@@ -10,6 +11,19 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 const CRONOMETRO_STORAGE_KEY = "aluno_cronometro_estado";
+
+// Matérias padronizadas do ENEM
+const MATERIAS_ENEM = [
+  "Matemática",
+  "Biologia",
+  "Física",
+  "Química",
+  "História",
+  "Geografia",
+  "Filosofia",
+  "Sociologia",
+  "Linguagens",
+] as const;
 
 interface CronometroEstado {
   ativo: boolean;
@@ -296,13 +310,22 @@ export default function AlunoEstudos() {
 
                 <div className="space-y-2">
                   <Label htmlFor="materia">Matéria</Label>
-                  <Input
-                    id="materia"
+                  <Select
                     value={formData.materia}
-                    onChange={(e) => setFormData({ ...formData, materia: e.target.value })}
-                    placeholder="Ex: Matemática, Português..."
+                    onValueChange={(value) => setFormData({ ...formData, materia: value })}
                     required
-                  />
+                  >
+                    <SelectTrigger id="materia">
+                      <SelectValue placeholder="Selecione uma matéria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MATERIAS_ENEM.map((materia) => (
+                        <SelectItem key={materia} value={materia}>
+                          {materia}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">

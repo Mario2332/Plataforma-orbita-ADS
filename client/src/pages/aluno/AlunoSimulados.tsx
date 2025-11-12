@@ -196,9 +196,27 @@ export default function AlunoSimulados() {
                 <TableBody>
                   {simulados.map((s) => {
                     const total = s.linguagensAcertos + s.humanasAcertos + s.naturezaAcertos + s.matematicaAcertos;
+                    
+                    // Converter data do Firestore
+                    let dataFormatada = 'Data inválida';
+                    try {
+                      let data: Date;
+                      if (s.data?.seconds || s.data?._seconds) {
+                        const seconds = s.data.seconds || s.data._seconds;
+                        data = new Date(seconds * 1000);
+                      } else if (s.data?.toDate) {
+                        data = s.data.toDate();
+                      } else {
+                        data = new Date(s.data);
+                      }
+                      dataFormatada = !isNaN(data.getTime()) ? data.toLocaleDateString('pt-BR') : 'Data inválida';
+                    } catch (error) {
+                      console.error('Erro ao converter data do simulado:', error);
+                    }
+                    
                     return (
                       <TableRow key={s.id}>
-                        <TableCell>{new Date(s.data).toLocaleDateString("pt-BR")}</TableCell>
+                        <TableCell>{dataFormatada}</TableCell>
                         <TableCell className="font-medium">{s.nome}</TableCell>
                         <TableCell>{s.linguagensAcertos}/45</TableCell>
                         <TableCell>{s.humanasAcertos}/45</TableCell>
