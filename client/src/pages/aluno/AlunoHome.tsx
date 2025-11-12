@@ -467,7 +467,7 @@ export default function AlunoHome() {
                   ))}
                 </div>
                 <p className="text-xs text-red-600 dark:text-red-400 mt-2">
-                  💡 Dica: Revise os conteúdos e faça mais exercícios dessas matérias
+                  💡 Dica: Veja os tópicos nos quais você teve mais dificuldade nessas matérias, revise-os e faça mais questões! Foque, principalmente, nos tópicos de maior incidência.
                 </p>
               </div>
             )}

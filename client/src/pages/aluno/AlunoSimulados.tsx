@@ -3,17 +3,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { alunoApi } from "@/lib/api";
-import { FileText, Plus, Trash2 } from "lucide-react";
+import { FileText, Plus, Trash2, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
+
+type AreaFiltro = "geral" | "linguagens" | "humanas" | "natureza" | "matematica";
 
 export default function AlunoSimulados() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [simulados, setSimulados] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [areaFiltro, setAreaFiltro] = useState<AreaFiltro>("geral");
 
   const [formData, setFormData] = useState({
     nome: "",
@@ -80,6 +85,71 @@ export default function AlunoSimulados() {
       }
     }
   };
+
+  // Preparar dados para o gráfico de evolução
+  const prepararDadosGrafico = () => {
+    if (!simulados || simulados.length === 0) return [];
+    
+    return simulados
+      .map(s => {
+        // Converter data
+        let data: Date;
+        try {
+          if (s.data?.seconds || s.data?._seconds) {
+            const seconds = s.data.seconds || s.data._seconds;
+            data = new Date(seconds * 1000);
+          } else if (s.data?.toDate) {
+            data = s.data.toDate();
+          } else {
+            data = new Date(s.data);
+          }
+        } catch {
+          return null;
+        }
+        
+        const dataFormatada = data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        const total = s.linguagensAcertos + s.humanasAcertos + s.naturezaAcertos + s.matematicaAcertos;
+        
+        let valor: number;
+        let label: string;
+        
+        switch (areaFiltro) {
+          case "linguagens":
+            valor = Math.round((s.linguagensAcertos / 45) * 100);
+            label = "Linguagens";
+            break;
+          case "humanas":
+            valor = Math.round((s.humanasAcertos / 45) * 100);
+            label = "Humanas";
+            break;
+          case "natureza":
+            valor = Math.round((s.naturezaAcertos / 45) * 100);
+            label = "Natureza";
+            break;
+          case "matematica":
+            valor = Math.round((s.matematicaAcertos / 45) * 100);
+            label = "Matemática";
+            break;
+          default: // geral
+            valor = Math.round((total / 180) * 100);
+            label = "Geral";
+        }
+        
+        return {
+          data: dataFormatada,
+          [label]: valor,
+          nome: s.nome,
+        };
+      })
+      .filter(Boolean)
+      .reverse(); // Mais antigo para mais recente
+  };
+  
+  const dadosGrafico = prepararDadosGrafico();
+  const labelGrafico = areaFiltro === "geral" ? "Geral" : 
+                       areaFiltro === "linguagens" ? "Linguagens" :
+                       areaFiltro === "humanas" ? "Humanas" :
+                       areaFiltro === "natureza" ? "Natureza" : "Matemática";
 
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-[400px]">
@@ -175,6 +245,75 @@ export default function AlunoSimulados() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Gráfico de Evolução */}
+      {simulados && simulados.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <CardTitle>Evolução de Desempenho</CardTitle>
+              </div>
+              <Select value={areaFiltro} onValueChange={(value) => setAreaFiltro(value as AreaFiltro)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="geral">Geral (Todas)</SelectItem>
+                  <SelectItem value="linguagens">Linguagens</SelectItem>
+                  <SelectItem value="humanas">Humanas</SelectItem>
+                  <SelectItem value="natureza">Natureza</SelectItem>
+                  <SelectItem value="matematica">Matemática</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <CardDescription>
+              Acompanhe sua evolução ao longo dos simulados
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={dadosGrafico}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="data" 
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis 
+                  domain={[0, 100]}
+                  style={{ fontSize: '12px' }}
+                  label={{ value: 'Percentual (%)', angle: -90, position: 'insideLeft' }}
+                />
+                <Tooltip 
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-background border rounded-lg p-3 shadow-lg">
+                          <p className="font-medium">{payload[0].payload.nome}</p>
+                          <p className="text-sm text-muted-foreground">{payload[0].payload.data}</p>
+                          <p className="text-sm font-semibold text-primary mt-1">
+                            {labelGrafico}: {payload[0].value}%
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey={labelGrafico} 
+                  stroke="#3b82f6" 
+                  strokeWidth={2}
+                  dot={{ fill: '#3b82f6', r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
