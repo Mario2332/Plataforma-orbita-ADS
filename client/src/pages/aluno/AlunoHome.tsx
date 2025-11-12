@@ -83,9 +83,10 @@ export default function AlunoHome() {
           let data: Date;
           
           // Lidar com diferentes formatos de data
-          if (e.data?.seconds) {
-            // Timestamp do Firestore
-            data = new Date(e.data.seconds * 1000);
+          if (e.data?.seconds || e.data?._seconds) {
+            // Timestamp do Firestore (com ou sem underscore)
+            const seconds = e.data.seconds || e.data._seconds;
+            data = new Date(seconds * 1000);
           } else if (e.data?.toDate) {
             // Timestamp do Firestore (método toDate)
             data = e.data.toDate();
@@ -153,8 +154,9 @@ export default function AlunoHome() {
       try {
         let data: Date;
         
-        if (e.data?.seconds) {
-          data = new Date(e.data.seconds * 1000);
+        if (e.data?.seconds || e.data?._seconds) {
+          const seconds = e.data.seconds || e.data._seconds;
+          data = new Date(seconds * 1000);
         } else if (e.data?.toDate) {
           data = e.data.toDate();
         } else {
@@ -261,7 +263,22 @@ export default function AlunoHome() {
           <CardContent>
             <div className="text-2xl font-bold">{acertosUltimoSimulado}/180</div>
             <p className="text-xs text-muted-foreground">
-              {ultimoSimulado ? new Date(ultimoSimulado.data).toLocaleDateString('pt-BR') : "Nenhum simulado"}
+              {ultimoSimulado ? (() => {
+                try {
+                  let data: Date;
+                  if (ultimoSimulado.data?.seconds || ultimoSimulado.data?._seconds) {
+                    const seconds = ultimoSimulado.data.seconds || ultimoSimulado.data._seconds;
+                    data = new Date(seconds * 1000);
+                  } else if (ultimoSimulado.data?.toDate) {
+                    data = ultimoSimulado.data.toDate();
+                  } else {
+                    data = new Date(ultimoSimulado.data);
+                  }
+                  return !isNaN(data.getTime()) ? data.toLocaleDateString('pt-BR') : 'Data inválida';
+                } catch {
+                  return 'Data inválida';
+                }
+              })() : "Nenhum simulado"}
             </p>
           </CardContent>
         </Card>
@@ -454,7 +471,22 @@ export default function AlunoHome() {
                       </p>
                     </div>
                     <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      {new Date(estudo.data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                      {(() => {
+                        try {
+                          let data: Date;
+                          if (estudo.data?.seconds || estudo.data?._seconds) {
+                            const seconds = estudo.data.seconds || estudo.data._seconds;
+                            data = new Date(seconds * 1000);
+                          } else if (estudo.data?.toDate) {
+                            data = estudo.data.toDate();
+                          } else {
+                            data = new Date(estudo.data);
+                          }
+                          return !isNaN(data.getTime()) ? data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : 'Inválida';
+                        } catch {
+                          return 'Inválida';
+                        }
+                      })()}
                     </span>
                   </div>
                 ))

@@ -460,9 +460,10 @@ export default function AlunoEstudos() {
                     console.log("Keys:", estudo.data && typeof estudo.data === 'object' ? Object.keys(estudo.data) : 'N/A');
                     
                     try {
-                      if (estudo.data?.seconds) {
-                        // Timestamp do Firestore
-                        const date = new Date(estudo.data.seconds * 1000);
+                      if (estudo.data?.seconds || estudo.data?._seconds) {
+                        // Timestamp do Firestore (com ou sem underscore)
+                        const seconds = estudo.data.seconds || estudo.data._seconds;
+                        const date = new Date(seconds * 1000);
                         console.log("Convertido (seconds):", date);
                         if (!isNaN(date.getTime())) {
                           dataFormatada = date.toLocaleDateString("pt-BR");

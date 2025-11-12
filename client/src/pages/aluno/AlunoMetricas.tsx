@@ -81,7 +81,22 @@ export default function AlunoMetricas() {
         return estudos;
     }
     
-    return estudos.filter(e => new Date(e.data) >= dataLimite);
+    return estudos.filter(e => {
+      try {
+        let data: Date;
+        if (e.data?.seconds || e.data?._seconds) {
+          const seconds = e.data.seconds || e.data._seconds;
+          data = new Date(seconds * 1000);
+        } else if (e.data?.toDate) {
+          data = e.data.toDate();
+        } else {
+          data = new Date(e.data);
+        }
+        return !isNaN(data.getTime()) && data >= dataLimite;
+      } catch {
+        return false;
+      }
+    });
   }, [estudos, periodo]);
 
   // Dados para gráfico de evolução temporal
@@ -89,7 +104,22 @@ export default function AlunoMetricas() {
     if (!estudosFiltrados.length) return [];
     
     const porDia = estudosFiltrados.reduce((acc, estudo) => {
-      const data = new Date(estudo.data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+      let dataFormatada: string;
+      try {
+        let data: Date;
+        if (estudo.data?.seconds || estudo.data?._seconds) {
+          const seconds = estudo.data.seconds || estudo.data._seconds;
+          data = new Date(seconds * 1000);
+        } else if (estudo.data?.toDate) {
+          data = estudo.data.toDate();
+        } else {
+          data = new Date(estudo.data);
+        }
+        dataFormatada = !isNaN(data.getTime()) ? data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : 'Inválida';
+      } catch {
+        dataFormatada = 'Inválida';
+      }
+      const data = dataFormatada;
       if (!acc[data]) {
         acc[data] = { data, tempo: 0, questoes: 0, acertos: 0 };
       }
@@ -150,8 +180,9 @@ export default function AlunoMetricas() {
           try {
             let data: Date;
             
-            if (e.data?.seconds) {
-              data = new Date(e.data.seconds * 1000);
+            if (e.data?.seconds || e.data?._seconds) {
+              const seconds = e.data.seconds || e.data._seconds;
+              data = new Date(seconds * 1000);
             } else if (e.data?.toDate) {
               data = e.data.toDate();
             } else {
