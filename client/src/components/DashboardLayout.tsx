@@ -60,7 +60,6 @@ const getMenuItems = (role?: string) => {
       ];
     case "mentor":
       return [
-        { icon: Home, label: "Início", path: "/mentor" },
         { icon: Users, label: "Alunos", path: "/mentor/alunos" },
         { icon: Settings, label: "Configurações", path: "/mentor/configuracoes" },
       ];

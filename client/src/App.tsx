@@ -26,6 +26,7 @@ import Sociologia from "./pages/aluno/conteudos/Sociologia";
 import MentorHome from "./pages/mentor/MentorHome";
 import MentorAlunos from "./pages/mentor/MentorAlunos";
 import MentorConfiguracoes from "./pages/mentor/MentorConfiguracoes";
+import MentorViewAluno from "./pages/mentor/MentorViewAluno";
 import GestorHome from "./pages/gestor/GestorHome";
 import GestorMentores from "./pages/gestor/GestorMentores";
 import GestorAlunos from "./pages/gestor/GestorAlunos";
@@ -136,13 +137,19 @@ function Router() {
       
       {/* Rotas do Mentor */}
       <Route path="/mentor">
-        <DashboardLayout>
-          <MentorHome />
-        </DashboardLayout>
+        {() => {
+          window.location.href = "/mentor/alunos";
+          return null;
+        }}
       </Route>
       <Route path="/mentor/alunos">
         <DashboardLayout>
           <MentorAlunos />
+        </DashboardLayout>
+      </Route>
+      <Route path="/mentor/alunos/:alunoId">
+        <DashboardLayout>
+          <MentorViewAluno />
         </DashboardLayout>
       </Route>
       <Route path="/mentor/configuracoes">
