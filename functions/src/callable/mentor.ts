@@ -558,24 +558,6 @@ const getAlunoAreaCompleta = functions
     }
   });
 
-// Exportar todas as funções do mentor
-export const mentorFunctions = {
-  getMe,
-  getAlunos,
-  getAlunoById,
-  createAluno,
-  updateAluno,
-  deleteAluno,
-  getAlunoEstudos,
-  getAlunoSimulados,
-  getAlunoDashboard,
-  getConfig,
-  updateConfig,
-  getAlunosMetricas,
-  getEvolucaoAlunos,
-  getAlunoAreaCompleta,
-};
-
 /**
  * Funções para o mentor gerenciar estudos do aluno
  */
