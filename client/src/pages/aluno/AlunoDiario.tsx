@@ -552,7 +552,8 @@ export default function AlunoDiario() {
                 <p className="text-center text-muted-foreground py-8">
                   Registre mais dias para ver os gráficos
                 </p>
-                       </CardContent>
+              )}
+            </CardContent>
           </Card>
 
           {/* Gráfico de Distribuição */}
