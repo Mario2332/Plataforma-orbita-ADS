@@ -34,15 +34,78 @@ export function useAlunoApi() {
       
       // Horários
       getHorarios: () => mentorApi.getAlunoData({ alunoId: mentorView.alunoId, collection: "horarios" }),
+      createHorario: (data: any) => {
+        // Por enquanto retorna erro - implementar função no backend se necessário
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      updateHorario: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      deleteHorario: (horarioId: string) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      
+      // Templates
+      getTemplates: () => mentorApi.getAlunoData({ alunoId: mentorView.alunoId, collection: "templates" }),
+      saveTemplate: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      loadTemplate: (templateId: string) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      deleteTemplate: (templateId: string) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
       
       // Diário Emocional
       getDiarioEmocional: (data?: any) => mentorApi.getAlunoData({ alunoId: mentorView.alunoId, collection: "diario_emocional" }),
+      createDiarioEmocional: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      deleteDiarioEmocional: (registroId: string) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
       
       // Autodiagnóstico
       getAutodiagnosticos: () => mentorApi.getAlunoData({ alunoId: mentorView.alunoId, collection: "autodiagnosticos" }),
+      createAutodiagnostico: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      deleteAutodiagnostico: (autodiagnosticoId: string) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
       
       // Progresso (conteúdos ENEM)
       getProgresso: (materia?: string) => mentorApi.getAlunoData({ alunoId: mentorView.alunoId, collection: "progresso" }),
+      updateProgresso: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      
+      // Profile
+      getMe: () => mentorApi.getAlunoById(mentorView.alunoId),
+      updateProfile: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      
+      // Cronograma (funções adicionais)
+      createCronograma: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      updateCronograma: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      deleteCronograma: (cronogramaId: string) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      createTarefa: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      updateTarefa: (data: any) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
+      deleteTarefa: (tarefaId: string) => {
+        return Promise.reject(new Error("Função não implementada para mentor"));
+      },
     };
   }
   
