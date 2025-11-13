@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -175,8 +175,8 @@ export default function AlunoDiario() {
     };
   };
 
-  const dadosGrafico = prepararDadosGrafico();
-  const analise = analisarCorrelacao();
+  const dadosGrafico = useMemo(() => prepararDadosGrafico(), [registros]);
+  const analise = useMemo(() => analisarCorrelacao(), [registros, estudos]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
