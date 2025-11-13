@@ -216,37 +216,6 @@ export default function AlunoDiario() {
     }
   };
 
-  const formatData = (timestamp: any) => {
-    if (!timestamp) return "";
-    
-    let data: Date;
-    
-    if (timestamp.toDate) {
-      data = timestamp.toDate();
-    } else if (timestamp.seconds || timestamp._seconds) {
-      const seconds = timestamp.seconds || timestamp._seconds;
-      data = new Date(seconds * 1000);
-    } else if (timestamp) {
-      data = new Date(timestamp);
-    } else {
-      return "";
-    }
-
-    return data.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
-
-  const getEstadoEmocional = (value: string) => {
-    return ESTADOS_EMOCIONAIS.find(e => e.value === value);
-  };
-
-  const getNivelCansaco = (value: string) => {
-    return NIVEIS_CANSACO.find(n => n.value === value);
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
