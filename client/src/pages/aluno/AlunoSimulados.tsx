@@ -10,10 +10,13 @@ import { FileText, Plus, Trash2, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AlunoAutodiagnostico from "./AlunoAutodiagnostico";
 
 type AreaFiltro = "geral" | "linguagens" | "humanas" | "natureza" | "matematica";
 
 export default function AlunoSimulados() {
+  const [activeTab, setActiveTab] = useState("simulados");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [simulados, setSimulados] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -167,11 +170,19 @@ export default function AlunoSimulados() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Simulados</h1>
-          <p className="text-muted-foreground mt-2">Registre e acompanhe seus simulados do ENEM</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold">Simulados</h1>
+        <p className="text-muted-foreground mt-2">Registre e acompanhe seus simulados do ENEM</p>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="simulados">Simulados</TabsTrigger>
+          <TabsTrigger value="autodiagnostico">Autodiagnóstico</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="simulados" className="space-y-6 mt-6">
+          <div className="flex items-center justify-end">
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button><Plus className="h-4 w-4 mr-2" />Registrar Simulado</Button>
@@ -395,6 +406,12 @@ export default function AlunoSimulados() {
           )}
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="autodiagnostico" className="mt-6">
+          <AlunoAutodiagnostico />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

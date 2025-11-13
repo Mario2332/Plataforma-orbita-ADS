@@ -238,4 +238,17 @@ export const alunoApi = {
     dataFim?: string;
   }) => callFunction("getDiarioEmocional", data || {}),
   deleteDiarioEmocional: (registroId: string) => callFunction("deleteDiarioEmocional", { registroId }),
+
+  // Autodiagnóstico
+  createAutodiagnostico: (data: {
+    prova: string;
+    questoes: Array<{
+      numeroQuestao: string;
+      macroassunto: string;
+      microassunto: string;
+      motivoErro: string;
+    }>;
+  }) => callFunction("createAutodiagnostico", data),
+  getAutodiagnosticos: () => callFunction("getAutodiagnosticos"),
+  deleteAutodiagnostico: (autodiagnosticoId: string) => callFunction("deleteAutodiagnostico", { autodiagnosticoId }),
 };

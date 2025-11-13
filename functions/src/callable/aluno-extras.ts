@@ -523,3 +523,117 @@ export const deleteDiarioEmocional = functions
       throw new functions.https.HttpsError("internal", error.message);
     }
   });
+
+// ==================== AUTODIAGNÓSTICO ====================
+
+/**
+ * Criar autodiagnóstico de erros em prova/simulado
+ */
+export const createAutodiagnostico = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "aluno");
+
+    const { prova, questoes } = data;
+
+    if (!prova || !questoes || !Array.isArray(questoes) || questoes.length === 0) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Prova e questões são obrigatórios"
+      );
+    }
+
+    // Validar questões
+    const motivosValidos = ["interpretacao", "atencao", "lacuna_teorica", "nao_estudado"];
+    for (const q of questoes) {
+      if (!q.numeroQuestao || !q.macroassunto || !q.microassunto || !q.motivoErro) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "Todos os campos da questão são obrigatórios"
+        );
+      }
+      if (!motivosValidos.includes(q.motivoErro)) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          `Motivo de erro inválido: ${q.motivoErro}`
+        );
+      }
+    }
+
+    try {
+      const autodiagnosticoRef = await db
+        .collection("alunos")
+        .doc(auth.uid)
+        .collection("autodiagnosticos")
+        .add({
+          prova,
+          questoes,
+          totalQuestoes: questoes.length,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+      return { success: true, id: autodiagnosticoRef.id };
+    } catch (error: any) {
+      functions.logger.error("Erro ao criar autodiagnóstico:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
+
+/**
+ * Obter autodiagnósticos
+ */
+export const getAutodiagnosticos = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "aluno");
+
+    try {
+      const snapshot = await db
+        .collection("alunos")
+        .doc(auth.uid)
+        .collection("autodiagnosticos")
+        .orderBy("createdAt", "desc")
+        .get();
+
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error: any) {
+      functions.logger.error("Erro ao buscar autodiagnósticos:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
+
+/**
+ * Deletar autodiagnóstico
+ */
+export const deleteAutodiagnostico = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "aluno");
+
+    const { autodiagnosticoId } = data;
+
+    if (!autodiagnosticoId) {
+      throw new functions.https.HttpsError("invalid-argument", "ID do autodiagnóstico é obrigatório");
+    }
+
+    try {
+      await db
+        .collection("alunos")
+        .doc(auth.uid)
+        .collection("autodiagnosticos")
+        .doc(autodiagnosticoId)
+        .delete();
+
+      return { success: true };
+    } catch (error: any) {
+      functions.logger.error("Erro ao deletar autodiagnóstico:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
