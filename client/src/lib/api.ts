@@ -330,26 +330,38 @@ export const alunoApi = {
   createSimulado: (data: {
     nome: string;
     data: Date;
-    notaTotal: number;
-    notaRedacao?: number;
-    notaMatematica?: number;
-    notaLinguagens?: number;
-    notaCienciasNatureza?: number;
-    notaCienciasHumanas?: number;
-    observacoes?: string;
+    linguagensAcertos?: number;
+    linguagensTempo?: number;
+    humanasAcertos?: number;
+    humanasTempo?: number;
+    naturezaAcertos?: number;
+    naturezaTempo?: number;
+    matematicaAcertos?: number;
+    matematicaTempo?: number;
+    redacaoNota?: number;
+    redacaoTempo?: number;
+    dificuldadeDia1?: string;
+    dificuldadeDia2?: string;
+    anotacoes?: string;
   }) => callFunction("alunoFunctions-createSimulado", data),
   
   updateSimulado: (data: {
     simuladoId: string;
     nome?: string;
     data?: Date;
-    notaTotal?: number;
-    notaRedacao?: number;
-    notaMatematica?: number;
-    notaLinguagens?: number;
-    notaCienciasNatureza?: number;
-    notaCienciasHumanas?: number;
-    observacoes?: string;
+    linguagensAcertos?: number;
+    linguagensTempo?: number;
+    humanasAcertos?: number;
+    humanasTempo?: number;
+    naturezaAcertos?: number;
+    naturezaTempo?: number;
+    matematicaAcertos?: number;
+    matematicaTempo?: number;
+    redacaoNota?: number;
+    redacaoTempo?: number;
+    dificuldadeDia1?: string;
+    dificuldadeDia2?: string;
+    anotacoes?: string;
   }) => callFunction("alunoFunctions-updateSimulado", data),
   
   deleteSimulado: (simuladoId: string) => callFunction("alunoFunctions-deleteSimulado", { simuladoId }),

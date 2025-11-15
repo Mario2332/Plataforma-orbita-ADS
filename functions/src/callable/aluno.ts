@@ -327,6 +327,8 @@ const createSimulado = functions
       matematicaTempo,
       redacaoNota,
       redacaoTempo,
+      dificuldadeDia1,
+      dificuldadeDia2,
       anotacoes,
     } = data;
 
@@ -352,6 +354,8 @@ const createSimulado = functions
           matematicaTempo: matematicaTempo || 0,
           redacaoNota: redacaoNota || 0,
           redacaoTempo: redacaoTempo || 0,
+          dificuldadeDia1: dificuldadeDia1 || "nao_informado",
+          dificuldadeDia2: dificuldadeDia2 || "nao_informado",
           anotacoes: anotacoes || null,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -360,6 +364,74 @@ const createSimulado = functions
       return { success: true, simuladoId: simuladoRef.id };
     } catch (error: any) {
       functions.logger.error("Erro ao criar simulado:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
+
+/**
+ * Atualizar simulado
+ */
+const updateSimulado = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "aluno");
+
+    const {
+      simuladoId,
+      nome,
+      data: dataSimulado,
+      linguagensAcertos,
+      linguagensTempo,
+      humanasAcertos,
+      humanasTempo,
+      naturezaAcertos,
+      naturezaTempo,
+      matematicaAcertos,
+      matematicaTempo,
+      redacaoNota,
+      redacaoTempo,
+      dificuldadeDia1,
+      dificuldadeDia2,
+      anotacoes,
+    } = data;
+
+    if (!simuladoId) {
+      throw new functions.https.HttpsError("invalid-argument", "ID do simulado é obrigatório");
+    }
+
+    try {
+      const updateData: any = {
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      // Adicionar apenas campos que foram fornecidos
+      if (nome !== undefined) updateData.nome = nome;
+      if (dataSimulado !== undefined) updateData.data = admin.firestore.Timestamp.fromDate(new Date(dataSimulado));
+      if (linguagensAcertos !== undefined) updateData.linguagensAcertos = linguagensAcertos;
+      if (linguagensTempo !== undefined) updateData.linguagensTempo = linguagensTempo;
+      if (humanasAcertos !== undefined) updateData.humanasAcertos = humanasAcertos;
+      if (humanasTempo !== undefined) updateData.humanasTempo = humanasTempo;
+      if (naturezaAcertos !== undefined) updateData.naturezaAcertos = naturezaAcertos;
+      if (naturezaTempo !== undefined) updateData.naturezaTempo = naturezaTempo;
+      if (matematicaAcertos !== undefined) updateData.matematicaAcertos = matematicaAcertos;
+      if (matematicaTempo !== undefined) updateData.matematicaTempo = matematicaTempo;
+      if (redacaoNota !== undefined) updateData.redacaoNota = redacaoNota;
+      if (redacaoTempo !== undefined) updateData.redacaoTempo = redacaoTempo;
+      if (dificuldadeDia1 !== undefined) updateData.dificuldadeDia1 = dificuldadeDia1;
+      if (dificuldadeDia2 !== undefined) updateData.dificuldadeDia2 = dificuldadeDia2;
+      if (anotacoes !== undefined) updateData.anotacoes = anotacoes;
+
+      await db
+        .collection("alunos")
+        .doc(auth.uid)
+        .collection("simulados")
+        .doc(simuladoId)
+        .update(updateData);
+
+      return { success: true };
+    } catch (error: any) {
+      functions.logger.error("Erro ao atualizar simulado:", error);
       throw new functions.https.HttpsError("internal", error.message);
     }
   });
@@ -490,6 +562,7 @@ export const alunoFunctions = {
   deleteEstudo,
   getSimulados,
   createSimulado,
+  updateSimulado,
   deleteSimulado,
   getMetricasPorMateria,
   updateProfile,
