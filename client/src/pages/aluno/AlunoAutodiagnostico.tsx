@@ -6,9 +6,17 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { alunoApi } from "@/lib/api";
-import { Plus, Trash2, FileText, BarChart3, AlertCircle } from "lucide-react";
+import { Plus, Trash2, FileText, BarChart3, AlertCircle, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from "recharts";
+
+// Áreas do ENEM
+const AREAS_ENEM = [
+  { value: "linguagens", label: "Linguagens" },
+  { value: "humanas", label: "Humanas" },
+  { value: "natureza", label: "Natureza" },
+  { value: "matematica", label: "Matemática" },
+];
 
 // Motivos de erro
 const MOTIVOS_ERRO = [
@@ -20,6 +28,7 @@ const MOTIVOS_ERRO = [
 
 interface Questao {
   numeroQuestao: string;
+  area: string;
   macroassunto: string;
   microassunto: string;
   motivoErro: string;
@@ -30,10 +39,14 @@ export default function AlunoAutodiagnostico() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
+  // Filtros
+  const [filtroArea, setFiltroArea] = useState<string>("geral");
+  const [filtroTempo, setFiltroTempo] = useState<string>("todo");
+  
   // Formulário
   const [prova, setProva] = useState("");
   const [questoes, setQuestoes] = useState<Questao[]>([
-    { numeroQuestao: "", macroassunto: "", microassunto: "", motivoErro: "" }
+    { numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "" }
   ]);
 
   useEffect(() => {
@@ -53,7 +66,7 @@ export default function AlunoAutodiagnostico() {
   };
 
   const addQuestao = () => {
-    setQuestoes([...questoes, { numeroQuestao: "", macroassunto: "", microassunto: "", motivoErro: "" }]);
+    setQuestoes([...questoes, { numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "" }]);
   };
 
   const removeQuestao = (index: number) => {
@@ -80,7 +93,7 @@ export default function AlunoAutodiagnostico() {
 
     // Validar questões
     const questoesValidas = questoes.filter(q => 
-      q.numeroQuestao.trim() && q.macroassunto.trim() && q.microassunto.trim() && q.motivoErro
+      q.numeroQuestao.trim() && q.area && q.macroassunto.trim() && q.microassunto.trim() && q.motivoErro
     );
 
     if (questoesValidas.length === 0) {
@@ -98,7 +111,7 @@ export default function AlunoAutodiagnostico() {
       
       // Limpar formulário
       setProva("");
-      setQuestoes([{ numeroQuestao: "", macroassunto: "", microassunto: "", motivoErro: "" }]);
+      setQuestoes([{ numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "" }]);
       
       await loadAutodiagnosticos();
     } catch (error: any) {
@@ -124,6 +137,39 @@ export default function AlunoAutodiagnostico() {
     return MOTIVOS_ERRO.find(m => m.value === value);
   };
 
+  const getAreaLabel = (value: string) => {
+    return AREAS_ENEM.find(a => a.value === value)?.label || value;
+  };
+
+  // Filtrar autodiagnósticos por tempo e área
+  const autodiagnosticosFiltrados = useMemo(() => {
+    let filtrados = [...autodiagnosticos];
+    
+    // Filtro de tempo
+    if (filtroTempo !== "todo") {
+      const dataLimite = new Date();
+      if (filtroTempo === "1mes") dataLimite.setMonth(dataLimite.getMonth() - 1);
+      if (filtroTempo === "3meses") dataLimite.setMonth(dataLimite.getMonth() - 3);
+      if (filtroTempo === "6meses") dataLimite.setMonth(dataLimite.getMonth() - 6);
+      if (filtroTempo === "12meses") dataLimite.setMonth(dataLimite.getMonth() - 12);
+      
+      filtrados = filtrados.filter(auto => {
+        const dataAuto = auto.createdAt?.toDate ? auto.createdAt.toDate() : new Date(auto.createdAt);
+        return dataAuto >= dataLimite;
+      });
+    }
+    
+    // Filtro de área
+    if (filtroArea !== "geral") {
+      filtrados = filtrados.map(auto => ({
+        ...auto,
+        questoes: auto.questoes?.filter((q: Questao) => q.area === filtroArea) || []
+      })).filter(auto => auto.questoes.length > 0);
+    }
+    
+    return filtrados;
+  }, [autodiagnosticos, filtroTempo, filtroArea]);
+
   // Preparar dados para o gráfico de distribuição
   const dadosDistribuicao = useMemo(() => {
     const contagem: Record<string, number> = {};
@@ -132,7 +178,7 @@ export default function AlunoAutodiagnostico() {
       contagem[m.value] = 0;
     });
 
-    autodiagnosticos.forEach(auto => {
+    autodiagnosticosFiltrados.forEach(auto => {
       auto.questoes?.forEach((q: Questao) => {
         if (q.motivoErro) {
           contagem[q.motivoErro] = (contagem[q.motivoErro] || 0) + 1;
@@ -145,9 +191,28 @@ export default function AlunoAutodiagnostico() {
       quantidade: contagem[m.value] || 0,
       cor: m.color
     }));
-  }, [autodiagnosticos]);
+  }, [autodiagnosticosFiltrados]);
 
   const totalErros = dadosDistribuicao.reduce((sum, d) => sum + d.quantidade, 0);
+
+  // Contagem por área
+  const contagemPorArea = useMemo(() => {
+    const contagem: Record<string, number> = {};
+    
+    AREAS_ENEM.forEach(a => {
+      contagem[a.value] = 0;
+    });
+
+    autodiagnosticos.forEach(auto => {
+      auto.questoes?.forEach((q: Questao) => {
+        if (q.area) {
+          contagem[q.area] = (contagem[q.area] || 0) + 1;
+        }
+      });
+    });
+
+    return contagem;
+  }, [autodiagnosticos]);
 
   if (isLoading) {
     return (
@@ -227,6 +292,25 @@ export default function AlunoAutodiagnostico() {
                         </div>
 
                         <div className="space-y-2">
+                          <Label>Área *</Label>
+                          <Select
+                            value={questao.area}
+                            onValueChange={(value) => updateQuestao(index, "area", value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione a área" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {AREAS_ENEM.map(area => (
+                                <SelectItem key={area.value} value={area.value}>
+                                  {area.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
                           <Label>Macroassunto *</Label>
                           <Input
                             placeholder="Ex: Ecologia, Termologia..."
@@ -244,7 +328,7 @@ export default function AlunoAutodiagnostico() {
                           />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 md:col-span-2">
                           <Label>Motivo do Erro *</Label>
                           <Select
                             value={questao.motivoErro}
@@ -285,10 +369,52 @@ export default function AlunoAutodiagnostico() {
               Distribuição de Tipos de Erro
             </CardTitle>
             <CardDescription>
-              Análise geral de {totalErros} erros registrados
+              Análise de {totalErros} erros registrados {filtroArea !== "geral" && `em ${getAreaLabel(filtroArea)}`}
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Filtros */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex-1 space-y-2">
+                <Label className="flex items-center gap-2 text-sm">
+                  <Filter className="h-4 w-4" />
+                  Filtrar por Área
+                </Label>
+                <Select value={filtroArea} onValueChange={setFiltroArea}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="geral">Geral (Todas as Áreas)</SelectItem>
+                    {AREAS_ENEM.map(area => (
+                      <SelectItem key={area.value} value={area.value}>
+                        {area.label} ({contagemPorArea[area.value] || 0})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <Label className="flex items-center gap-2 text-sm">
+                  <Filter className="h-4 w-4" />
+                  Filtrar por Período
+                </Label>
+                <Select value={filtroTempo} onValueChange={setFiltroTempo}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todo">Todo o Período</SelectItem>
+                    <SelectItem value="1mes">Último Mês</SelectItem>
+                    <SelectItem value="3meses">Últimos 3 Meses</SelectItem>
+                    <SelectItem value="6meses">Últimos 6 Meses</SelectItem>
+                    <SelectItem value="12meses">Últimos 12 Meses</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             {totalErros > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={dadosDistribuicao}>
@@ -306,7 +432,7 @@ export default function AlunoAutodiagnostico() {
             ) : (
               <div className="flex items-center justify-center py-12 text-muted-foreground">
                 <AlertCircle className="h-5 w-5 mr-2" />
-                Nenhum erro registrado ainda
+                Nenhum erro registrado para os filtros selecionados
               </div>
             )}
 
@@ -349,72 +475,95 @@ export default function AlunoAutodiagnostico() {
         <CardContent>
           {autodiagnosticos.length > 0 ? (
             <Accordion type="single" collapsible className="w-full">
-              {autodiagnosticos.map((auto) => (
-                <AccordionItem key={auto.id} value={auto.id}>
-                  <AccordionTrigger className="hover:no-underline">
-                    <div className="flex items-center justify-between w-full pr-4">
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-primary" />
-                        <div className="text-left">
-                          <div className="font-medium">{auto.prova}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {auto.totalQuestoes || auto.questoes?.length || 0} questão(ões) errada(s)
+              {autodiagnosticos.map((auto) => {
+                // Agrupar questões por área
+                const questoesPorArea = AREAS_ENEM.reduce((acc, area) => {
+                  acc[area.value] = auto.questoes?.filter((q: Questao) => q.area === area.value) || [];
+                  return acc;
+                }, {} as Record<string, Questao[]>);
+
+                return (
+                  <AccordionItem key={auto.id} value={auto.id}>
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex items-center justify-between w-full pr-4">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-5 w-5 text-primary" />
+                          <div className="text-left">
+                            <div className="font-medium">{auto.prova}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {auto.totalQuestoes || auto.questoes?.length || 0} questão(ões) errada(s)
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4 pt-4">
-                      {/* Tabela de Questões */}
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="border-b">
-                              <th className="text-left py-2 px-3">Questão</th>
-                              <th className="text-left py-2 px-3">Macroassunto</th>
-                              <th className="text-left py-2 px-3">Microassunto</th>
-                              <th className="text-left py-2 px-3">Motivo do Erro</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {auto.questoes?.map((q: Questao, idx: number) => {
-                              const motivo = getMotivoErro(q.motivoErro);
-                              return (
-                                <tr key={idx} className="border-b last:border-0">
-                                  <td className="py-2 px-3">{q.numeroQuestao}</td>
-                                  <td className="py-2 px-3">{q.macroassunto}</td>
-                                  <td className="py-2 px-3">{q.microassunto}</td>
-                                  <td className="py-2 px-3">
-                                    <span 
-                                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white"
-                                      style={{ backgroundColor: motivo?.color }}
-                                    >
-                                      {motivo?.label}
-                                    </span>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-6 pt-4">
+                        {/* Questões agrupadas por área */}
+                        {AREAS_ENEM.map(area => {
+                          const questoesDaArea = questoesPorArea[area.value];
+                          if (!questoesDaArea || questoesDaArea.length === 0) return null;
 
-                      {/* Botão de Excluir */}
-                      <div className="flex justify-end pt-2">
-                        <Button
-                          onClick={() => handleDelete(auto.id)}
-                          variant="destructive"
-                          size="sm"
-                        >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Excluir Autodiagnóstico
-                        </Button>
+                          return (
+                            <div key={area.value} className="space-y-3">
+                              <h4 className="font-semibold text-sm flex items-center gap-2">
+                                {area.label}
+                                <span className="text-muted-foreground font-normal">
+                                  ({questoesDaArea.length} questão{questoesDaArea.length !== 1 ? 'ões' : ''})
+                                </span>
+                              </h4>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                  <thead>
+                                    <tr className="border-b">
+                                      <th className="text-left py-2 px-3">Questão</th>
+                                      <th className="text-left py-2 px-3">Macroassunto</th>
+                                      <th className="text-left py-2 px-3">Microassunto</th>
+                                      <th className="text-left py-2 px-3">Motivo do Erro</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {questoesDaArea.map((q: Questao, idx: number) => {
+                                      const motivo = getMotivoErro(q.motivoErro);
+                                      return (
+                                        <tr key={idx} className="border-b last:border-0">
+                                          <td className="py-2 px-3">{q.numeroQuestao}</td>
+                                          <td className="py-2 px-3">{q.macroassunto}</td>
+                                          <td className="py-2 px-3">{q.microassunto}</td>
+                                          <td className="py-2 px-3">
+                                            <span 
+                                              className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white"
+                                              style={{ backgroundColor: motivo?.color }}
+                                            >
+                                              {motivo?.label}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* Botão de Excluir */}
+                        <div className="flex justify-end pt-2">
+                          <Button
+                            onClick={() => handleDelete(auto.id)}
+                            variant="destructive"
+                            size="sm"
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Excluir Autodiagnóstico
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
             </Accordion>
           ) : (
             <div className="text-center py-12 text-muted-foreground">

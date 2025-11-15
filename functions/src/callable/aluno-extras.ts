@@ -546,11 +546,18 @@ export const createAutodiagnostico = functions
 
     // Validar questões
     const motivosValidos = ["interpretacao", "atencao", "lacuna_teorica", "nao_estudado"];
+    const areasValidas = ["linguagens", "humanas", "natureza", "matematica"];
     for (const q of questoes) {
-      if (!q.numeroQuestao || !q.macroassunto || !q.microassunto || !q.motivoErro) {
+      if (!q.numeroQuestao || !q.area || !q.macroassunto || !q.microassunto || !q.motivoErro) {
         throw new functions.https.HttpsError(
           "invalid-argument",
           "Todos os campos da questão são obrigatórios"
+        );
+      }
+      if (!areasValidas.includes(q.area)) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          `Área inválida: ${q.area}`
         );
       }
       if (!motivosValidos.includes(q.motivoErro)) {

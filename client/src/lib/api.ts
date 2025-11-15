@@ -216,6 +216,7 @@ export const mentorApi = {
     prova: string;
     questoes: Array<{
       numeroQuestao: string;
+      area: string;
       macroassunto: string;
       microassunto: string;
       motivoErro: string;
@@ -466,6 +467,7 @@ export const alunoApi = {
     prova: string;
     questoes: Array<{
       numeroQuestao: string;
+      area: string;
       macroassunto: string;
       microassunto: string;
       motivoErro: string;
