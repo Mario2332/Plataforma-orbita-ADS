@@ -318,8 +318,9 @@ function DashboardLayoutContent({
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
               {menuItems.map(item => {
-                const hasSubmenu = 'submenu' in item && item.submenu;
-                const isActive = location === item.path || (hasSubmenu && item.submenu?.some((sub: any) => location === sub.path));
+                const hasSubmenu = ('submenu' in item && item.submenu) || ('subItems' in item && item.subItems);
+                const submenuItems = (item as any).submenu || (item as any).subItems;
+                const isActive = location === item.path || (hasSubmenu && submenuItems?.some((sub: any) => location === sub.path));
                 const isExpanded = expandedMenus[item.path] || false;
                 
                 return (
@@ -350,7 +351,7 @@ function DashboardLayoutContent({
                     </SidebarMenuItem>
                     {hasSubmenu && isExpanded && (
                       <div className="ml-6 mt-1 space-y-1">
-                        {item.submenu?.map((subItem: any) => {
+                        {submenuItems?.map((subItem: any) => {
                           const isSubActive = location === subItem.path;
                           return (
                             <SidebarMenuItem key={subItem.path}>
