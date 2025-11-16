@@ -95,6 +95,14 @@ export default function DashboardLayout({
   });
   const { loading, user, userData } = useAuthContext();
   
+  console.log('[DashboardLayout] Estado atual:', {
+    loading,
+    hasUser: !!user,
+    hasUserData: !!userData,
+    role: userData?.role,
+    willShowSkeleton: loading || !userData?.role
+  });
+  
   useEffect(() => {
     // Aplicar tema ao documento
     if (theme === "dark") {
@@ -195,7 +203,13 @@ function DashboardLayoutContent({
   
   // Recalcular menuItems sempre que userData.role mudar
   const menuItems = useMemo(() => {
-    return getMenuItems(userData?.role);
+    const items = getMenuItems(userData?.role);
+    console.log('[DashboardLayoutContent] menuItems recalculado:', {
+      role: userData?.role,
+      itemCount: items.length,
+      items: items.map(i => i.label)
+    });
+    return items;
   }, [userData?.role]);
   
   const activeMenuItem = menuItems.find(item => item.path === location);

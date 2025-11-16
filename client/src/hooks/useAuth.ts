@@ -50,6 +50,14 @@ export function useAuth() {
 
           if (userDocSnap.exists()) {
             const data = userDocSnap.data();
+            console.log('[useAuth] userData carregado do Firestore:', {
+              uid: firebaseUser.uid,
+              email: data.email,
+              name: data.name,
+              role: data.role,
+              hasRole: !!data.role
+            });
+            
             const userData: UserData = {
               uid: firebaseUser.uid,
               email: data.email,
@@ -60,6 +68,7 @@ export function useAuth() {
               lastSignedIn: data.lastSignedIn?.toDate() || new Date(),
             };
 
+            console.log('[useAuth] Definindo authState com userData completo, loading=false');
             setAuthState({
               user: firebaseUser,
               userData,
