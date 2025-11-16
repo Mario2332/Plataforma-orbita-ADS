@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { alunoApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookOpen, CheckCircle2, TrendingUp } from "lucide-react";
+import { Loader2, BookOpen, CheckCircle2 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import studyData from "@shared/study-content-data.json";
 import { toast } from "sonner";
@@ -34,59 +34,37 @@ export default function PainelGeral() {
     const materias = Object.entries(studyData as Record<string, any>);
     let totalTopicos = 0;
     let topicosEstudados = 0;
-    let questoesTotais = 0;
-    let acertosTotais = 0;
 
     const resumoPorMateria = materias.map(([key, materia]) => {
       const topics = materia.topics || [];
       const topicosMateria = topics.length;
       let estudadosMateria = 0;
-      let questoesMateria = 0;
-      let acertosMateria = 0;
 
       topics.forEach((topic: any) => {
         const progresso = progressoMap[topic.id];
-        if (progresso) {
-          if (progresso.estudado) estudadosMateria++;
-          questoesMateria += progresso.questoesFeitas;
-          acertosMateria += progresso.questoesAcertos;
+        if (progresso?.estudado) {
+          estudadosMateria++;
         }
       });
 
       totalTopicos += topicosMateria;
       topicosEstudados += estudadosMateria;
-      questoesTotais += questoesMateria;
-      acertosTotais += acertosMateria;
 
       const percentualEstudado = topicosMateria > 0
         ? ((estudadosMateria / topicosMateria) * 100).toFixed(1)
-        : "0.0";
-      
-      const desempenho = questoesMateria > 0
-        ? ((acertosMateria / questoesMateria) * 100).toFixed(1)
         : "0.0";
 
       return {
         materia: materia.displayName,
         topicos: topicosMateria,
         estudados: estudadosMateria,
-        percentualEstudado: parseFloat(percentualEstudado),
-        questoes: questoesMateria,
-        acertos: acertosMateria,
-        desempenho: parseFloat(desempenho)
+        percentualEstudado: parseFloat(percentualEstudado)
       };
     });
-
-    const desempenhoGeral = questoesTotais > 0
-      ? ((acertosTotais / questoesTotais) * 100).toFixed(1)
-      : "0.0";
 
     return {
       totalTopicos,
       topicosEstudados,
-      questoesTotais,
-      acertosTotais,
-      desempenhoGeral: parseFloat(desempenhoGeral),
       resumoPorMateria
     };
   }, [progressoMap]);
@@ -101,8 +79,7 @@ export default function PainelGeral() {
 
   const dadosGraficoBarras = stats.resumoPorMateria.map(m => ({
     name: m.materia,
-    "% Estudado": m.percentualEstudado,
-    "Desempenho %": m.desempenho
+    "% Estudado": m.percentualEstudado
   }));
 
   const dadosGraficoPizza = stats.resumoPorMateria.map(m => ({
@@ -120,7 +97,7 @@ export default function PainelGeral() {
       </div>
 
       {/* Cards de Métricas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Tópicos</CardTitle>
@@ -129,33 +106,20 @@ export default function PainelGeral() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalTopicos}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.topicosEstudados} estudados ({((stats.topicosEstudados / stats.totalTopicos) * 100).toFixed(1)}%)
+              Disponíveis para estudo
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Questões Resolvidas</CardTitle>
+            <CardTitle className="text-sm font-medium">Tópicos Estudados</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.questoesTotais}</div>
+            <div className="text-2xl font-bold">{stats.topicosEstudados}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.acertosTotais} acertos
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Desempenho Geral</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.desempenhoGeral}%</div>
-            <p className="text-xs text-muted-foreground">
-              Taxa de acerto geral
+              {((stats.topicosEstudados / stats.totalTopicos) * 100).toFixed(1)}% do total
             </p>
           </CardContent>
         </Card>
@@ -176,7 +140,6 @@ export default function PainelGeral() {
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="% Estudado" fill="#3b82f6" />
-                <Bar dataKey="Desempenho %" fill="#10b981" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -224,9 +187,6 @@ export default function PainelGeral() {
                   <th className="text-center p-3 font-semibold">Total Tópicos</th>
                   <th className="text-center p-3 font-semibold">Estudados</th>
                   <th className="text-center p-3 font-semibold">% Estudado</th>
-                  <th className="text-center p-3 font-semibold">Questões</th>
-                  <th className="text-center p-3 font-semibold">Acertos</th>
-                  <th className="text-center p-3 font-semibold">Desempenho</th>
                 </tr>
               </thead>
               <tbody>
@@ -236,9 +196,6 @@ export default function PainelGeral() {
                     <td className="p-3 text-center">{m.topicos}</td>
                     <td className="p-3 text-center">{m.estudados}</td>
                     <td className="p-3 text-center font-semibold">{m.percentualEstudado}%</td>
-                    <td className="p-3 text-center">{m.questoes}</td>
-                    <td className="p-3 text-center">{m.acertos}</td>
-                    <td className="p-3 text-center font-semibold">{m.desempenho}%</td>
                   </tr>
                 ))}
               </tbody>
