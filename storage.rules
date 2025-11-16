@@ -84,6 +84,29 @@ service firebase.storage {
       );
     }
     
+    // ============================================
+    // AUTODIAGNÓSTICOS
+    // ============================================
+    match /autodiagnosticos/temp/{fileName} {
+      // Aluno pode fazer upload temporário de imagens
+      allow write: if hasRole('aluno') && isImage() && isValidSize();
+      
+      // Aluno pode ler suas próprias imagens temporárias
+      allow read: if hasRole('aluno');
+    }
+    
+    match /autodiagnosticos/{alunoId}/{autodiagnosticoId}/{fileName} {
+      // Aluno pode fazer upload de imagens para seus autodiagnósticos
+      allow write: if hasRole('aluno') && isOwner(alunoId) && isImage() && isValidSize();
+      
+      // Aluno, seu mentor e gestor podem ler
+      allow read: if isAuthenticated() && (
+        isOwner(alunoId) ||
+        hasRole('mentor') ||
+        hasRole('gestor')
+      );
+    }
+    
     // Negar acesso a qualquer outro caminho
     match /{allPaths=**} {
       allow read, write: if false;
