@@ -113,7 +113,8 @@ export default function DashboardLayout({
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
   }, [sidebarWidth]);
 
-  if (loading) {
+  // Mostrar skeleton até userData.role estar disponível
+  if (loading || !userData?.role) {
     return <DashboardLayoutSkeleton />
   }
 
