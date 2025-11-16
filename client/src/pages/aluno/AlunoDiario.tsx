@@ -624,9 +624,16 @@ export default function AlunoDiario() {
                       tick={{ fontSize: 12 }}
                     />
                     <RechartsTooltip 
-                      formatter={(value: any) => {
-                        const labels = ['', 'Péssimo/Exausto', 'Ruim/Muito Cansado', 'Neutro/Cansado', 'Bom/Normal', 'Ótimo/Descansado'];
-                        return labels[value] || value;
+                      formatter={(value: any, name: string) => {
+                        const labelsEstado = ['', 'Péssimo', 'Ruim', 'Neutro', 'Bom', 'Ótimo'];
+                        const labelsEnergia = ['', 'Exausto', 'Muito Cansado', 'Cansado', 'Normal', 'Descansado'];
+                        
+                        if (name === 'Estado Emocional') {
+                          return labelsEstado[value] || value;
+                        } else if (name === 'Nível de Energia') {
+                          return labelsEnergia[value] || value;
+                        }
+                        return value;
                       }}
                     />
                     <Legend />
