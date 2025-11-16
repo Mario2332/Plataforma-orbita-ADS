@@ -50,6 +50,37 @@ export function useAuth() {
 
           if (userDocSnap.exists()) {
             const data = userDocSnap.data();
+            
+            // Garantir que o role existe antes de considerar o carregamento completo
+            if (!data.role) {
+              console.warn('User data loaded but role is missing, keeping loading state');
+              // Manter loading true e tentar novamente após um delay
+              setTimeout(() => {
+                // Forçar uma nova verificação
+                getDoc(userDocRef).then(retrySnap => {
+                  if (retrySnap.exists() && retrySnap.data().role) {
+                    const retryData = retrySnap.data();
+                    const userData: UserData = {
+                      uid: firebaseUser.uid,
+                      email: retryData.email,
+                      name: retryData.name,
+                      role: retryData.role as UserRole,
+                      createdAt: retryData.createdAt?.toDate() || new Date(),
+                      updatedAt: retryData.updatedAt?.toDate() || new Date(),
+                      lastSignedIn: retryData.lastSignedIn?.toDate() || new Date(),
+                    };
+                    setAuthState({
+                      user: firebaseUser,
+                      userData,
+                      loading: false,
+                      error: null,
+                    });
+                  }
+                });
+              }, 500);
+              return;
+            }
+            
             const userData: UserData = {
               uid: firebaseUser.uid,
               email: data.email,
