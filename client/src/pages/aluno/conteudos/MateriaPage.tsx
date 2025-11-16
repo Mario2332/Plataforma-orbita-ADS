@@ -2,11 +2,12 @@ import { useState, useMemo, useEffect } from "react";
 import { alunoApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpDown, ArrowUp, ArrowDown, Filter, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowUpDown, ArrowUp, ArrowDown, Filter, Loader2, FileText } from "lucide-react";
 import { toast } from "sonner";
 import studyData from "@shared/study-content-data.json";
 
@@ -27,6 +28,8 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
 
   const [progressoMap, setProgressoMap] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingNotes, setEditingNotes] = useState<{ [key: string]: string }>({});
+  const [openDialog, setOpenDialog] = useState<string | null>(null);
 
   const loadProgresso = async () => {
     try {
@@ -45,14 +48,14 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
   }, [materiaKey]);
 
   // Estados de ordenação
-  const [sortColumn, setSortColumn] = useState<"name" | "incidence" | "questoes" | "acertos" | "performance">("name");
+  const [sortColumn, setSortColumn] = useState<"name" | "incidence">("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Estados de filtro
   const [filterIncidence, setFilterIncidence] = useState<string>("todos");
   const [filterStatus, setFilterStatus] = useState<string>("todos");
 
-  const handleSort = (column: "name" | "incidence" | "questoes" | "acertos" | "performance") => {
+  const handleSort = (column: "name" | "incidence") => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -90,24 +93,6 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
         comparison = a.name.localeCompare(b.name);
       } else if (sortColumn === "incidence") {
         comparison = a.incidenceValue - b.incidenceValue;
-      } else if (sortColumn === "questoes") {
-        const questoesA = progressoMap?.[a.id]?.questoesFeitas || 0;
-        const questoesB = progressoMap?.[b.id]?.questoesFeitas || 0;
-        comparison = questoesA - questoesB;
-      } else if (sortColumn === "acertos") {
-        const acertosA = progressoMap?.[a.id]?.questoesAcertos || 0;
-        const acertosB = progressoMap?.[b.id]?.questoesAcertos || 0;
-        comparison = acertosA - acertosB;
-      } else if (sortColumn === "performance") {
-        const progressA = progressoMap?.[a.id];
-        const progressB = progressoMap?.[b.id];
-        const perfA = progressA && progressA.questoesFeitas > 0
-          ? (progressA.questoesAcertos / progressA.questoesFeitas) * 100
-          : 0;
-        const perfB = progressB && progressB.questoesFeitas > 0
-          ? (progressB.questoesAcertos / progressB.questoesFeitas) * 100
-          : 0;
-        comparison = perfA - perfB;
       }
       
       return sortDirection === "asc" ? comparison : -comparison;
@@ -131,9 +116,22 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
     try {
       await alunoApi.updateProgresso({ topicoId, ...data });
       await loadProgresso();
+      toast.success("Progresso atualizado com sucesso!");
     } catch (error: any) {
       toast.error(error.message || "Erro ao atualizar progresso");
     }
+  };
+
+  const handleSaveNotes = async (topicoId: string) => {
+    const anotacoes = editingNotes[topicoId] || "";
+    await handleUpdateProgresso(topicoId, { anotacoes });
+    setOpenDialog(null);
+  };
+
+  const handleOpenDialog = (topicoId: string) => {
+    const currentNotes = progressoMap?.[topicoId]?.anotacoes || "";
+    setEditingNotes({ ...editingNotes, [topicoId]: currentNotes });
+    setOpenDialog(topicoId);
   };
 
   if (isLoading) {
@@ -150,7 +148,7 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
         <CardHeader>
           <CardTitle className="text-3xl">{materia?.displayName}</CardTitle>
           <p className="text-muted-foreground">
-            {topics.length} tópicos • {filteredAndSortedTopics.length} exibidos • Marque como estudado e registre seu desempenho
+            {topics.length} tópicos • {filteredAndSortedTopics.length} exibidos • Marque como estudado e adicione anotações
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -235,63 +233,27 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
                     </Button>
                   </th>
                   <th className="text-center p-3 font-semibold w-24">Estudado</th>
-                  <th className="text-center p-3 font-semibold w-32">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("questoes")}
-                      className="flex items-center gap-1 mx-auto hover:bg-muted"
-                    >
-                      Questões
-                      {getSortIcon("questoes")}
-                    </Button>
-                  </th>
-                  <th className="text-center p-3 font-semibold w-32">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("acertos")}
-                      className="flex items-center gap-1 mx-auto hover:bg-muted"
-                    >
-                      Acertos
-                      {getSortIcon("acertos")}
-                    </Button>
-                  </th>
-                  <th className="text-center p-3 font-semibold">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSort("performance")}
-                      className="flex items-center gap-1 mx-auto hover:bg-muted"
-                    >
-                      Desempenho
-                      {getSortIcon("performance")}
-                    </Button>
-                  </th>
+                  <th className="text-center p-3 font-semibold w-32">Anotações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredAndSortedTopics.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                    <td colSpan={4} className="p-8 text-center text-muted-foreground">
                       Nenhum tópico encontrado com os filtros selecionados.
                     </td>
                   </tr>
                 ) : (
                   filteredAndSortedTopics.map((topic) => {
                     const progresso = progressoMap?.[topic.id];
-                    const questoesFeitas = progresso?.questoesFeitas || 0;
-                    const questoesAcertos = progresso?.questoesAcertos || 0;
-                    const desempenho = questoesFeitas > 0
-                      ? ((questoesAcertos / questoesFeitas) * 100).toFixed(1)
-                      : "0.0";
+                    const hasNotes = progresso?.anotacoes && progresso.anotacoes.trim().length > 0;
 
                     return (
                       <tr key={topic.id} className="border-b hover:bg-muted/50 transition-colors">
                         <td className="p-3">{topic.name}</td>
                         <td className="p-3 text-center">
                           <Badge className={getIncidenceBadgeColor(topic.incidenceLevel)}>
-                            {(topic.incidenceValue * 100).toFixed(2)}%
+                            {topic.incidenceLevel}
                           </Badge>
                         </td>
                         <td className="p-3 text-center">
@@ -305,43 +267,40 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
                           </div>
                         </td>
                         <td className="p-3 text-center">
-                          <Input
-                            type="number"
-                            min="0"
-                            value={questoesFeitas}
-                            onChange={(e) => {
-                              const novoValor = parseInt(e.target.value) || 0;
-                              handleUpdateProgresso(topic.id, { questoesFeitas: novoValor, questoesAcertos });
-                            }}
-                            className="w-20 mx-auto text-center"
-                          />
-                        </td>
-                        <td className="p-3 text-center">
-                          <Input
-                            type="number"
-                            min="0"
-                            max={questoesFeitas}
-                            value={questoesAcertos}
-                            onChange={(e) => {
-                              const novoValor = Math.min(
-                                parseInt(e.target.value) || 0,
-                                questoesFeitas
-                              );
-                              handleUpdateProgresso(topic.id, { questoesFeitas, questoesAcertos: novoValor });
-                            }}
-                            className="w-20 mx-auto text-center"
-                          />
-                        </td>
-                        <td className="p-3 text-center">
-                          <span className={`font-semibold ${
-                            parseFloat(desempenho) >= 80 ? "text-green-600" :
-                            parseFloat(desempenho) >= 60 ? "text-blue-600" :
-                            parseFloat(desempenho) >= 40 ? "text-yellow-600" :
-                            parseFloat(desempenho) > 0 ? "text-red-600" :
-                            "text-muted-foreground"
-                          }`}>
-                            {desempenho}%
-                          </span>
+                          <Dialog open={openDialog === topic.id} onOpenChange={(open) => !open && setOpenDialog(null)}>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant={hasNotes ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleOpenDialog(topic.id)}
+                                className={hasNotes ? "bg-blue-500 hover:bg-blue-600" : ""}
+                              >
+                                <FileText className="w-4 h-4 mr-1" />
+                                {hasNotes ? "Ver" : "Adicionar"}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>Anotações - {topic.name}</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <Textarea
+                                  value={editingNotes[topic.id] || ""}
+                                  onChange={(e) => setEditingNotes({ ...editingNotes, [topic.id]: e.target.value })}
+                                  placeholder="Digite suas anotações sobre este tópico..."
+                                  className="min-h-[200px]"
+                                />
+                                <div className="flex justify-end gap-2">
+                                  <Button variant="outline" onClick={() => setOpenDialog(null)}>
+                                    Cancelar
+                                  </Button>
+                                  <Button onClick={() => handleSaveNotes(topic.id)}>
+                                    Salvar
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </td>
                       </tr>
                     );
