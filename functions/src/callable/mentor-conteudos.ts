@@ -1,7 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import * as path from "path";
 import { getAuthContext, requireRole } from "../utils/auth";
-const studyData = require("../study-content-data.json");
+
+// Usar caminho absoluto para garantir que o JSON seja encontrado
+const studyDataPath = path.join(__dirname, "..", "study-content-data.json");
+const studyData = require(studyDataPath);
 
 const db = admin.firestore();
 
