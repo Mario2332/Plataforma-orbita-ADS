@@ -281,7 +281,7 @@ function DashboardLayoutContent({
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity"></div>
                   <img
                     src={APP_LOGO}
-                    className="relative h-10 w-10 rounded-xl object-cover ring-2 ring-blue-200 dark:ring-blue-800 shadow-lg"
+                    className="relative h-10 w-10 rounded-xl object-contain ring-2 ring-blue-200 dark:ring-blue-800 shadow-lg"
                     alt="Logo"
                   />
                   <button
@@ -298,7 +298,7 @@ function DashboardLayoutContent({
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl blur-md opacity-50"></div>
                       <img
                         src={APP_LOGO}
-                        className="relative h-10 w-10 rounded-xl object-cover ring-2 ring-blue-200 dark:ring-blue-800 shrink-0 shadow-lg"
+                        className="relative h-10 w-10 rounded-xl object-contain ring-2 ring-blue-200 dark:ring-blue-800 shrink-0 shadow-lg"
                         alt="Logo"
                       />
                     </div>
