@@ -45,9 +45,10 @@ export function useAuth() {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // Buscar dados do usuário no Firestore
+          // Buscar dados do usuário no Firestore (forçando leitura do servidor para evitar cache vazio após logout)
           const userDocRef = doc(db, "users", firebaseUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
+          console.log('[useAuth] onAuthStateChanged: buscando dados do servidor (ignorando cache)');
+          const userDocSnap = await getDocFromServer(userDocRef);
 
           if (userDocSnap.exists()) {
             const data = userDocSnap.data();
