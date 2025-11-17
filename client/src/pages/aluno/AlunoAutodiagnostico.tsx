@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { alunoApi } from "@/lib/api";
 import { storage } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Plus, Trash2, FileText, BarChart3, AlertCircle, Filter, Upload, X, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, FileText, BarChart3, AlertCircle, Filter, Upload, X, Image as ImageIcon, Zap, Target } from "lucide-react";
 import { toast } from "sonner";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from "recharts";
 
@@ -23,10 +23,10 @@ const AREAS_ENEM = [
 
 // Motivos de erro
 const MOTIVOS_ERRO = [
-  { value: "interpretacao", label: "Interpretação", color: "#ef4444" },
-  { value: "atencao", label: "Atenção", color: "#f59e0b" },
-  { value: "lacuna_teorica", label: "Lacuna Teórica", color: "#3b82f6" },
-  { value: "nao_estudado", label: "Não Estudado", color: "#8b5cf6" },
+  { value: "interpretacao", label: "Interpretação", color: "#3b82f6" },
+  { value: "atencao", label: "Atenção", color: "#06b6d4" },
+  { value: "lacuna_teorica", label: "Lacuna Teórica", color: "#0ea5e9" },
+  { value: "nao_estudado", label: "Não Estudado", color: "#6366f1" },
 ];
 
 interface Questao {
