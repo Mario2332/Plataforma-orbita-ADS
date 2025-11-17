@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { alunoApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
