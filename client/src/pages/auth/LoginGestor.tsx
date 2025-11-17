@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, Settings, Database, TrendingUp } from "lucide-react";
+import { Shield, Settings, Database, TrendingUp, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -34,7 +34,6 @@ export default function LoginGestor() {
     } catch (error: any) {
       console.error("Erro ao fazer login:", error);
       
-      // Mensagens de erro amigáveis
       if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
         toast.error("Email ou senha incorretos");
       } else if (error.code === "auth/user-not-found") {
@@ -50,133 +49,129 @@ export default function LoginGestor() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Lado Esquerdo - Informações */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-800 to-slate-900 p-12 flex-col justify-between text-white">
-        <div>
-          <div className="flex items-center gap-2 mb-8">
-            <Shield className="h-10 w-10" />
-            <h1 className="text-3xl font-bold">Mentoria Mário Machado</h1>
-          </div>
-          <h2 className="text-4xl font-bold mb-6">
-            Painel de Gestão Completo
-          </h2>
-          <p className="text-lg text-slate-300 mb-12">
-            Gerencie toda a plataforma, configure mentores e acompanhe o crescimento da rede de estudantes.
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Elementos decorativos flutuantes */}
+      <div className="absolute top-20 left-20 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-float-delayed" />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-400/10 rounded-full blur-3xl" />
 
-        <div className="space-y-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-white/10 p-3 rounded-lg">
-              <Settings className="h-6 w-6" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-1">Configuração White-label</h3>
-              <p className="text-slate-300">Personalize plataformas para cada mentor</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="bg-white/10 p-3 rounded-lg">
-              <Database className="h-6 w-6" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-1">Gestão Centralizada</h3>
-              <p className="text-slate-300">Controle total sobre mentores e alunos</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="bg-white/10 p-3 rounded-lg">
-              <TrendingUp className="h-6 w-6" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-1">Analytics Avançado</h3>
-              <p className="text-slate-300">Métricas e relatórios de toda a plataforma</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-sm text-slate-400">
-          © 2024 Mentoria Mário Machado. Todos os direitos reservados.
-        </div>
-      </div>
-
-      {/* Lado Direito - Formulário */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-        <Card className="w-full max-w-md shadow-xl border-2">
-          <CardHeader className="space-y-1 bg-gradient-to-r from-slate-50 to-gray-50">
-            <div className="flex justify-center mb-4">
-              <div className="bg-slate-900 p-3 rounded-full">
-                <Shield className="h-8 w-8 text-white" />
+      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center relative z-10">
+        {/* Lado Esquerdo - Informações Premium */}
+        <div className="text-center md:text-left space-y-6 animate-fade-in">
+          <div className="flex items-center justify-center md:justify-start gap-3">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full blur-xl opacity-50" />
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full relative z-10 shadow-2xl">
+                <Shield className="w-10 h-10 text-white" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-center">Área do Gestor</CardTitle>
-            <CardDescription className="text-center">
-              Acesso restrito para administradores
+            <h1 className="text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-600 bg-clip-text text-transparent">
+              Mentoria Mário Machado
+            </h1>
+          </div>
+          
+          <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-2 justify-center md:justify-start">
+            <Sparkles className="w-8 h-8 text-blue-500" />
+            Painel de Gestão
+          </h2>
+          
+          <p className="text-gray-600 text-lg font-semibold">
+            Gerencie toda a plataforma, configure mentores e acompanhe o crescimento da rede de estudantes com controle total.
+          </p>
+
+          <div className="space-y-4 pt-4">
+            <div className="flex items-start gap-3 bg-gradient-to-br from-white to-blue-50 p-5 rounded-xl border-2 border-blue-200 hover:shadow-xl transition-all hover:scale-105">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-lg">
+                <Settings className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-800">Configuração White-label</h3>
+                <p className="text-sm text-gray-600 font-semibold">Personalize plataformas para cada mentor</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-gradient-to-br from-white to-cyan-50 p-5 rounded-xl border-2 border-cyan-200 hover:shadow-xl transition-all hover:scale-105">
+              <div className="p-2 bg-gradient-to-br from-cyan-500 to-sky-500 rounded-lg shadow-lg">
+                <Database className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-800">Gestão de Dados</h3>
+                <p className="text-sm text-gray-600 font-semibold">Controle completo sobre todos os dados da plataforma</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-gradient-to-br from-white to-sky-50 p-5 rounded-xl border-2 border-sky-200 hover:shadow-xl transition-all hover:scale-105">
+              <div className="p-2 bg-gradient-to-br from-sky-500 to-indigo-500 rounded-lg shadow-lg">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-800">Analytics Avançado</h3>
+                <p className="text-sm text-gray-600 font-semibold">Visualize estatísticas e crescimento da rede</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Lado Direito - Formulário Premium */}
+        <Card className="w-full shadow-2xl border-2 border-blue-200 bg-white/95 backdrop-blur-sm animate-slide-up">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b-2 border-blue-200">
+            <CardTitle className="text-3xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent flex items-center gap-2">
+              <Zap className="w-8 h-8 text-blue-500" />
+              Login Gestor
+            </CardTitle>
+            <CardDescription className="text-base font-semibold text-gray-600">
+              Acesso administrativo ao painel de gestão
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="font-bold text-base">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="gestor@email.com"
                   value={loginData.email}
                   onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                  disabled={loading}
                   required
-                  className="border-slate-300"
+                  className="border-2 h-12 font-semibold"
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="senha">Senha</Label>
+                <Label htmlFor="senha" className="font-bold text-base">Senha</Label>
                 <Input
                   id="senha"
                   type="password"
                   placeholder="••••••••"
                   value={loginData.senha}
                   onChange={(e) => setLoginData({ ...loginData, senha: e.target.value })}
+                  disabled={loading}
                   required
-                  className="border-slate-300"
+                  className="border-2 h-12 font-semibold"
                 />
               </div>
-              <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800" disabled={loading}>
-                {loading ? "Entrando..." : "Acessar Painel"}
+
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 font-bold text-lg shadow-lg hover:shadow-xl transition-all" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Entrando...
+                  </div>
+                ) : (
+                  "Entrar"
+                )}
               </Button>
             </form>
 
-            <div className="mt-6 space-y-4">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">Outros acessos</span>
-                </div>
-              </div>
-
-              <div className="text-center text-sm space-y-2">
-                <p className="text-muted-foreground">
-                  Aluno?{" "}
-                  <a href="/login/aluno" className="text-primary hover:underline">
-                    Acesse aqui
-                  </a>
-                </p>
-                <p className="text-muted-foreground">
-                  Mentor?{" "}
-                  <a href="/login/mentor" className="text-primary hover:underline">
-                    Acesse aqui
-                  </a>
-                </p>
-              </div>
-
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-900">
-                <p className="font-medium mb-1">🔒 Acesso Restrito</p>
-                <p>
-                  Esta área é exclusiva para gestores da Mentoria Mário Machado. Acesso não autorizado é proibido.
-                </p>
-              </div>
+            <div className="mt-6 text-center text-sm text-gray-600 font-semibold">
+              <p>Acesso restrito apenas para administradores.</p>
+              <p className="mt-1">Credenciais de alto nível são necessárias.</p>
             </div>
           </CardContent>
         </Card>
