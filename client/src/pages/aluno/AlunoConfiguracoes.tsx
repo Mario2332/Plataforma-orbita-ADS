@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { alunoApi } from "@/lib/api";
+import { useState, useEffect } from "react";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { alunoApi } from "@/lib/api";ib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { httpsCallable } from "firebase/functions";
 import { functions } from "@/lib/firebase";
 
 export default function AlunoConfiguracoes() {
+  const { refreshUserData } = useAuthContext();
   const [aluno, setAluno] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -174,8 +176,9 @@ export default function AlunoConfiguracoes() {
       const data = result.data as any;
 
       if (data.success) {
-        toast.success("Foto de perfil atualizada!");
-        await loadAluno();
+        toast.success("Foto de perfil atualizada com sucesso!");
+        await refreshUserData(); // Atualizar contexto
+        await loadAluno(); // Recarregar dados do aluno
       }
     } catch (error: any) {
       console.error("Erro ao fazer upload:", error);
@@ -194,16 +197,14 @@ export default function AlunoConfiguracoes() {
     try {
       setLoadingPhoto(true);
       const deleteProfilePhoto = httpsCallable(functions, "deleteProfilePhoto");
-      
-      const result = await deleteProfilePhoto();
+           const result = await deleteProfilePhoto();
       const data = result.data as any;
 
       if (data.success) {
-        toast.success("Foto de perfil removida!");
-        setPhotoPreview(null);
-        await loadAluno();
-      }
-    } catch (error: any) {
+        toast.success("Foto de perfil removida com sucesso!");
+        await refreshUserData(); // Atualizar contexto
+        await loadAluno(); // Recarregar dados do aluno
+      }atch (error: any) {
       console.error("Erro ao deletar foto:", error);
       toast.error(error.message || "Erro ao remover foto");
     } finally {

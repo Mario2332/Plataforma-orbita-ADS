@@ -13,6 +13,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>;
   updateUserProfile: (updates: { name?: string; email?: string }) => Promise<void>;
   changePassword: (newPassword: string) => Promise<void>;
+  refreshUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

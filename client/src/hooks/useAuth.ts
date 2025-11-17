@@ -296,6 +296,36 @@ export function useAuth() {
     }
   };
 
+  // Função para atualizar userData do Firestore
+  const refreshUserData = async () => {
+    if (!authState.user) return;
+
+    try {
+      const userDocRef = doc(db, "users", authState.user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const data = userDocSnap.data();
+        const userData: UserData = {
+          uid: authState.user.uid,
+          email: data.email || authState.user.email || "",
+          name: data.name || data.nome || authState.user.displayName || "Usuário",
+          role: data.role as UserRole,
+          createdAt: data.createdAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt?.toDate() || new Date(),
+          lastSignedIn: data.lastSignedIn?.toDate() || new Date(),
+        };
+
+        setAuthState((prev) => ({
+          ...prev,
+          userData: { ...userData, photoURL: data.photoURL } as any,
+        }));
+      }
+    } catch (error) {
+      console.error('[useAuth] Erro ao atualizar userData:', error);
+    }
+  };
+
   // Função de atualização de senha
   const changePassword = async (newPassword: string) => {
     if (!authState.user) throw new Error("Usuário não autenticado");
@@ -315,5 +345,6 @@ export function useAuth() {
     resetPassword,
     updateUserProfile,
     changePassword,
+    refreshUserData,
   };
 }
