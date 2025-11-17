@@ -13,7 +13,7 @@ import { httpsCallable } from "firebase/functions";
 import { functions } from "@/lib/firebase";
 
 export default function AlunoConfiguracoes() {
-  const { refreshUserData } = useAuthContext();
+  const { refreshUserData, userData } = useAuthContext();
   const [aluno, setAluno] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -44,7 +44,7 @@ export default function AlunoConfiguracoes() {
         email: data.email || "",
         celular: data.celular || "",
       });
-      setPhotoPreview(data.photoURL || null);
+      setPhotoPreview(data.photoURL || userData?.photoURL || null);
     } catch (error: any) {
       toast.error(error.message || "Erro ao carregar dados do aluno");
     } finally {

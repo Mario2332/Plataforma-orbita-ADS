@@ -36,7 +36,11 @@ const getMe = functions
       };
     }
 
-    return { id: alunoDoc.id, ...alunoDoc.data() };
+    // Buscar photoURL do documento users
+    const userDoc = await db.collection("users").doc(auth.uid).get();
+    const photoURL = userDoc.exists ? userDoc.data()?.photoURL : null;
+
+    return { id: alunoDoc.id, ...alunoDoc.data(), photoURL };
   });
 
 /**
