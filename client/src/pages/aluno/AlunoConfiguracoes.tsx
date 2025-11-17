@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { alunoApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,14 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Settings, User, Lock, Loader2 } from "lucide-react";
+import { Settings, User, Lock, Loader2, Camera, Trash2, Upload } from "lucide-react";
 import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 export default function AlunoConfiguracoes() {
   const [aluno, setAluno] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
+  const [loadingPhoto, setLoadingPhoto] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileData, setProfileData] = useState({
     nome: "",
@@ -37,6 +41,7 @@ export default function AlunoConfiguracoes() {
         email: data.email || "",
         celular: data.celular || "",
       });
+      setPhotoPreview(data.photoURL || null);
     } catch (error: any) {
       toast.error(error.message || "Erro ao carregar dados do aluno");
     } finally {
@@ -131,6 +136,82 @@ export default function AlunoConfiguracoes() {
     }
   };
 
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+
+    // Validar tamanho (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Imagem muito grande. Tamanho máximo: 5MB");
+      return;
+    }
+
+    // Ler arquivo e criar preview
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const imageData = event.target?.result as string;
+      setPhotoPreview(imageData);
+
+      // Fazer upload
+      await uploadPhoto(imageData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const uploadPhoto = async (imageData: string) => {
+    try {
+      setLoadingPhoto(true);
+      const functions = getFunctions();
+      const uploadProfilePhoto = httpsCallable(functions, "uploadProfilePhoto");
+      
+      const result = await uploadProfilePhoto({ imageData });
+      const data = result.data as any;
+
+      if (data.success) {
+        toast.success("Foto de perfil atualizada!");
+        await loadAluno();
+      }
+    } catch (error: any) {
+      console.error("Erro ao fazer upload:", error);
+      toast.error(error.message || "Erro ao fazer upload da foto");
+      setPhotoPreview(aluno?.photoURL || null);
+    } finally {
+      setLoadingPhoto(false);
+    }
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!confirm("Tem certeza que deseja remover sua foto de perfil?")) {
+      return;
+    }
+
+    try {
+      setLoadingPhoto(true);
+      const functions = getFunctions();
+      const deleteProfilePhoto = httpsCallable(functions, "deleteProfilePhoto");
+      
+      const result = await deleteProfilePhoto();
+      const data = result.data as any;
+
+      if (data.success) {
+        toast.success("Foto de perfil removida!");
+        setPhotoPreview(null);
+        await loadAluno();
+      }
+    } catch (error: any) {
+      console.error("Erro ao deletar foto:", error);
+      toast.error(error.message || "Erro ao remover foto");
+    } finally {
+      setLoadingPhoto(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -150,6 +231,83 @@ export default function AlunoConfiguracoes() {
           Gerencie suas informações pessoais e preferências de conta
         </p>
       </div>
+
+      {/* Foto de Perfil */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Camera className="h-5 w-5 text-primary" />
+            <CardTitle>Foto de Perfil</CardTitle>
+          </div>
+          <CardDescription>
+            Adicione ou atualize sua foto de perfil
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            {/* Preview da foto */}
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt="Foto de perfil"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
+                    <User className="w-16 h-16 text-gray-400" />
+                  </div>
+                )}
+              </div>
+              {loadingPhoto && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                </div>
+              )}
+            </div>
+
+            {/* Botões */}
+            <div className="flex flex-col gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoSelect}
+                className="hidden"
+              />
+              
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loadingPhoto}
+                variant="outline"
+                className="w-full md:w-auto"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                {photoPreview ? "Alterar Foto" : "Adicionar Foto"}
+              </Button>
+
+              {photoPreview && (
+                <Button
+                  onClick={handleDeletePhoto}
+                  disabled={loadingPhoto}
+                  variant="destructive"
+                  className="w-full md:w-auto"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remover Foto
+                </Button>
+              )}
+
+              <p className="text-xs text-muted-foreground">
+                Formatos aceitos: JPG, PNG, WebP (máx. 5MB)
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Separator />
 
       {/* Edição de Perfil */}
       <Card>
