@@ -1,27 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as path from "path";
 import { getAuthContext, requireRole } from "../utils/auth";
-
-// Usar caminho absoluto para garantir que o JSON seja encontrado
-const studyDataPath = path.join(__dirname, "..", "study-content-data.json");
-functions.logger.info("📂 Tentando carregar JSON de:", studyDataPath);
-functions.logger.info("📂 __dirname:", __dirname);
-
-let studyData: any;
-try {
-  studyData = require(studyDataPath);
-  functions.logger.info("✅ JSON carregado com sucesso!", {
-    keys: Object.keys(studyData).length
-  });
-} catch (error: any) {
-  functions.logger.error("❌ Erro ao carregar JSON:", {
-    path: studyDataPath,
-    error: error.message,
-    stack: error.stack
-  });
-  throw error;
-}
 
 const db = admin.firestore();
 
@@ -35,10 +14,30 @@ const INCIDENCE_MAP: Record<string, number> = {
 };
 
 /**
- * Obter conteúdos mesclados (JSON base + customizações)
+ * Carregar dados base do Firestore
+ */
+async function loadBaseData(materiaKey?: string): Promise<Record<string, any>> {
+  if (materiaKey) {
+    // Carregar apenas uma matéria
+    const doc = await db.collection("conteudos_base").doc(materiaKey).get();
+    if (!doc.exists) {
+      throw new functions.https.HttpsError("not-found", "Matéria não encontrada");
+    }
+    return { [materiaKey]: doc.data() };
+  } else {
+    // Carregar todas as matérias
+    const snapshot = await db.collection("conteudos_base").get();
+    const allData: Record<string, any> = {};
+    snapshot.docs.forEach(doc => {
+      allData[doc.id] = doc.data();
+    });
+    return allData;
+  }
+}
+
+/**
+ * Obter conteúdos mesclados (Firestore base + customizações)
  * Disponível para alunos e mentores
- * 
- * NOTA: Funções callable já têm CORS habilitado automaticamente
  */
 export const getConteudos = functions
   .region("southamerica-east1")
@@ -68,15 +67,15 @@ export const getConteudos = functions
     const { materiaKey } = data;
 
     try {
-      // Carregar dados base do JSON
-      const baseData = JSON.parse(JSON.stringify(studyData)) as Record<string, any>;
+      // Carregar dados base do Firestore
+      functions.logger.info("📂 Carregando dados base do Firestore...");
+      const baseData = await loadBaseData(materiaKey);
+      functions.logger.info("✅ Dados base carregados", {
+        materias: Object.keys(baseData).length
+      });
       
       if (materiaKey) {
         // Retornar apenas uma matéria
-        if (!baseData[materiaKey]) {
-          throw new functions.https.HttpsError("not-found", "Matéria não encontrada");
-        }
-
         const materia = baseData[materiaKey];
         const topics = materia.topics || [];
 
