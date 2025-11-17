@@ -679,8 +679,7 @@ export default function AlunoEstudos() {
                 </div>
               </div>
             )}
-          </div>
-
+            
             {cronometroAtivo && (
               <div className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500/20 to-sky-500/20 rounded-full border-2 border-cyan-500/30 backdrop-blur-sm animate-pulse-slow">
                 <div className="w-3 h-3 bg-cyan-500 rounded-full animate-ping" />
