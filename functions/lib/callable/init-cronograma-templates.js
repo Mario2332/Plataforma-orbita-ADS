@@ -46,7 +46,7 @@ const cronogramaIntensivo = require("../data/cronograma-intensivo.json");
  * Será chamada automaticamente quando necessário
  */
 // Versão dos templates - incrementar quando houver mudanças
-const TEMPLATE_VERSION = 2; // Atualizado com cronograma intensivo completo (32 ciclos)
+const TEMPLATE_VERSION = 3; // Corrigido: 383 tópicos (removido Química 2 e 3 como tópicos)
 async function initializeTemplatesIfNeeded() {
     try {
         // Verificar se templates já existem

@@ -1038,8 +1038,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Revoltas nativistas",
-          "Quimica 3",
+          "Revoltas nativistas"
+        ]
+      },
+      {
+        "name": "Química 3",
+        "topics": [
           "Introdução à Química Orgânica e classificação das cadeias carbônicas",
           "Hidrocarbonetos"
         ]
@@ -1102,8 +1106,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Movimentos emancipacionistas",
-          "Quimica 3",
+          "Movimentos emancipacionistas"
+        ]
+      },
+      {
+        "name": "Química 3",
+        "topics": [
           "Petróleo",
           "Funções oxigenadas e nitrogenadas"
         ]
@@ -1167,8 +1175,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Família Real portuguesa no Brasil",
-          "Quimica 3",
+          "Família Real portuguesa no Brasil"
+        ]
+      },
+      {
+        "name": "Química 3",
+        "topics": [
           "Propriedades físicas e químicas dos compostos orgânicos"
         ]
       },
@@ -1231,8 +1243,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Processo de independência do Brasil",
-          "Quimica 3",
+          "Processo de independência do Brasil"
+        ]
+      },
+      {
+        "name": "Química 3",
+        "topics": [
           "Isomeria plana",
           "Isomeria geométrica (cis-trans)"
         ]
@@ -1289,8 +1305,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Primeiro Reinado",
-          "Quimica 3",
+          "Primeiro Reinado"
+        ]
+      },
+      {
+        "name": "Química 3",
+        "topics": [
           "Reações orgânicas de eliminação",
           "Reações orgânicas de substituição"
         ]
@@ -1342,8 +1362,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Período Regencial",
-          "Quimica 3",
+          "Período Regencial"
+        ]
+      },
+      {
+        "name": "Química 3",
+        "topics": [
           "Reações orgânicas de oxidação",
           "Reações orgânicas de adição"
         ]
@@ -1395,11 +1419,19 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Segundo Reinado",
-          "Quimica 2",
+          "Segundo Reinado"
+        ]
+      },
+      {
+        "name": "Química 2",
+        "topics": [
           "Entalpia",
-          "Lei de Hess",
-          "Quimica 3",
+          "Lei de Hess"
+        ]
+      },
+      {
+        "name": "Química 3",
+        "topics": [
           "Biomoléculas"
         ]
       },
@@ -1445,8 +1477,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "República da Espada",
-          "Quimica 2",
+          "República da Espada"
+        ]
+      },
+      {
+        "name": "Química 2",
+        "topics": [
           "Energia de Ligação",
           "Soluções: classificação e solubilidade"
         ]
@@ -1492,8 +1528,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "República Oligárquica",
-          "Quimica 2",
+          "República Oligárquica"
+        ]
+      },
+      {
+        "name": "Química 2",
+        "topics": [
           "Diluição e mistura de soluções",
           "Propriedades coligativas"
         ]
@@ -1533,8 +1573,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Era Vargas",
-          "Quimica 2",
+          "Era Vargas"
+        ]
+      },
+      {
+        "name": "Química 2",
+        "topics": [
           "Noções e cálculos de equilíbrio químico",
           "Deslocamento de equilíbrio"
         ]
@@ -1575,8 +1619,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "República Liberal",
-          "Quimica 2",
+          "República Liberal"
+        ]
+      },
+      {
+        "name": "Química 2",
+        "topics": [
           "Equilíbrio iônico da água, pH e pOH",
           "Soluções tampão e Titulação"
         ]
@@ -1607,8 +1655,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Regime Militar",
-          "Quimica 2",
+          "Regime Militar"
+        ]
+      },
+      {
+        "name": "Química 2",
+        "topics": [
           "Número de oxidação (NOX)",
           "Reações e Balanceamento por oxirredução"
         ]
@@ -1637,8 +1689,12 @@
       {
         "name": "História do Brasil",
         "topics": [
-          "Redemocratização",
-          "Quimica 2",
+          "Redemocratização"
+        ]
+      },
+      {
+        "name": "Química 2",
+        "topics": [
           "Pilhas"
         ]
       }
