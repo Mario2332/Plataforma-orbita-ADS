@@ -177,8 +177,8 @@ export default function AlunoConfiguracoes() {
 
       if (data.success) {
         toast.success("Foto de perfil atualizada com sucesso!");
-        await refreshUserData(); // Atualizar contexto
-        await loadAluno(); // Recarregar dados do aluno
+        await loadAluno(); // Recarregar dados do aluno primeiro
+        await refreshUserData(); // Depois atualizar contexto
       }
     } catch (error: any) {
       console.error("Erro ao fazer upload:", error);
@@ -202,8 +202,8 @@ export default function AlunoConfiguracoes() {
 
       if (data.success) {
         toast.success("Foto de perfil removida com sucesso!");
-        await refreshUserData(); // Atualizar contexto
-        await loadAluno(); // Recarregar dados do aluno
+        await loadAluno(); // Recarregar dados do aluno primeiro
+        await refreshUserData(); // Depois atualizar contexto
       }
     } catch (error: any) {
       console.error("Erro ao deletar foto:", error);

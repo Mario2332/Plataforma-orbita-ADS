@@ -23,6 +23,7 @@ export interface UserData {
   createdAt: Date;
   updatedAt: Date;
   lastSignedIn: Date;
+  photoURL?: string;
 }
 
 export interface AuthState {
@@ -116,6 +117,7 @@ export function useAuth() {
               createdAt: data.createdAt?.toDate() || new Date(),
               updatedAt: data.updatedAt?.toDate() || new Date(),
               lastSignedIn: data.lastSignedIn?.toDate() || new Date(),
+              photoURL: data.photoURL,
             };
 
             console.log('[useAuth] Definindo authState com userData completo, loading=false');
@@ -217,6 +219,7 @@ export function useAuth() {
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
           lastSignedIn: data.lastSignedIn?.toDate() || new Date(),
+          photoURL: data.photoURL,
         };
 
         // Atualizar estado com userData
@@ -314,6 +317,7 @@ export function useAuth() {
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
           lastSignedIn: data.lastSignedIn?.toDate() || new Date(),
+          photoURL: data.photoURL,
         };
 
         setAuthState((prev) => ({
