@@ -333,7 +333,7 @@ export default function AlunoHome() {
                 {streak > 0 && (
                   <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full border border-orange-500/30 backdrop-blur-sm animate-bounce-subtle">
                     <Flame className="h-5 w-5 text-orange-500" />
-                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{streak} dias de fogo!</span>
+                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{streak} dias de foco!</span>
                   </div>
                 )}
               </div>
