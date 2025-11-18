@@ -46,6 +46,8 @@ export default function AlunoAutodiagnostico() {
   const [filtroArea, setFiltroArea] = useState<string>("geral");
   const [filtroTempo, setFiltroTempo] = useState<string>("todo");
   const [prova, setProva] = useState("");
+  const [dataProva, setDataProva] = useState(new Date().toISOString().split('T')[0]);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
   const [questoes, setQuestoes] = useState<Questao[]>([
     { numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }
   ]);
@@ -127,6 +129,10 @@ export default function AlunoAutodiagnostico() {
       toast.error("Informe o nome da prova");
       return;
     }
+    if (!dataProva) {
+      toast.error("Informe a data da prova");
+      return;
+    }
     const questoesValidas = questoes.filter(q => 
       q.numeroQuestao.trim() && q.area && q.macroassunto.trim() && q.microassunto.trim() && q.motivoErro
     );
@@ -136,12 +142,24 @@ export default function AlunoAutodiagnostico() {
     }
     try {
       setIsSaving(true);
-      await alunoApi.createAutodiagnostico({
-        prova: prova.trim(),
-        questoes: questoesValidas
-      });
-      toast.success("Autodiagnóstico salvo com sucesso!");
+      if (editandoId) {
+        await alunoApi.updateAutodiagnostico(editandoId, {
+          prova: prova.trim(),
+          dataProva: new Date(dataProva),
+          questoes: questoesValidas
+        });
+        toast.success("Autodiagnóstico atualizado com sucesso!");
+      } else {
+        await alunoApi.createAutodiagnostico({
+          prova: prova.trim(),
+          dataProva: new Date(dataProva),
+          questoes: questoesValidas
+        });
+        toast.success("Autodiagnóstico salvo com sucesso!");
+      }
       setProva("");
+      setDataProva(new Date().toISOString().split('T')[0]);
+      setEditandoId(null);
       setQuestoes([{ numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
       await loadAutodiagnosticos();
     } catch (error: any) {
@@ -149,6 +167,39 @@ export default function AlunoAutodiagnostico() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleEdit = (autodiagnostico: any) => {
+    setEditandoId(autodiagnostico.id);
+    setProva(autodiagnostico.prova);
+    
+    // Converter dataProva para formato YYYY-MM-DD
+    let dataFormatada = new Date().toISOString().split('T')[0];
+    if (autodiagnostico.dataProva) {
+      if (autodiagnostico.dataProva.toDate) {
+        dataFormatada = autodiagnostico.dataProva.toDate().toISOString().split('T')[0];
+      } else if (autodiagnostico.dataProva.seconds || autodiagnostico.dataProva._seconds) {
+        const seconds = autodiagnostico.dataProva.seconds || autodiagnostico.dataProva._seconds;
+        dataFormatada = new Date(seconds * 1000).toISOString().split('T')[0];
+      } else {
+        dataFormatada = new Date(autodiagnostico.dataProva).toISOString().split('T')[0];
+      }
+    }
+    setDataProva(dataFormatada);
+    
+    setQuestoes(autodiagnostico.questoes || [{ numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
+    
+    // Scroll para o formulário
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast.info("Editando autodiagnóstico");
+  };
+
+  const handleCancelEdit = () => {
+    setEditandoId(null);
+    setProva("");
+    setDataProva(new Date().toISOString().split('T')[0]);
+    setQuestoes([{ numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
+    toast.info("Edição cancelada");
   };
 
   const handleDelete = async (autodiagnosticoId: string) => {
@@ -242,16 +293,22 @@ export default function AlunoAutodiagnostico() {
               <Target className="w-6 h-6 text-white" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-black">Novo Autodiagnóstico</CardTitle>
+              <CardTitle className="text-2xl font-black">{editandoId ? "Editar Autodiagnóstico" : "Novo Autodiagnóstico"}</CardTitle>
               <CardDescription className="text-base">Registre os erros de uma prova ou simulado para identificar padrões</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="prova" className="font-bold">Nome da Prova/Simulado *</Label>
-              <Input id="prova" placeholder="Ex: ENEM 2022, ENEM 2023, Simulado FUVEST..." value={prova} onChange={(e) => setProva(e.target.value)} required className="border-2" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="prova" className="font-bold">Nome da Prova/Simulado *</Label>
+                <Input id="prova" placeholder="Ex: ENEM 2022, ENEM 2023, Simulado FUVEST..." value={prova} onChange={(e) => setProva(e.target.value)} required className="border-2" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dataProva" className="font-bold">Data da Prova *</Label>
+                <Input id="dataProva" type="date" value={dataProva} onChange={(e) => setDataProva(e.target.value)} required className="border-2" />
+              </div>
             </div>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -343,9 +400,16 @@ export default function AlunoAutodiagnostico() {
                 ))}
               </div>
             </div>
-            <Button type="submit" disabled={isSaving} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 font-bold text-lg py-6">
-              {isSaving ? "Salvando..." : "Salvar Autodiagnóstico"}
-            </Button>
+            <div className="flex gap-3">
+              {editandoId && (
+                <Button type="button" onClick={handleCancelEdit} variant="outline" className="flex-1 font-bold text-lg py-6 border-2">
+                  Cancelar
+                </Button>
+              )}
+              <Button type="submit" disabled={isSaving} className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 font-bold text-lg py-6">
+                {isSaving ? "Salvando..." : editandoId ? "Atualizar Autodiagnóstico" : "Salvar Autodiagnóstico"}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
@@ -475,7 +539,19 @@ export default function AlunoAutodiagnostico() {
                           </div>
                           <div className="text-left">
                             <div className="font-black">{auto.prova}</div>
-                            <div className="text-sm text-muted-foreground font-semibold">{auto.totalQuestoes || auto.questoes?.length || 0} questão(ões) errada(s)</div>
+                            <div className="text-sm text-muted-foreground font-semibold">
+                              {auto.totalQuestoes || auto.questoes?.length || 0} questão(ões) errada(s)
+                              {auto.dataProva && (
+                                <span className="ml-2">• {(() => {
+                                  if (auto.dataProva.toDate) return auto.dataProva.toDate().toLocaleDateString('pt-BR');
+                                  if (auto.dataProva.seconds || auto.dataProva._seconds) {
+                                    const seconds = auto.dataProva.seconds || auto.dataProva._seconds;
+                                    return new Date(seconds * 1000).toLocaleDateString('pt-BR');
+                                  }
+                                  return new Date(auto.dataProva).toLocaleDateString('pt-BR');
+                                })()}</span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -556,10 +632,14 @@ export default function AlunoAutodiagnostico() {
                             </div>
                           );
                         })}
-                        <div className="flex justify-end pt-2">
+                        <div className="flex justify-end gap-2 pt-2">
+                          <Button onClick={() => handleEdit(auto)} variant="outline" size="sm" className="font-bold">
+                            <FileText className="h-4 w-4 mr-1" />
+                            Editar
+                          </Button>
                           <Button onClick={() => handleDelete(auto.id)} variant="destructive" size="sm" className="font-bold">
                             <Trash2 className="h-4 w-4 mr-1" />
-                            Excluir Autodiagnóstico
+                            Excluir
                           </Button>
                         </div>
                       </div>

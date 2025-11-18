@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAutodiagnostico = exports.getAutodiagnosticos = exports.createAutodiagnostico = exports.deleteDiarioEmocional = exports.getDiarioEmocional = exports.createDiarioEmocional = exports.updateProgresso = exports.getProgresso = exports.deleteTemplate = exports.loadTemplate = exports.saveTemplate = exports.getTemplates = exports.deleteHorario = exports.updateHorario = exports.createHorario = exports.getHorarios = void 0;
+exports.deleteAutodiagnostico = exports.updateAutodiagnostico = exports.getAutodiagnosticos = exports.createAutodiagnostico = exports.deleteDiarioEmocional = exports.getDiarioEmocional = exports.createDiarioEmocional = exports.updateProgresso = exports.getProgresso = exports.deleteTemplate = exports.loadTemplate = exports.saveTemplate = exports.getTemplates = exports.deleteHorario = exports.updateHorario = exports.createHorario = exports.getHorarios = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const auth_1 = require("../utils/auth");
@@ -509,9 +509,9 @@ exports.createAutodiagnostico = functions
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");
-    const { prova, questoes } = data;
-    if (!prova || !questoes || !Array.isArray(questoes) || questoes.length === 0) {
-        throw new functions.https.HttpsError("invalid-argument", "Prova e questões são obrigatórios");
+    const { prova, dataProva, questoes } = data;
+    if (!prova || !dataProva || !questoes || !Array.isArray(questoes) || questoes.length === 0) {
+        throw new functions.https.HttpsError("invalid-argument", "Prova, data da prova e questões são obrigatórios");
     }
     // Validar questões
     const motivosValidos = ["interpretacao", "atencao", "lacuna_teorica", "nao_estudado"];
@@ -534,6 +534,7 @@ exports.createAutodiagnostico = functions
             .collection("autodiagnosticos")
             .add({
             prova,
+            dataProva: admin.firestore.Timestamp.fromDate(new Date(dataProva)),
             questoes,
             totalQuestoes: questoes.length,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -568,6 +569,55 @@ exports.getAutodiagnosticos = functions
     }
     catch (error) {
         functions.logger.error("Erro ao buscar autodiagnósticos:", error);
+        throw new functions.https.HttpsError("internal", error.message);
+    }
+});
+/**
+ * Deletar autodiagnóstico
+ */
+/**
+ * Atualizar autodiagnóstico
+ */
+exports.updateAutodiagnostico = functions
+    .region("southamerica-east1")
+    .https.onCall(async (data, context) => {
+    const auth = await (0, auth_1.getAuthContext)(context);
+    (0, auth_1.requireRole)(auth, "aluno");
+    const { autodiagnosticoId, prova, dataProva, questoes } = data;
+    if (!autodiagnosticoId || !prova || !dataProva || !questoes || !Array.isArray(questoes) || questoes.length === 0) {
+        throw new functions.https.HttpsError("invalid-argument", "ID, prova, data da prova e questões são obrigatórios");
+    }
+    // Validar questões
+    const motivosValidos = ["interpretacao", "atencao", "lacuna_teorica", "nao_estudado"];
+    const areasValidas = ["linguagens", "humanas", "natureza", "matematica"];
+    for (const q of questoes) {
+        if (!q.numeroQuestao || !q.area || !q.macroassunto || !q.microassunto || !q.motivoErro) {
+            throw new functions.https.HttpsError("invalid-argument", "Todos os campos da questão são obrigatórios");
+        }
+        if (!areasValidas.includes(q.area)) {
+            throw new functions.https.HttpsError("invalid-argument", `Área inválida: ${q.area}`);
+        }
+        if (!motivosValidos.includes(q.motivoErro)) {
+            throw new functions.https.HttpsError("invalid-argument", `Motivo de erro inválido: ${q.motivoErro}`);
+        }
+    }
+    try {
+        await db
+            .collection("alunos")
+            .doc(auth.uid)
+            .collection("autodiagnosticos")
+            .doc(autodiagnosticoId)
+            .update({
+            prova,
+            dataProva: admin.firestore.Timestamp.fromDate(new Date(dataProva)),
+            questoes,
+            totalQuestoes: questoes.length,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        return { success: true };
+    }
+    catch (error) {
+        functions.logger.error("Erro ao atualizar autodiagnóstico:", error);
         throw new functions.https.HttpsError("internal", error.message);
     }
 });

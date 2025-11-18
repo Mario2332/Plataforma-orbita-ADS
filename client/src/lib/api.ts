@@ -467,6 +467,7 @@ export const alunoApi = {
   // Autodiagnóstico
   createAutodiagnostico: (data: {
     prova: string;
+    dataProva: Date;
     questoes: Array<{
       numeroQuestao: string;
       area: string;
@@ -477,6 +478,19 @@ export const alunoApi = {
       imagemUrl?: string;
     }>;
   }) => callFunction("createAutodiagnostico", data),
+  updateAutodiagnostico: (autodiagnosticoId: string, data: {
+    prova: string;
+    dataProva: Date;
+    questoes: Array<{
+      numeroQuestao: string;
+      area: string;
+      macroassunto: string;
+      microassunto: string;
+      motivoErro: string;
+      anotacoes?: string;
+      imagemUrl?: string;
+    }>;
+  }) => callFunction("updateAutodiagnostico", { autodiagnosticoId, ...data }),
   getAutodiagnosticos: () => callFunction("getAutodiagnosticos"),
   deleteAutodiagnostico: (autodiagnosticoId: string) => callFunction("deleteAutodiagnostico", { autodiagnosticoId }),
 };

@@ -556,12 +556,12 @@ export const createAutodiagnostico = functions
     const auth = await getAuthContext(context);
     requireRole(auth, "aluno");
 
-    const { prova, questoes } = data;
+    const { prova, dataProva, questoes } = data;
 
-    if (!prova || !questoes || !Array.isArray(questoes) || questoes.length === 0) {
+    if (!prova || !dataProva || !questoes || !Array.isArray(questoes) || questoes.length === 0) {
       throw new functions.https.HttpsError(
         "invalid-argument",
-        "Prova e questões são obrigatórios"
+        "Prova, data da prova e questões são obrigatórios"
       );
     }
 
@@ -596,6 +596,7 @@ export const createAutodiagnostico = functions
         .collection("autodiagnosticos")
         .add({
           prova,
+          dataProva: admin.firestore.Timestamp.fromDate(new Date(dataProva)),
           questoes,
           totalQuestoes: questoes.length,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -632,6 +633,72 @@ export const getAutodiagnosticos = functions
       }));
     } catch (error: any) {
       functions.logger.error("Erro ao buscar autodiagnósticos:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
+
+/**
+ * Deletar autodiagnóstico
+ */
+/**
+ * Atualizar autodiagnóstico
+ */
+export const updateAutodiagnostico = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "aluno");
+
+    const { autodiagnosticoId, prova, dataProva, questoes } = data;
+
+    if (!autodiagnosticoId || !prova || !dataProva || !questoes || !Array.isArray(questoes) || questoes.length === 0) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "ID, prova, data da prova e questões são obrigatórios"
+      );
+    }
+
+    // Validar questões
+    const motivosValidos = ["interpretacao", "atencao", "lacuna_teorica", "nao_estudado"];
+    const areasValidas = ["linguagens", "humanas", "natureza", "matematica"];
+    for (const q of questoes) {
+      if (!q.numeroQuestao || !q.area || !q.macroassunto || !q.microassunto || !q.motivoErro) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "Todos os campos da questão são obrigatórios"
+        );
+      }
+      if (!areasValidas.includes(q.area)) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          `Área inválida: ${q.area}`
+        );
+      }
+      if (!motivosValidos.includes(q.motivoErro)) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          `Motivo de erro inválido: ${q.motivoErro}`
+        );
+      }
+    }
+
+    try {
+      await db
+        .collection("alunos")
+        .doc(auth.uid)
+        .collection("autodiagnosticos")
+        .doc(autodiagnosticoId)
+        .update({
+          prova,
+          dataProva: admin.firestore.Timestamp.fromDate(new Date(dataProva)),
+          questoes,
+          totalQuestoes: questoes.length,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+      return { success: true };
+    } catch (error: any) {
+      functions.logger.error("Erro ao atualizar autodiagnóstico:", error);
       throw new functions.https.HttpsError("internal", error.message);
     }
   });
