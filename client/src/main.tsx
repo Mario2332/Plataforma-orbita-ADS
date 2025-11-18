@@ -2,6 +2,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { registerServiceWorker } from "./registerSW";
+
+// Registrar service worker para cache busting automático
+registerServiceWorker();
 
 const queryClient = new QueryClient({
   defaultOptions: {

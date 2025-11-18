@@ -24,6 +24,8 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    // Cache busting: adicionar hash nos nomes dos arquivos
+    assetsInlineLimit: 0,
     rollupOptions: {
       output: {
         manualChunks: {
