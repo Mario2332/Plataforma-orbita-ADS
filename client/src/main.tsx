@@ -2,7 +2,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { clearOldCacheIfNeeded } from "./clearOldCache";
 import { registerServiceWorker } from "./registerSW";
+
+// Limpar cache antigo se necessário (executa apenas uma vez)
+clearOldCacheIfNeeded();
 
 // Registrar service worker para cache busting automático
 registerServiceWorker();

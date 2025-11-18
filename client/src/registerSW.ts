@@ -21,14 +21,16 @@ export function registerServiceWorker() {
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // Nova versão disponível
-                  console.log('[SW] Nova versão disponível! Recarregando...');
+                  // Nova versão disponível - atualizar automaticamente
+                  console.log('[SW] Nova versão disponível! Atualizando automaticamente...');
                   
-                  // Mostrar notificação ao usuário (opcional)
-                  if (confirm('Nova versão da plataforma disponível! Deseja atualizar agora?')) {
-                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  // Atualizar automaticamente sem pedir confirmação
+                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  
+                  // Aguardar 1 segundo e recarregar
+                  setTimeout(() => {
                     window.location.reload();
-                  }
+                  }, 1000);
                 }
               });
             }
