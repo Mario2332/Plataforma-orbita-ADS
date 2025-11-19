@@ -225,7 +225,22 @@ export default function AlunoAutodiagnostico() {
       if (filtroTempo === "6meses") dataLimite.setMonth(dataLimite.getMonth() - 6);
       if (filtroTempo === "12meses") dataLimite.setMonth(dataLimite.getMonth() - 12);
       filtrados = filtrados.filter(auto => {
-        const dataAuto = auto.createdAt?.toDate ? auto.createdAt.toDate() : new Date(auto.createdAt);
+        // Usar dataProva se existir, senão usar createdAt como fallback
+        let dataAuto;
+        if (auto.dataProva) {
+          if (auto.dataProva.toDate) {
+            dataAuto = auto.dataProva.toDate();
+          } else if (auto.dataProva.seconds || auto.dataProva._seconds) {
+            const seconds = auto.dataProva.seconds || auto.dataProva._seconds;
+            dataAuto = new Date(seconds * 1000);
+          } else {
+            dataAuto = new Date(auto.dataProva);
+          }
+        } else if (auto.createdAt) {
+          dataAuto = auto.createdAt.toDate ? auto.createdAt.toDate() : new Date(auto.createdAt);
+        } else {
+          return false; // Sem data, não incluir
+        }
         return dataAuto >= dataLimite;
       });
     }
