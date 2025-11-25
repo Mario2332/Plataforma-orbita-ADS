@@ -294,6 +294,35 @@ export const mentorApi = {
     cronogramaId: string;
     tarefaId: string;
   }) => callFunction("mentorFunctions-deleteAlunoTarefa", data),
+  
+  // Metas
+  createAlunoMeta: (data: {
+    alunoId: string;
+    tipo: string;
+    nome: string;
+    descricao?: string;
+    valorAlvo: number;
+    unidade: string;
+    dataInicio: string;
+    dataFim: string;
+    materia?: string;
+    incidencia?: string;
+  }) => callFunction("mentorFunctions-createAlunoMeta", data),
+  
+  updateAlunoMeta: (data: {
+    alunoId: string;
+    metaId: string;
+    nome?: string;
+    descricao?: string;
+    valorAlvo?: number;
+    dataFim?: string;
+    status?: string;
+  }) => callFunction("mentorFunctions-updateAlunoMeta", data),
+  
+  deleteAlunoMeta: (data: {
+    alunoId: string;
+    metaId: string;
+  }) => callFunction("mentorFunctions-deleteAlunoMeta", data),
 };
 
 // ============================================
@@ -493,4 +522,36 @@ export const alunoApi = {
   }) => callFunction("updateAutodiagnostico", { autodiagnosticoId, ...data }),
   getAutodiagnosticos: () => callFunction("getAutodiagnosticos"),
   deleteAutodiagnostico: (autodiagnosticoId: string) => callFunction("deleteAutodiagnostico", { autodiagnosticoId }),
+  
+  // Metas
+  getMetas: () => callFunction("metasFunctions-getMetas"),
+  createMeta: (data: {
+    tipo: string;
+    nome: string;
+    descricao?: string;
+    valorAlvo: number;
+    unidade: string;
+    dataInicio: string;
+    dataFim: string;
+    materia?: string;
+    incidencia?: string;
+  }) => callFunction("metasFunctions-createMeta", data),
+  
+  updateMeta: (data: {
+    metaId: string;
+    nome?: string;
+    descricao?: string;
+    valorAlvo?: number;
+    dataFim?: string;
+    status?: string;
+  }) => callFunction("metasFunctions-updateMeta", data),
+  
+  deleteMeta: (metaId: string) => callFunction("metasFunctions-deleteMeta", { metaId }),
+  
+  updateMetaProgress: (data: {
+    metaId: string;
+    valorAtual: number;
+  }) => callFunction("metasFunctions-updateMetaProgress", data),
+  
+  checkExpiredMetas: () => callFunction("metasFunctions-checkExpiredMetas"),
 };

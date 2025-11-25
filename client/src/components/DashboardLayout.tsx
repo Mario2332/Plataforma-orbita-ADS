@@ -21,11 +21,12 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { BarChart3, BookOpen, ChevronDown, FileText, GraduationCap, Heart, Home, LayoutDashboard, LogOut, Moon, PanelLeft, Settings, Sun, Users, Sparkles } from "lucide-react";
+import { BarChart3, BookOpen, ChevronDown, FileText, GraduationCap, Heart, Home, LayoutDashboard, LogOut, Moon, PanelLeft, Settings, Sun, Users, Sparkles, Target } from "lucide-react";
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
+import Notificacoes from './Notificacoes';
 
 const getMenuItems = (role?: string) => {
   if (!role) return [];
@@ -37,6 +38,7 @@ const getMenuItems = (role?: string) => {
         { icon: BookOpen, label: "Estudos", path: "/aluno/estudos" },
         { icon: LayoutDashboard, label: "Cronograma", path: "/aluno/cronograma" },
         { icon: BarChart3, label: "Métricas", path: "/aluno/metricas" },
+        { icon: Target, label: "Metas", path: "/aluno/metas" },
         { icon: FileText, label: "Simulados", path: "/aluno/simulados" },
         { icon: Heart, label: "Diário de Bordo", path: "/aluno/diario" },
         { 
@@ -385,6 +387,11 @@ function DashboardLayoutContent({
           </SidebarContent>
 
           <SidebarFooter className="p-3 space-y-2 border-t-2 border-blue-100 dark:border-blue-900/30 bg-gradient-to-r from-blue-500/5 to-cyan-500/5">
+            {user?.role === 'aluno' && !isMobile && (
+              <div className="flex justify-center group-data-[collapsible=icon]:justify-center">
+                <Notificacoes />
+              </div>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -462,6 +469,11 @@ function DashboardLayoutContent({
                 </div>
               </div>
             </div>
+            {user?.role === 'aluno' && (
+              <div className="flex items-center gap-2">
+                <Notificacoes />
+              </div>
+            )}
           </div>
         )}
         <main className="flex-1 p-4">{children}</main>

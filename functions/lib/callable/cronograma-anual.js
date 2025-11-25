@@ -157,7 +157,30 @@ exports.toggleTopicoCompleto = functions
             completedTopics,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         }, { merge: true });
-        functions.logger.info("✅ Tópico atualizado", {
+        // Sincronizar com conteudos_progresso para metas de tópicos
+        const progressoRef = db
+            .collection("alunos")
+            .doc(context.auth.uid)
+            .collection("conteudos_progresso")
+            .doc(topicoId);
+        if (completed) {
+            // Marcar como concluído
+            await progressoRef.set({
+                concluido: true,
+                topicoId,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            }, { merge: true });
+        }
+        else {
+            // Desmarcar como concluído
+            await progressoRef.set({
+                concluido: false,
+                topicoId,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            }, { merge: true });
+        }
+        functions.logger.info("✅ Tópico atualizado e sincronizado", {
             topicoId,
             completed
         });

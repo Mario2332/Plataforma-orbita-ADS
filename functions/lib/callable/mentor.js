@@ -1226,6 +1226,155 @@ const deleteAlunoTarefa = functions
         throw new functions.https.HttpsError("internal", error.message);
     }
 });
+/**
+ * Criar meta para aluno (mentor)
+ */
+const createAlunoMeta = functions
+    .region("southamerica-east1")
+    .https.onCall(async (data, context) => {
+    const auth = await (0, auth_1.getAuthContext)(context);
+    (0, auth_1.requireRole)(auth, "mentor");
+    const { alunoId, tipo, nome, descricao, valorAlvo, unidade, dataInicio, dataFim, materia, incidencia, } = data;
+    if (!alunoId) {
+        throw new functions.https.HttpsError("invalid-argument", "ID do aluno é obrigatório");
+    }
+    if (!tipo || !nome || !valorAlvo || !unidade || !dataInicio || !dataFim) {
+        throw new functions.https.HttpsError("invalid-argument", "Tipo, nome, valor alvo, unidade, data início e data fim são obrigatórios");
+    }
+    try {
+        // Para metas de sequência, buscar sequência atual do aluno
+        let valorAtual = 0;
+        if (tipo === 'sequencia') {
+            const estudosSnapshot = await db
+                .collection("alunos")
+                .doc(alunoId)
+                .collection("estudos")
+                .orderBy("data", "desc")
+                .get();
+            const estudos = estudosSnapshot.docs.map((doc) => doc.data());
+            const datasEstudo = [...new Set(estudos.map((e) => {
+                    const data = e.data.toDate();
+                    return data.toISOString().split('T')[0];
+                }))].sort().reverse();
+            let streak = 0;
+            const hoje = new Date().toISOString().split('T')[0];
+            if (datasEstudo.length > 0) {
+                let dataAtual = new Date(hoje);
+                for (const dataStr of datasEstudo) {
+                    const dataEstudo = new Date(dataStr);
+                    const diffDias = Math.floor((dataAtual.getTime() - dataEstudo.getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDias === 0 || diffDias === 1) {
+                        streak++;
+                        dataAtual = dataEstudo;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            valorAtual = streak;
+        }
+        const metaData = {
+            alunoId,
+            tipo,
+            nome,
+            descricao: descricao || '',
+            valorAlvo: Number(valorAlvo),
+            valorAtual,
+            unidade,
+            dataInicio: admin.firestore.Timestamp.fromDate(new Date(dataInicio)),
+            dataFim: admin.firestore.Timestamp.fromDate(new Date(dataFim)),
+            status: 'ativa',
+            createdAt: admin.firestore.Timestamp.now(),
+            updatedAt: admin.firestore.Timestamp.now(),
+            createdBy: auth.uid, // ID do mentor que criou
+        };
+        if (materia)
+            metaData.materia = materia;
+        if (incidencia)
+            metaData.incidencia = incidencia;
+        const metaRef = await db
+            .collection("alunos")
+            .doc(alunoId)
+            .collection("metas")
+            .add(metaData);
+        return { success: true, metaId: metaRef.id };
+    }
+    catch (error) {
+        functions.logger.error("Erro ao criar meta do aluno:", error);
+        throw new functions.https.HttpsError("internal", error.message);
+    }
+});
+/**
+ * Atualizar meta do aluno (mentor)
+ */
+const updateAlunoMeta = functions
+    .region("southamerica-east1")
+    .https.onCall(async (data, context) => {
+    const auth = await (0, auth_1.getAuthContext)(context);
+    (0, auth_1.requireRole)(auth, "mentor");
+    const { alunoId, metaId, nome, descricao, valorAlvo, dataFim, status, } = data;
+    if (!alunoId || !metaId) {
+        throw new functions.https.HttpsError("invalid-argument", "IDs do aluno e da meta são obrigatórios");
+    }
+    try {
+        const updateData = {
+            updatedAt: admin.firestore.Timestamp.now(),
+        };
+        if (nome !== undefined)
+            updateData.nome = nome;
+        if (descricao !== undefined)
+            updateData.descricao = descricao;
+        if (valorAlvo !== undefined)
+            updateData.valorAlvo = Number(valorAlvo);
+        if (dataFim !== undefined) {
+            updateData.dataFim = admin.firestore.Timestamp.fromDate(new Date(dataFim));
+        }
+        if (status !== undefined) {
+            updateData.status = status;
+            if (status === 'concluida') {
+                updateData.dataConclusao = admin.firestore.Timestamp.now();
+            }
+        }
+        await db
+            .collection("alunos")
+            .doc(alunoId)
+            .collection("metas")
+            .doc(metaId)
+            .update(updateData);
+        return { success: true };
+    }
+    catch (error) {
+        functions.logger.error("Erro ao atualizar meta do aluno:", error);
+        throw new functions.https.HttpsError("internal", error.message);
+    }
+});
+/**
+ * Deletar meta do aluno (mentor)
+ */
+const deleteAlunoMeta = functions
+    .region("southamerica-east1")
+    .https.onCall(async (data, context) => {
+    const auth = await (0, auth_1.getAuthContext)(context);
+    (0, auth_1.requireRole)(auth, "mentor");
+    const { alunoId, metaId } = data;
+    if (!alunoId || !metaId) {
+        throw new functions.https.HttpsError("invalid-argument", "IDs do aluno e da meta são obrigatórios");
+    }
+    try {
+        await db
+            .collection("alunos")
+            .doc(alunoId)
+            .collection("metas")
+            .doc(metaId)
+            .delete();
+        return { success: true };
+    }
+    catch (error) {
+        functions.logger.error("Erro ao deletar meta do aluno:", error);
+        throw new functions.https.HttpsError("internal", error.message);
+    }
+});
 // Exportar todas as funções do mentor
 exports.mentorFunctions = {
     // Funções básicas do mentor
@@ -1278,5 +1427,9 @@ exports.mentorFunctions = {
     createAlunoTarefa,
     updateAlunoTarefa,
     deleteAlunoTarefa,
+    // Metas
+    createAlunoMeta,
+    updateAlunoMeta,
+    deleteAlunoMeta,
 };
 //# sourceMappingURL=mentor.js.map

@@ -36,7 +36,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.alunoFunctions = exports.mentorFunctions = exports.gestorFunctions = exports.onUserCreated = void 0;
+exports.notificacoesFunctions = exports.metasFunctions = exports.alunoFunctions = exports.mentorFunctions = exports.gestorFunctions = exports.onUserCreated = void 0;
 const admin = __importStar(require("firebase-admin"));
 const dotenv = __importStar(require("dotenv"));
 // Carregar variáveis de ambiente
@@ -54,6 +54,10 @@ var mentor_1 = require("./callable/mentor");
 Object.defineProperty(exports, "mentorFunctions", { enumerable: true, get: function () { return mentor_1.mentorFunctions; } });
 var aluno_1 = require("./callable/aluno");
 Object.defineProperty(exports, "alunoFunctions", { enumerable: true, get: function () { return aluno_1.alunoFunctions; } });
+var metas_1 = require("./callable/metas");
+Object.defineProperty(exports, "metasFunctions", { enumerable: true, get: function () { return metas_1.metasFunctions; } });
+var notificacoes_1 = require("./callable/notificacoes");
+Object.defineProperty(exports, "notificacoesFunctions", { enumerable: true, get: function () { return notificacoes_1.notificacoesFunctions; } });
 __exportStar(require("./callable/aluno-extras"), exports);
 __exportStar(require("./callable/mentor-conteudos"), exports);
 __exportStar(require("./callable/conteudos-simples"), exports);
@@ -64,4 +68,6 @@ __exportStar(require("./callable/reset-templates"), exports);
 __exportStar(require("./callable/upload-profile-photo"), exports);
 __exportStar(require("./webhooks/kiwify"), exports);
 __exportStar(require("./triggers/email-sender"), exports);
+__exportStar(require("./triggers/updateMetasProgress"), exports);
+__exportStar(require("./triggers/processarMetasDiarias"), exports);
 //# sourceMappingURL=index.js.map

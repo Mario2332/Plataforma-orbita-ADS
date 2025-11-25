@@ -54,17 +54,20 @@ export default function AlunoHome() {
   const { userData } = useAuthContext();
   const [estudos, setEstudos] = useState<any[]>([]);
   const [simulados, setSimulados] = useState<any[]>([]);
+  const [metas, setMetas] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const [estudosData, simuladosData] = await Promise.all([
+      const [estudosData, simuladosData, metasData] = await Promise.all([
         api.getEstudos(),
         api.getSimulados(),
+        api.getMetas(),
       ]);
       setEstudos(estudosData as any[]);
       setSimulados(simuladosData as any[]);
+      setMetas(metasData as any[]);
     } catch (error: any) {
       toast.error(error.message || "Erro ao carregar dados");
     } finally {
@@ -377,10 +380,12 @@ export default function AlunoHome() {
               <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${Math.min((streak / 30) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((streak / (metas.find(m => m.tipo === 'sequencia' && m.status === 'ativa')?.valorAlvo || 30)) * 100, 100)}%` }}
                 />
               </div>
-              <span className="text-xs font-medium text-muted-foreground">Meta: 30</span>
+              <span className="text-xs font-medium text-muted-foreground">
+                Meta: {metas.find(m => m.tipo === 'sequencia' && m.status === 'ativa')?.valorAlvo || 30}
+              </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium">
               {streak > 0 ? "🔥 Mantenha o ritmo!" : "Comece hoje!"}
