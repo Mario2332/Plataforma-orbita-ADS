@@ -28,6 +28,7 @@ const MOTIVOS_ERRO = [
 ];
 
 interface Questao {
+  id: string;
   numeroQuestao: string;
   area: string;
   macroassunto: string;
@@ -49,7 +50,7 @@ export default function AlunoAutodiagnostico() {
   const [dataProva, setDataProva] = useState(new Date().toISOString().split('T')[0]);
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [questoes, setQuestoes] = useState<Questao[]>([
-    { numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }
+    { id: crypto.randomUUID(), numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }
   ]);
 
   useEffect(() => {
@@ -60,7 +61,17 @@ export default function AlunoAutodiagnostico() {
     try {
       setIsLoading(true);
       const response = await alunoApi.getAutodiagnosticos();
-      setAutodiagnosticos(response || []);
+      
+      // Garantir que todas as questões tenham IDs únicos
+      const autodiagnosticosComIds = (response || []).map((auto: any) => ({
+        ...auto,
+        questoes: (auto.questoes || []).map((q: any) => ({
+          ...q,
+          id: q.id || crypto.randomUUID()
+        }))
+      }));
+      
+      setAutodiagnosticos(autodiagnosticosComIds);
     } catch (error: any) {
       toast.error(error.message || "Erro ao carregar autodiagnósticos");
     } finally {
@@ -69,7 +80,7 @@ export default function AlunoAutodiagnostico() {
   };
 
   const addQuestao = () => {
-    setQuestoes([...questoes, { numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
+    setQuestoes([...questoes, { id: crypto.randomUUID(), numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
   };
 
   const removeQuestao = (index: number) => {
@@ -160,7 +171,7 @@ export default function AlunoAutodiagnostico() {
       setProva("");
       setDataProva(new Date().toISOString().split('T')[0]);
       setEditandoId(null);
-      setQuestoes([{ numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
+      setQuestoes([{ id: crypto.randomUUID(), numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
       await loadAutodiagnosticos();
     } catch (error: any) {
       toast.error(error.message || "Erro ao salvar autodiagnóstico");
@@ -187,7 +198,12 @@ export default function AlunoAutodiagnostico() {
     }
     setDataProva(dataFormatada);
     
-    setQuestoes(autodiagnostico.questoes || [{ numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
+    // Adicionar IDs às questões se não tiverem
+    const questoesComId = (autodiagnostico.questoes || []).map((q: any) => ({
+      ...q,
+      id: q.id || crypto.randomUUID()
+    }));
+    setQuestoes(questoesComId.length > 0 ? questoesComId : [{ id: crypto.randomUUID(), numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
     
     // Scroll para o formulário
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -198,7 +214,7 @@ export default function AlunoAutodiagnostico() {
     setEditandoId(null);
     setProva("");
     setDataProva(new Date().toISOString().split('T')[0]);
-    setQuestoes([{ numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
+    setQuestoes([{ id: crypto.randomUUID(), numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }]);
     toast.info("Edição cancelada");
   };
 
@@ -335,7 +351,7 @@ export default function AlunoAutodiagnostico() {
               </div>
               <div className="space-y-4">
                 {questoes.map((questao, index) => (
-                  <Card key={index} className="p-4 border-2 hover:shadow-lg transition-shadow">
+                  <Card key={questao.id} className="p-4 border-2 hover:shadow-lg transition-shadow">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Questão {index + 1}</span>

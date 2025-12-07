@@ -12,6 +12,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AlunoAutodiagnostico from "./AlunoAutodiagnostico";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 type AreaFiltro = "total" | "linguagens" | "humanas" | "natureza" | "matematica";
 type MetricaFiltro = "acertos" | "tempo";
@@ -590,7 +591,12 @@ export default function AlunoSimulados() {
         </TabsContent>
 
         <TabsContent value="autodiagnostico">
-          <AlunoAutodiagnostico />
+          <ErrorBoundary 
+            componentName="AlunoAutodiagnostico" 
+            fallbackMessage="Erro ao carregar Autodiagnóstico"
+          >
+            <AlunoAutodiagnostico />
+          </ErrorBoundary>
         </TabsContent>
       </Tabs>
 
