@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { alunoApi } from "@/lib/api";
+import { useAlunoApi } from "@/hooks/useAlunoApi";
 import { storage } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Plus, Trash2, FileText, BarChart3, AlertCircle, Filter, Upload, X, Image as ImageIcon, Zap, Target, TrendingDown } from "lucide-react";
@@ -39,6 +39,7 @@ interface Questao {
 }
 
 export default function AlunoAutodiagnostico() {
+  const alunoApi = useAlunoApi();
   const [autodiagnosticos, setAutodiagnosticos] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -55,7 +56,7 @@ export default function AlunoAutodiagnostico() {
 
   useEffect(() => {
     loadAutodiagnosticos();
-  }, []);
+  }, [alunoApi]);
 
   const loadAutodiagnosticos = async () => {
     try {
