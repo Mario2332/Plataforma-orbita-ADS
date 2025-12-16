@@ -878,6 +878,47 @@ const deleteAlunoHorario = functions
   });
 
 /**
+ * Limpar todos os horários do cronograma do aluno (para salvar novos)
+ */
+const clearAlunoHorarios = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "mentor");
+
+    const { alunoId } = data;
+
+    if (!alunoId) {
+      throw new functions.https.HttpsError("invalid-argument", "ID do aluno é obrigatório");
+    }
+
+    try {
+      const horariosRef = db
+        .collection("alunos")
+        .doc(alunoId)
+        .collection("horarios");
+      
+      const snapshot = await horariosRef.get();
+      
+      if (snapshot.empty) {
+        return { success: true, deleted: 0 };
+      }
+      
+      // Deletar em batch para melhor performance
+      const batch = db.batch();
+      snapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      
+      return { success: true, deleted: snapshot.size };
+    } catch (error: any) {
+      functions.logger.error("Erro ao limpar horários do aluno:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
+
+/**
  * Funções para o mentor gerenciar templates de cronograma do aluno
  */
 const saveAlunoTemplate = functions
@@ -1613,6 +1654,7 @@ export const mentorFunctions = {
   createAlunoHorario,
   updateAlunoHorario,
   deleteAlunoHorario,
+  clearAlunoHorarios,
   
   // Templates
   saveAlunoTemplate,

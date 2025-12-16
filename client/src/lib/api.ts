@@ -179,6 +179,10 @@ export const mentorApi = {
     horarioId: string;
   }) => callFunction("mentorFunctions-deleteAlunoHorario", data),
   
+  clearAlunoHorarios: (data: {
+    alunoId: string;
+  }) => callFunction("mentorFunctions-clearAlunoHorarios", data),
+  
   // Templates
   saveAlunoTemplate: (data: {
     alunoId: string;
@@ -462,6 +466,7 @@ export const alunoApi = {
     cor?: string;
   }) => callFunction("updateHorario", data),
   deleteHorario: (horarioId: string) => callFunction("deleteHorario", { horarioId }),
+  clearAllHorarios: () => callFunction("clearAllHorarios"),
 
   // Templates de Cronograma
   getTemplates: () => callFunction("getTemplates"),

@@ -45,6 +45,7 @@ export function useAlunoApi() {
       createHorario: (data: any) => mentorApi.createAlunoHorario({ ...data, alunoId: mentorView.alunoId }),
       updateHorario: (data: any) => mentorApi.updateAlunoHorario({ ...data, alunoId: mentorView.alunoId }),
       deleteHorario: (horarioId: string) => mentorApi.deleteAlunoHorario({ alunoId: mentorView.alunoId, horarioId }),
+      clearAllHorarios: () => mentorApi.clearAlunoHorarios({ alunoId: mentorView.alunoId }),
       
       // Templates
       getTemplates: () => mentorApi.getAlunoData({ alunoId: mentorView.alunoId, collection: "templates" }),

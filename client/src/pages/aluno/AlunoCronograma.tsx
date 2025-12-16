@@ -272,6 +272,9 @@ export default function AlunoCronograma() {
     try {
       setIsSaving(true);
       
+      // Primeiro, limpar todos os horários existentes
+      await api.clearAllHorarios();
+      
       const sortedSchedule = [...schedule]
         .filter(s => s.activity)
         .sort((a, b) => {

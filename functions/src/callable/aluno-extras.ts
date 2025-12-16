@@ -145,6 +145,41 @@ export const deleteHorario = functions
   });
 
 /**
+ * Limpar todos os horários do cronograma (para salvar novos)
+ */
+export const clearAllHorarios = functions
+  .region("southamerica-east1")
+  .https.onCall(async (data, context) => {
+    const auth = await getAuthContext(context);
+    requireRole(auth, "aluno");
+
+    try {
+      const horariosRef = db
+        .collection("alunos")
+        .doc(auth.uid)
+        .collection("horarios");
+      
+      const snapshot = await horariosRef.get();
+      
+      if (snapshot.empty) {
+        return { success: true, deleted: 0 };
+      }
+      
+      // Deletar em batch para melhor performance
+      const batch = db.batch();
+      snapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      
+      return { success: true, deleted: snapshot.size };
+    } catch (error: any) {
+      functions.logger.error("Erro ao limpar horários:", error);
+      throw new functions.https.HttpsError("internal", error.message);
+    }
+  });
+
+/**
  * Obter templates de cronograma
  */
 export const getTemplates = functions
