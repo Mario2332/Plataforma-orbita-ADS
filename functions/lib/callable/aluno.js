@@ -43,7 +43,6 @@ const db = admin.firestore();
  */
 const getMe = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "256MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");
@@ -77,24 +76,32 @@ const getMe = functions
  */
 const getDashboardData = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "512MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");
-    // Buscar estudos
-    const estudosSnapshot = await db
-        .collection("alunos")
-        .doc(auth.uid)
-        .collection("estudos")
-        .orderBy("data", "desc")
-        .get();
-    // Buscar simulados
-    const simuladosSnapshot = await db
-        .collection("alunos")
-        .doc(auth.uid)
-        .collection("simulados")
-        .orderBy("data", "desc")
-        .get();
+    // Buscar estudos e simulados em PARALELO para melhor performance
+    const [estudosSnapshot, simuladosSnapshot, estudosCountSnapshot] = await Promise.all([
+        // Últimos 30 estudos para cálculo de streak e métricas recentes
+        db.collection("alunos")
+            .doc(auth.uid)
+            .collection("estudos")
+            .orderBy("data", "desc")
+            .limit(100) // Limitar para performance
+            .get(),
+        // Últimos 10 simulados
+        db.collection("alunos")
+            .doc(auth.uid)
+            .collection("simulados")
+            .orderBy("data", "desc")
+            .limit(10)
+            .get(),
+        // Contagem total de estudos (query leve)
+        db.collection("alunos")
+            .doc(auth.uid)
+            .collection("estudos")
+            .count()
+            .get()
+    ]);
     const estudos = estudosSnapshot.docs.map((doc) => ({
         ...doc.data(),
         data: doc.data().data.toDate(),
@@ -133,7 +140,7 @@ const getDashboardData = functions
         questoesFeitas,
         questoesAcertadas,
         ultimoSimulado,
-        totalEstudos: estudos.length,
+        totalEstudos: estudosCountSnapshot.data().count,
         totalSimulados: simulados.length,
     };
 });
@@ -142,15 +149,18 @@ const getDashboardData = functions
  */
 const getEstudos = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "256MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");
+    // Limitar a 200 estudos mais recentes para melhor performance
+    // Usuários com muitos estudos terão carregamento mais rápido
+    const limit = data?.limit || 200;
     const estudosSnapshot = await db
         .collection("alunos")
         .doc(auth.uid)
         .collection("estudos")
         .orderBy("data", "desc")
+        .limit(limit)
         .get();
     return estudosSnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -273,15 +283,17 @@ const deleteEstudo = functions
  */
 const getSimulados = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "256MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");
+    // Limitar a 100 simulados mais recentes para melhor performance
+    const limit = data?.limit || 100;
     const simuladosSnapshot = await db
         .collection("alunos")
         .doc(auth.uid)
         .collection("simulados")
         .orderBy("data", "desc")
+        .limit(limit)
         .get();
     return simuladosSnapshot.docs.map((doc) => ({
         id: doc.id,

@@ -60,7 +60,6 @@ function parseDateWithNoonUTC(dateString) {
  */
 const getMetas = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "256MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");

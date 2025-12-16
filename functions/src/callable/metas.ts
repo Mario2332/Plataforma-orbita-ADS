@@ -76,7 +76,6 @@ export interface Meta {
  */
 const getMetas = functions
   .region("southamerica-east1")
-  .runWith({ minInstances: 1, memory: "256MB" })
   .https.onCall(async (data, context) => {
     const auth = await getAuthContext(context);
     requireRole(auth, "aluno");

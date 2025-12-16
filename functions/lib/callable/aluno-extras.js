@@ -43,7 +43,6 @@ const db = admin.firestore();
  */
 exports.getHorarios = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "256MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");
@@ -198,7 +197,6 @@ exports.clearAllHorarios = functions
  */
 exports.getTemplates = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "256MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");
@@ -329,7 +327,6 @@ exports.deleteTemplate = functions
  */
 exports.getProgresso = functions
     .region("southamerica-east1")
-    .runWith({ minInstances: 1, memory: "256MB" })
     .https.onCall(async (data, context) => {
     const auth = await (0, auth_1.getAuthContext)(context);
     (0, auth_1.requireRole)(auth, "aluno");

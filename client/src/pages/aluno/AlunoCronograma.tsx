@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CronogramaSkeleton } from "@/components/ui/skeleton-loader";
 
 type TimeSlot = {
   day: number;
@@ -353,13 +354,8 @@ export default function AlunoCronograma() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="relative">
-          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-primary"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <Zap className="h-8 w-8 text-primary animate-pulse" />
-          </div>
-        </div>
+      <div className="space-y-8 pb-8">
+        <CronogramaSkeleton />
       </div>
     );
   }
