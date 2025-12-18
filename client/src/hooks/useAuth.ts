@@ -11,7 +11,7 @@ import {
   updatePassword
 } from "firebase/auth";
 import { doc, getDoc, getDocFromServer, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "../lib/firebase";
+import { auth, db, warmupFirestoreConnection } from "../lib/firebase";
 
 export type UserRole = "gestor" | "mentor" | "aluno";
 
@@ -150,6 +150,10 @@ export function useAuth() {
               loading: false,
               error: null,
             });
+            
+            // Pré-aquecer conexão do Firestore em background
+            // Isso reduz o tempo de carregamento das próximas páginas
+            warmupFirestoreConnection();
           } else {
             // Documento do usuário não existe (erro de configuração)
             setAuthState({
