@@ -33,17 +33,28 @@ const MATERIAS_ENEM = [
   "Filosofia",
   "Sociologia",
   "Linguagens",
+  "Redação",
+  "Revisão",
+  "Simulado",
+  "Correção de simulado",
+  "Preenchimento de lacunas",
 ] as const;
 
 const CORES_GRAFICOS = [
-  "#3b82f6", // blue
-  "#10b981", // green
-  "#f59e0b", // amber
-  "#ef4444", // red
-  "#8b5cf6", // violet
-  "#ec4899", // pink
-  "#06b6d4", // cyan
-  "#f97316", // orange
+  "#3b82f6", // blue - Matemática
+  "#10b981", // green - Biologia
+  "#f59e0b", // amber - Física
+  "#ef4444", // red - Química
+  "#8b5cf6", // violet - História
+  "#ec4899", // pink - Geografia
+  "#06b6d4", // cyan - Filosofia
+  "#f97316", // orange - Sociologia
+  "#84cc16", // lime - Linguagens
+  "#14b8a6", // teal - Redação
+  "#a855f7", // purple - Revisão
+  "#f43f5e", // rose - Simulado
+  "#0ea5e9", // sky - Correção de simulado
+  "#eab308", // yellow - Preenchimento de lacunas
 ];
 
 export default function AlunoMetricas() {
@@ -51,6 +62,7 @@ export default function AlunoMetricas() {
   const [periodo, setPeriodo] = useState<PeriodoFiltro>("30d");
   const [estudos, setEstudos] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [itensOcultos, setItensOcultos] = useState<Set<string>>(new Set());
 
   const loadEstudos = async () => {
     try {
@@ -193,12 +205,33 @@ export default function AlunoMetricas() {
   const dadosDistribuicaoTempo = useMemo(() => {
     return dadosPorMateria
       .filter(d => d.tempo > 0)
-      .map((d, index) => ({
-        name: d.materia,
-        value: d.tempo,
-        color: CORES_GRAFICOS[index % CORES_GRAFICOS.length],
-      }));
+      .map((d) => {
+        const indexMateria = MATERIAS_ENEM.indexOf(d.materia as typeof MATERIAS_ENEM[number]);
+        return {
+          name: d.materia,
+          value: d.tempo,
+          color: CORES_GRAFICOS[indexMateria >= 0 ? indexMateria : 0],
+        };
+      });
   }, [dadosPorMateria]);
+
+  // Dados filtrados para o gráfico (excluindo itens ocultos)
+  const dadosDistribuicaoTempoFiltrados = useMemo(() => {
+    return dadosDistribuicaoTempo.filter(d => !itensOcultos.has(d.name));
+  }, [dadosDistribuicaoTempo, itensOcultos]);
+
+  // Função para alternar visibilidade de um item
+  const toggleItemVisibilidade = (nome: string) => {
+    setItensOcultos(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nome)) {
+        newSet.delete(nome);
+      } else {
+        newSet.add(nome);
+      }
+      return newSet;
+    });
+  };
 
   const metricas = useMemo(() => {
     const tempoTotal = estudosFiltrados.reduce((acc, e) => acc + e.tempoMinutos, 0);
@@ -594,39 +627,89 @@ export default function AlunoMetricas() {
                 <div className="p-2 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl shadow-lg">
                   <PieChart className="h-5 w-5 text-white" />
                 </div>
-                Distribuição de Tempo por Matéria
+                Distribuição de Tempo por Matéria/Atividade
               </CardTitle>
               <CardDescription className="text-base">Veja como você distribui seu tempo de estudo</CardDescription>
             </CardHeader>
             <CardContent>
               {dadosDistribuicaoTempo.length > 0 ? (
-                <ResponsiveContainer width="100%" height={450}>
-                  <RechartsPie>
-                    <Pie
-                      data={dadosDistribuicaoTempo}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={140}
-                      fill="#8884d8"
-                      dataKey="value"
-                      style={{ fontSize: '13px', fontWeight: 700 }}
-                    >
-                      {dadosDistribuicaoTempo.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '12px',
-                        fontWeight: 600
-                      }} 
-                    />
-                  </RechartsPie>
-                </ResponsiveContainer>
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Gráfico de Pizza */}
+                  <div className="flex-1">
+                    <ResponsiveContainer width="100%" height={450}>
+                      <RechartsPie>
+                        <Pie
+                          data={dadosDistribuicaoTempoFiltrados}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={140}
+                          fill="#8884d8"
+                          dataKey="value"
+                          style={{ fontSize: '12px', fontWeight: 700 }}
+                        >
+                          {dadosDistribuicaoTempoFiltrados.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '12px',
+                            fontWeight: 600
+                          }}
+                          formatter={(value: number) => [`${Math.floor(value / 60)}h ${value % 60}min`, 'Tempo']}
+                        />
+                      </RechartsPie>
+                    </ResponsiveContainer>
+                  </div>
+                  
+                  {/* Legenda Interativa */}
+                  <div className="lg:w-64 space-y-2">
+                    <p className="text-sm font-semibold text-muted-foreground mb-3">Clique para ocultar/exibir:</p>
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+                      {dadosDistribuicaoTempo.map((item) => {
+                        const isOculto = itensOcultos.has(item.name);
+                        const tempoHoras = Math.floor(item.value / 60);
+                        const tempoMinutos = item.value % 60;
+                        return (
+                          <button
+                            key={item.name}
+                            onClick={() => toggleItemVisibilidade(item.name)}
+                            className={`w-full flex items-center gap-3 p-2 rounded-lg border-2 transition-all duration-200 text-left ${
+                              isOculto 
+                                ? 'opacity-40 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
+                            }`}
+                          >
+                            <div 
+                              className={`w-4 h-4 rounded-full flex-shrink-0 transition-opacity ${isOculto ? 'opacity-40' : ''}`}
+                              style={{ backgroundColor: item.color }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-semibold truncate ${isOculto ? 'line-through text-muted-foreground' : ''}`}>
+                                {item.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {tempoHoras > 0 ? `${tempoHoras}h ` : ''}{tempoMinutos}min
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {itensOcultos.size > 0 && (
+                      <button
+                        onClick={() => setItensOcultos(new Set())}
+                        className="w-full mt-3 p-2 text-sm font-semibold text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 rounded-lg transition-colors"
+                      >
+                        Mostrar todos ({itensOcultos.size} oculto{itensOcultos.size > 1 ? 's' : ''})
+                      </button>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-[450px]">
                   <div className="p-6 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-full mb-4">

@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 const CRONOMETRO_STORAGE_KEY = "aluno_cronometro_estado";
 
-// Matérias padronizadas do ENEM
+// Matérias e atividades padronizadas do ENEM
 const MATERIAS_ENEM = [
   "Matemática",
   "Biologia",
@@ -23,6 +23,11 @@ const MATERIAS_ENEM = [
   "Filosofia",
   "Sociologia",
   "Linguagens",
+  "Redação",
+  "Revisão",
+  "Simulado",
+  "Correção de simulado",
+  "Preenchimento de lacunas",
 ] as const;
 
 interface CronometroEstado {
@@ -480,14 +485,14 @@ export default function AlunoEstudos() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="materia" className="text-sm font-semibold">Matéria</Label>
+                    <Label htmlFor="materia" className="text-sm font-semibold">Matéria/Atividade</Label>
                     <Select
                       value={formData.materia}
                       onValueChange={(value) => setFormData({ ...formData, materia: value })}
                       required
                     >
                       <SelectTrigger id="materia" className="border-2">
-                        <SelectValue placeholder="Selecione uma matéria" />
+                        <SelectValue placeholder="Selecione uma opção" />
                       </SelectTrigger>
                       <SelectContent>
                         {MATERIAS_ENEM.map((materia) => (
