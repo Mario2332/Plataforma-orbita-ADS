@@ -701,7 +701,7 @@ export default function AlunoHome() {
                   Comece sua sequência hoje!
                 </p>
                 <p className="text-sm text-orange-700 dark:text-orange-300 mt-2 font-medium">
-                  Estudar todos os dias aumenta sua retenção em até 40%
+                  Estudar todos os dias te aproxima cada vez mais de ver seu nome na lista de aprovados!
                 </p>
               </div>
             )}
