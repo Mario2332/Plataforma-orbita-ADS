@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAlunoApi } from "@/hooks/useAlunoApi";
 import { BookOpen, Clock, Edit, Play, Plus, Trash2, Pause, RotateCcw, Save, ArrowUpDown, Zap, Timer, CheckCircle2, Target, Maximize2, X, AlertCircle } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { toast } from "sonner";
 
 const CRONOMETRO_STORAGE_KEY = "aluno_cronometro_estado";
@@ -331,49 +331,52 @@ export default function AlunoEstudos() {
     }
   };
   
-  const estudosOrdenados = [...estudos].sort((a, b) => {
-    if (!colunaOrdenacao) return 0;
-    
-    let valorA: any;
-    let valorB: any;
-    
-    switch (colunaOrdenacao) {
-      case "data":
-        try {
-          const dataA = a.data?.seconds || a.data?._seconds ? new Date((a.data.seconds || a.data._seconds) * 1000) : new Date(a.data);
-          const dataB = b.data?.seconds || b.data?._seconds ? new Date((b.data.seconds || b.data._seconds) * 1000) : new Date(b.data);
-          valorA = dataA.getTime();
-          valorB = dataB.getTime();
-        } catch {
+  // useMemo para evitar re-ordenação desnecessária a cada atualização do cronômetro
+  const estudosOrdenados = useMemo(() => {
+    return [...estudos].sort((a, b) => {
+      if (!colunaOrdenacao) return 0;
+      
+      let valorA: any;
+      let valorB: any;
+      
+      switch (colunaOrdenacao) {
+        case "data":
+          try {
+            const dataA = a.data?.seconds || a.data?._seconds ? new Date((a.data.seconds || a.data._seconds) * 1000) : new Date(a.data);
+            const dataB = b.data?.seconds || b.data?._seconds ? new Date((b.data.seconds || b.data._seconds) * 1000) : new Date(b.data);
+            valorA = dataA.getTime();
+            valorB = dataB.getTime();
+          } catch {
+            return 0;
+          }
+          break;
+        case "materia":
+          valorA = a.materia?.toLowerCase() || "";
+          valorB = b.materia?.toLowerCase() || "";
+          break;
+        case "tempo":
+          valorA = a.tempoMinutos || 0;
+          valorB = b.tempoMinutos || 0;
+          break;
+        case "questoes":
+          valorA = a.questoesFeitas || 0;
+          valorB = b.questoesFeitas || 0;
+          break;
+        case "acertos":
+          valorA = a.questoesAcertadas || 0;
+          valorB = b.questoesAcertadas || 0;
+          break;
+        default:
           return 0;
-        }
-        break;
-      case "materia":
-        valorA = a.materia?.toLowerCase() || "";
-        valorB = b.materia?.toLowerCase() || "";
-        break;
-      case "tempo":
-        valorA = a.tempoMinutos || 0;
-        valorB = b.tempoMinutos || 0;
-        break;
-      case "questoes":
-        valorA = a.questoesFeitas || 0;
-        valorB = b.questoesFeitas || 0;
-        break;
-      case "acertos":
-        valorA = a.questoesAcertadas || 0;
-        valorB = b.questoesAcertadas || 0;
-        break;
-      default:
-        return 0;
-    }
-    
-    if (direcaoOrdenacao === "asc") {
-      return valorA > valorB ? 1 : -1;
-    } else {
-      return valorA < valorB ? 1 : -1;
-    }
-  });
+      }
+      
+      if (direcaoOrdenacao === "asc") {
+        return valorA > valorB ? 1 : -1;
+      } else {
+        return valorA < valorB ? 1 : -1;
+      }
+    });
+  }, [estudos, colunaOrdenacao, direcaoOrdenacao]);
 
   if (isLoading) {
     return (
