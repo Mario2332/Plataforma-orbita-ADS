@@ -940,6 +940,16 @@ export default function AlunoRedacoes() {
                   <PolarGrid stroke="#e5e7eb" />
                   <PolarAngleAxis dataKey="competencia" stroke="#6b7280" fontSize={12} fontWeight="bold" />
                   <PolarRadiusAxis angle={30} domain={[0, 200]} stroke="#6b7280" fontSize={10} />
+                  <RechartsTooltip
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '2px solid #8b5cf6',
+                      borderRadius: '12px',
+                      fontWeight: 'bold',
+                      boxShadow: '0 10px 40px rgba(139, 92, 246, 0.2)'
+                    }}
+                    formatter={(value: number, name: string) => [value, "Nota"]}
+                  />
                   <Radar
                     name="Média"
                     dataKey="valor"
