@@ -106,12 +106,16 @@ export async function clearAllHorariosDirect(): Promise<void> {
   
   if (snapshot.empty) return;
 
-  const batch = writeBatch(db);
-  snapshot.docs.forEach(doc => {
-    batch.delete(doc.ref);
-  });
+  // Firestore tem limite de 500 operações por batch
+  const BATCH_SIZE = 500;
+  const docs = snapshot.docs;
   
-  await batch.commit();
+  for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+    const batch = writeBatch(db);
+    const chunk = docs.slice(i, i + BATCH_SIZE);
+    chunk.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+  }
 }
 
 /**
@@ -122,18 +126,77 @@ export async function saveHorariosBatch(horarios: Omit<Horario, 'id'>[]): Promis
   const userId = auth.currentUser?.uid;
   if (!userId) throw new Error("Usuário não autenticado");
 
+  if (horarios.length === 0) return;
+
   const horariosRef = collection(db, "alunos", userId, "horarios");
-  const batch = writeBatch(db);
   
+  // Firestore tem limite de 500 operações por batch
+  const BATCH_SIZE = 500;
+  
+  for (let i = 0; i < horarios.length; i += BATCH_SIZE) {
+    const batch = writeBatch(db);
+    const chunk = horarios.slice(i, i + BATCH_SIZE);
+    
+    chunk.forEach(horario => {
+      const newDocRef = doc(horariosRef);
+      batch.set(newDocRef, {
+        ...horario,
+        createdAt: Timestamp.now()
+      });
+    });
+    
+    await batch.commit();
+  }
+}
+
+/**
+ * Limpar e salvar horários em uma única operação otimizada
+ * Combina delete + create para minimizar round-trips
+ */
+export async function replaceAllHorarios(horarios: Omit<Horario, 'id'>[]): Promise<void> {
+  const userId = auth.currentUser?.uid;
+  if (!userId) throw new Error("Usuário não autenticado");
+
+  const horariosRef = collection(db, "alunos", userId, "horarios");
+  
+  // Buscar documentos existentes para deletar
+  const snapshot = await getDocs(horariosRef);
+  const existingDocs = snapshot.docs;
+  
+  // Firestore tem limite de 500 operações por batch
+  const BATCH_SIZE = 500;
+  const allOperations: Array<{ type: 'delete' | 'set', ref: any, data?: any }> = [];
+  
+  // Adicionar operações de delete
+  existingDocs.forEach(doc => {
+    allOperations.push({ type: 'delete', ref: doc.ref });
+  });
+  
+  // Adicionar operações de create
   horarios.forEach(horario => {
     const newDocRef = doc(horariosRef);
-    batch.set(newDocRef, {
-      ...horario,
-      createdAt: Timestamp.now()
+    allOperations.push({ 
+      type: 'set', 
+      ref: newDocRef, 
+      data: { ...horario, createdAt: Timestamp.now() } 
     });
   });
   
-  await batch.commit();
+  // Executar em batches
+  for (let i = 0; i < allOperations.length; i += BATCH_SIZE) {
+    const batch = writeBatch(db);
+    const chunk = allOperations.slice(i, i + BATCH_SIZE);
+    
+    chunk.forEach(op => {
+      if (op.type === 'delete') {
+        batch.delete(op.ref);
+      } else {
+        batch.set(op.ref, op.data);
+      }
+    });
+    
+    await batch.commit();
+  }
 }
 
 // ============================================

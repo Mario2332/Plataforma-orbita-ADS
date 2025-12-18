@@ -9,8 +9,7 @@ import { toast } from "sonner";
 // Acesso direto ao Firestore (elimina cold start de ~20s)
 import {
   getHorariosDirect,
-  clearAllHorariosDirect,
-  saveHorariosBatch,
+  replaceAllHorarios,
   getTemplatesDirect,
   saveTemplateDirect,
   loadTemplateDirect,
@@ -346,9 +345,6 @@ export default function AlunoCronograma() {
     try {
       setIsSaving(true);
       
-      // Primeiro, limpar todos os horários existentes (acesso direto ao Firestore)
-      await clearAllHorariosDirect();
-      
       const sortedSchedule = [...schedule]
         .filter(s => s.activity)
         .sort((a, b) => {
@@ -405,8 +401,8 @@ export default function AlunoCronograma() {
         cor: g.color,
       }));
       
-      // Otimização: Salvar todos os horários em BATCH (muito mais rápido - uma única operação)
-      await saveHorariosBatch(horarios);
+      // Otimização: Limpar e salvar em UMA Única operação (delete + create no mesmo batch)
+      await replaceAllHorarios(horarios);
       toast.success("Cronograma salvo com sucesso!");
     } catch (error: any) {
       toast.error(error.message || "Erro ao salvar cronograma");
