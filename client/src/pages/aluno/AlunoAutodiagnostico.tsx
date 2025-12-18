@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -54,6 +54,7 @@ export default function AlunoAutodiagnostico() {
   const [questoes, setQuestoes] = useState<Questao[]>([
     { id: crypto.randomUUID(), numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }
   ]);
+  const questoesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadAutodiagnosticos();
@@ -85,6 +86,10 @@ export default function AlunoAutodiagnostico() {
   const addQuestao = () => {
     // Adicionar nova questão no início do array para melhor UX
     setQuestoes([{ id: crypto.randomUUID(), numeroQuestao: "", area: "", macroassunto: "", microassunto: "", motivoErro: "", anotacoes: "" }, ...questoes]);
+    // Scroll automático para o topo do container de questões
+    setTimeout(() => {
+      questoesContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const removeQuestao = (index: number) => {
@@ -361,7 +366,7 @@ export default function AlunoAutodiagnostico() {
                   Adicionar Questão
                 </Button>
               </div>
-              <div className="space-y-4">
+              <div ref={questoesContainerRef} className="space-y-4">
                 {questoes.map((questao, index) => (
                   <Card key={questao.id} className="p-4 border-2 hover:shadow-lg transition-shadow">
                     <div className="space-y-4">
