@@ -145,6 +145,9 @@ export default function AlunoRedacoes() {
           c4: data.c4 || 0,
           c5: data.c5 || 0,
           notaTotal: data.notaTotal || 0,
+          repertorioIntro: data.repertorioIntro || "",
+          repertorioD1: data.repertorioD1 || "",
+          repertorioD2: data.repertorioD2 || "",
           criadoEm: data.criadoEm?.toDate() || new Date(),
         };
       });
@@ -1213,6 +1216,31 @@ export default function AlunoRedacoes() {
                             C5: {redacao.c5}
                           </span>
                         </div>
+                        
+                        {/* Repertórios */}
+                        {(redacao.repertorioIntro || redacao.repertorioD1 || redacao.repertorioD2) && (
+                          <div className="mt-4 space-y-2">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Repertórios Utilizados</p>
+                            {redacao.repertorioIntro && (
+                              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
+                                <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-1">📘 Introdução</p>
+                                <p className="text-sm text-blue-900 dark:text-blue-200">{redacao.repertorioIntro}</p>
+                              </div>
+                            )}
+                            {redacao.repertorioD1 && (
+                              <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800">
+                                <p className="text-xs font-semibold text-purple-700 dark:text-purple-400 mb-1">📜 Desenvolvimento 1</p>
+                                <p className="text-sm text-purple-900 dark:text-purple-200">{redacao.repertorioD1}</p>
+                              </div>
+                            )}
+                            {redacao.repertorioD2 && (
+                              <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                                <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-1">📗 Desenvolvimento 2</p>
+                                <p className="text-sm text-emerald-900 dark:text-emerald-200">{redacao.repertorioD2}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-center">
