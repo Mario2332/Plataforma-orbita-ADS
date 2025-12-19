@@ -380,28 +380,29 @@ export default function AlunoHome() {
               const t = i / 39;
               const x = t * 1200;
               const segmentT = (t * 4) % 1;
-              const y = 10 + Math.sin(segmentT * Math.PI) * 50;
+              // Y do cabo (mesma fórmula do path)
+              const cableY = 10 + Math.sin(segmentT * Math.PI) * 50;
               const colors = ['#ef4444', '#facc15', '#22c55e', '#3b82f6'];
               const filters = ['glow-red', 'glow-yellow', 'glow-green', 'glow-blue'];
               const color = colors[i % 4];
               const filterId = filters[i % 4];
               return (
                 <g key={i}>
-                  {/* Base da lâmpada (conector) */}
+                  {/* Base da lâmpada (conector) - diretamente no cabo */}
                   <rect
                     x={x - 2}
-                    y={y - 3}
+                    y={cableY}
                     width="4"
-                    height="5"
+                    height="4"
                     fill="#6b7280"
                     rx="1"
                   />
-                  {/* Lâmpada oval com filtro de brilho */}
+                  {/* Lâmpada oval com filtro de brilho - logo abaixo do conector */}
                   <ellipse 
                     cx={x} 
-                    cy={y + 10} 
+                    cy={cableY + 12} 
                     rx="5" 
-                    ry="9"
+                    ry="8"
                     fill={color}
                     filter={`url(#${filterId})`}
                     className="animate-light-blink"
