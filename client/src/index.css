@@ -281,3 +281,17 @@
 .animate-santa-hat {
   animation: santa-hat-wiggle 2s ease-in-out infinite;
 }
+
+/* Animação de piscar para luzinhas de Natal - SEM MOVIMENTO */
+@keyframes light-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.animate-light-blink {
+  animation: light-blink 1.5s ease-in-out infinite;
+}
