@@ -367,9 +367,9 @@ export default function AlunoHome() {
                 </feMerge>
               </filter>
             </defs>
-            {/* Fio das luzinhas - curva em arcos */}
+            {/* Fio das luzinhas - curva em arcos - MAIS BAIXO */}
             <path 
-              d="M0,10 Q150,60 300,10 Q450,60 600,10 Q750,60 900,10 Q1050,60 1200,10" 
+              d="M0,25 Q150,55 300,25 Q450,55 600,25 Q750,55 900,25 Q1050,55 1200,25" 
               fill="none" 
               stroke="#374151" 
               strokeWidth="2"
@@ -380,8 +380,8 @@ export default function AlunoHome() {
               const t = i / 39;
               const x = t * 1200;
               const segmentT = (t * 4) % 1;
-              // Y do cabo (mesma fórmula do path)
-              const cableY = 10 + Math.sin(segmentT * Math.PI) * 50;
+              // Y do cabo (mesma fórmula do path - ajustado para coincidir)
+              const cableY = 25 + Math.sin(segmentT * Math.PI) * 30;
               const colors = ['#ef4444', '#facc15', '#22c55e', '#3b82f6'];
               const filters = ['glow-red', 'glow-yellow', 'glow-green', 'glow-blue'];
               const color = colors[i % 4];
