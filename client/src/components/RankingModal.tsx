@@ -186,7 +186,7 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl w-[95vw] sm:w-auto max-h-[90vh] flex flex-col overflow-hidden">
+      <DialogContent className="max-w-4xl w-[95vw] sm:w-[90vw] md:w-auto max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-2xl">
