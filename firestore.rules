@@ -247,6 +247,18 @@ service cloud.firestore {
         allow read: if hasRole('mentor') && 
                        get(/databases/$(database)/documents/alunos/$(alunoId)).data.mentorId == request.auth.uid;
       }
+      
+      // ============================================
+      // CRONOGRAMA DINÂMICO (subcoleção)
+      // ============================================
+      match /cronograma/{cronogramaId} {
+        // Aluno pode gerenciar seu próprio cronograma dinâmico
+        allow read, create, update, delete: if hasRole('aluno') && isOwner(alunoId);
+        
+        // Mentor pode visualizar cronograma dos seus alunos
+        allow read: if hasRole('mentor') && 
+                       get(/databases/$(database)/documents/alunos/$(alunoId)).data.mentorId == request.auth.uid;
+      }
     }
     
     // ============================================

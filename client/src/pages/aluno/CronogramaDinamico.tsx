@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { BookOpen, Calendar as CalendarIcon, Settings, CheckCircle, Clock, ChevronDown, ChevronRight, ChevronLeft, BarChart2, AlertCircle, RefreshCw, Save, Layers, LayoutGrid, List as ListIcon, CheckSquare, Square, Edit3, Repeat, X, Map, RotateCcw, FileText, Zap, CheckCircle2, AlertTriangle, Eye, CheckCheck, PenTool, CalendarOff } from 'lucide-react';
+import { BookOpen, Calendar as CalendarIcon, Settings, CheckCircle, Clock, ChevronDown, ChevronRight, ChevronLeft, BarChart2, AlertCircle, RefreshCw, Save, Layers, LayoutGrid, List as ListIcon, CheckSquare, Square, Edit3, Repeat, X, Map, RotateCcw, FileText, Zap, CheckCircle2, AlertTriangle, Eye, CheckCheck, PenTool, CalendarOff, Loader2 } from 'lucide-react';
+import { db, auth } from "@/lib/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { toast } from "sonner";
 
 // --- DADOS DO CRONOGRAMA EXTENSIVO (COMPLETO) ---
 const extensiveTopicsSource = [
@@ -2093,7 +2096,9 @@ const CalendarView = ({ schedule, onToggleCheck, checkedItems }: { schedule: any
                         {dayData ? (
                             dayData.tasks.map((task: any, idx: number) => {
                                 const style = getSubjectStyle(task.subject);
-                                const taskId = `${dayDate.toISOString()}-${idx}`;
+                                // IMPORTANTE: Usar dayData.date (a mesma referência do schedule) para gerar o taskId
+                                // Isso garante consistência com as outras visualizações (lista e mensal)
+                                const taskId = `${dayData.date.toISOString()}-${idx}`;
                                 const isChecked = checkedItems.has(taskId);
                                 return (
                                     <div key={idx} onClick={() => onToggleCheck(taskId, task.originalIndex)} className={`p-2 rounded-lg border-l-4 shadow-sm cursor-pointer transition-all ${style.bg} ${style.border} ${isChecked ? 'opacity-50 grayscale' : 'hover:shadow-md'}`}>
@@ -2176,21 +2181,28 @@ const ScheduleView = ({
     schedule, 
     onReconfigure, 
     onRecalculate, 
+    onSave,
+    isSaving,
     userEndDate, 
     allTopicsFit,
     remainingTopicsCount,
-    remainingTopicsList
+    remainingTopicsList,
+    checkedItems,
+    onToggleCheck
 }: { 
     schedule: any[], 
     onReconfigure: () => void, 
     onRecalculate: (checked: Set<string>) => void, 
+    onSave: () => void,
+    isSaving: boolean,
     userEndDate: string | null, 
     allTopicsFit: boolean,
     remainingTopicsCount: number,
-    remainingTopicsList: Topic[]
+    remainingTopicsList: Topic[],
+    checkedItems: Set<string>,
+    onToggleCheck: (taskId: string) => void
 }) => {
     const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
-    const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
     const [showMissingModal, setShowMissingModal] = useState(false);
 
     // Formatando a data final real do cronograma
@@ -2199,16 +2211,12 @@ const ScheduleView = ({
         : 'N/A';
 
     const toggleCheck = (taskId: string) => {
-        const newSet = new Set(checkedItems);
-        if (newSet.has(taskId)) newSet.delete(taskId);
-        else newSet.add(taskId);
-        setCheckedItems(newSet);
+        onToggleCheck(taskId);
     };
 
     const handleRecalculate = () => {
         if(window.confirm("Isso irá remover os itens concluídos e reorganizar os atrasados a partir de hoje. Continuar?")) {
             onRecalculate(checkedItems);
-            setCheckedItems(new Set()); 
         }
     };
     
@@ -2323,7 +2331,14 @@ const ScheduleView = ({
                     </div>
                     <div className="flex gap-2">
                         <button onClick={onReconfigure} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors">Reconfigurar</button>
-                        <button onClick={() => window.print()} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"><Save className="w-4 h-4" /> <span className="hidden sm:inline">Salvar</span></button>
+                        <button 
+                            onClick={onSave} 
+                            disabled={isSaving}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            <span className="hidden sm:inline">{isSaving ? 'Salvando...' : 'Salvar'}</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2715,6 +2730,163 @@ export default function CronogramaDinamico() {
   
   // Novo estado para o alerta de prazo e lista de faltantes
   const [scheduleStatus, setScheduleStatus] = useState<{ allTopicsFit: boolean; remainingTopicsCount: number; remainingTopicsList: Topic[] }>({ allTopicsFit: true, remainingTopicsCount: 0, remainingTopicsList: [] });
+  
+  // Estados para salvamento e progresso
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  const [hasSavedSchedule, setHasSavedSchedule] = useState(false);
+
+  // Função para obter o ID do aluno
+  const getAlunoId = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const alunoIdFromUrl = urlParams.get('alunoId');
+    if (alunoIdFromUrl) return alunoIdFromUrl;
+    return auth.currentUser?.uid || "";
+  };
+
+  // Carregar cronograma salvo ao montar o componente
+  useEffect(() => {
+    const loadSavedSchedule = async () => {
+      try {
+        const alunoId = getAlunoId();
+        if (!alunoId) {
+          setIsLoading(false);
+          return;
+        }
+
+        const scheduleRef = doc(db, "alunos", alunoId, "cronograma", "dinamico");
+        const scheduleDoc = await getDoc(scheduleRef);
+        
+        if (scheduleDoc.exists()) {
+          const data = scheduleDoc.data();
+          
+          // Restaurar o schedule com as datas convertidas
+          const restoredSchedule = data.schedule.map((day: any) => ({
+            ...day,
+            date: new Date(day.date)
+          }));
+          
+          // Restaurar checkedItems
+          const restoredCheckedItems = new Set<string>(data.checkedItems || []);
+          
+          // Restaurar completedTopics
+          const restoredCompletedTopics = new Set<number>(data.completedTopics || []);
+          
+          // Restaurar topicPrefs
+          const restoredTopicPrefs = data.topicPrefs || {};
+          
+          setState(prev => ({
+            ...prev,
+            schedule: restoredSchedule,
+            topicPrefs: restoredTopicPrefs,
+            completedTopics: restoredCompletedTopics,
+            scheduleType: data.scheduleType || 'extensivo',
+            endDate: data.endDate || null,
+            weeklyHours: data.weeklyHours || prev.weeklyHours,
+            simulations: data.simulations || prev.simulations,
+            revision: data.revision || prev.revision,
+            writing: data.writing || prev.writing,
+            correctionComplete: data.correctionComplete || prev.correctionComplete,
+            correctionFragmented: data.correctionFragmented || prev.correctionFragmented,
+            gapsComplete: data.gapsComplete || prev.gapsComplete,
+            gapsFragmented: data.gapsFragmented || prev.gapsFragmented,
+            freeDays: data.freeDays || [],
+            step: 4 // Ir direto para a visualização do cronograma
+          }));
+          
+          setCheckedItems(restoredCheckedItems);
+          setScheduleStatus({
+            allTopicsFit: data.allTopicsFit ?? true,
+            remainingTopicsCount: data.remainingTopicsCount ?? 0,
+            remainingTopicsList: data.remainingTopicsList ?? []
+          });
+          setHasSavedSchedule(true);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar cronograma salvo:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Aguardar autenticação antes de carregar
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        loadSavedSchedule();
+      } else {
+        setIsLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Função para salvar o cronograma no Firebase
+  const handleSaveSchedule = async () => {
+    try {
+      setIsSaving(true);
+      const alunoId = getAlunoId();
+      
+      if (!alunoId) {
+        toast.error("Usuário não identificado");
+        return;
+      }
+
+      // Converter schedule para formato salvável (datas como strings ISO)
+      const scheduleToSave = state.schedule.map(day => ({
+        ...day,
+        date: day.date.toISOString()
+      }));
+
+      // Converter Sets para arrays para salvar no Firestore
+      const dataToSave = {
+        schedule: scheduleToSave,
+        checkedItems: Array.from(checkedItems),
+        completedTopics: Array.from(state.completedTopics),
+        topicPrefs: state.topicPrefs,
+        scheduleType: state.scheduleType,
+        endDate: state.endDate,
+        weeklyHours: state.weeklyHours,
+        simulations: state.simulations,
+        revision: state.revision,
+        writing: state.writing,
+        correctionComplete: state.correctionComplete,
+        correctionFragmented: state.correctionFragmented,
+        gapsComplete: state.gapsComplete,
+        gapsFragmented: state.gapsFragmented,
+        freeDays: state.freeDays,
+        allTopicsFit: scheduleStatus.allTopicsFit,
+        remainingTopicsCount: scheduleStatus.remainingTopicsCount,
+        remainingTopicsList: scheduleStatus.remainingTopicsList,
+        updatedAt: new Date().toISOString()
+      };
+
+      const scheduleRef = doc(db, "alunos", alunoId, "cronograma", "dinamico");
+      await setDoc(scheduleRef, dataToSave, { merge: true });
+      
+      setHasSavedSchedule(true);
+      toast.success("Cronograma salvo com sucesso!");
+    } catch (error) {
+      console.error('Erro ao salvar cronograma:', error);
+      toast.error("Erro ao salvar cronograma");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Função para alternar check de uma tarefa
+  const handleToggleCheck = (taskId: string) => {
+    setCheckedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(taskId)) {
+        newSet.delete(taskId);
+      } else {
+        newSet.add(taskId);
+      }
+      return newSet;
+    });
+  };
 
   useEffect(() => {
     const initialPrefs: TopicPreferences = {};
@@ -2817,6 +2989,18 @@ export default function CronogramaDinamico() {
       });
   };
 
+  // Mostrar loading enquanto carrega o cronograma salvo
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Carregando cronograma...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="text-gray-800 font-sans pb-12 print:bg-white">
       <div className="py-4">
@@ -2863,6 +3047,10 @@ export default function CronogramaDinamico() {
                 remainingTopicsList={scheduleStatus.remainingTopicsList}
                 onReconfigure={() => setState(s => ({...s, step: 2}))}
                 onRecalculate={handleRecalculate}
+                onSave={handleSaveSchedule}
+                isSaving={isSaving}
+                checkedItems={checkedItems}
+                onToggleCheck={handleToggleCheck}
             />
         )}
       </div>
