@@ -887,13 +887,35 @@ type WeeklyHours = {
   [key: number]: number;
 };
 
+// Configuração de intensificação de frequência
+type IntensificationPeriod = {
+  startDate: string; // Data de início da intensificação
+  days: number[]; // Dias da semana (0-6)
+  durations?: { [key: number]: number }; // Para atividades com duração (correção, lacunas)
+};
+
 type SimulationConfig = {
   enabled: boolean;
-  complete: { count: number; days: number[] };
-  fragmented: { count: number; days: number[] };
+  complete: { 
+    startDate: string | null; // Data de início dos simulados completos
+    intensifications: IntensificationPeriod[]; // Períodos de intensificação
+  };
+  fragmented: { 
+    startDate: string | null; // Data de início dos simulados fragmentados
+    endDate: string | null; // Data de término dos simulados fragmentados
+    intensifications: IntensificationPeriod[]; // Períodos de intensificação
+  };
 };
 
 type FixedActivityConfig = {
+    enabled: boolean;
+    startDate: string | null; // Data de início
+    endDate: string | null; // Data de término
+    intensifications: IntensificationPeriod[]; // Períodos de intensificação
+};
+
+// Configuração legada para revisão e redação (mantém compatibilidade)
+type SimpleActivityConfig = {
     enabled: boolean;
     durations: { [key: number]: number }; // day index -> minutes
 };
@@ -908,10 +930,12 @@ type AppState = {
   endDate: string | null;
   weeklyHours: WeeklyHours;
   simulations: SimulationConfig;
-  revision: FixedActivityConfig;
-  writing: FixedActivityConfig;
-  correction: FixedActivityConfig;
-  gaps: FixedActivityConfig;
+  revision: SimpleActivityConfig;
+  writing: SimpleActivityConfig;
+  correctionComplete: FixedActivityConfig; // Correção de simulado completo
+  correctionFragmented: FixedActivityConfig; // Correção de simulado fragmentado
+  gapsComplete: FixedActivityConfig; // Preenchimento de lacunas - Completo
+  gapsFragmented: FixedActivityConfig; // Preenchimento de lacunas - Fragmentado
   freeDays: string[];
   schedule: any[];
   completedTopics: Set<number>;
@@ -1271,6 +1295,295 @@ const TopicsStep = ({
     );
 };
 
+// Componente de Configuração de Simulados com datas e intensificação
+const SimulationConfigSection = ({ 
+    state, 
+    onUpdateSimulations, 
+    dayNames, 
+    shortDays 
+}: { 
+    state: AppState, 
+    onUpdateSimulations: (config: SimulationConfig) => void,
+    dayNames: string[],
+    shortDays: string[]
+}) => {
+    // Funções auxiliares para Simulados Completos
+    const addCompleteIntensification = () => {
+        const newIntensifications = [...state.simulations.complete.intensifications, { startDate: '', days: [] }];
+        onUpdateSimulations({
+            ...state.simulations, 
+            complete: { ...state.simulations.complete, intensifications: newIntensifications }
+        });
+    };
+
+    const removeCompleteIntensification = (index: number) => {
+        if (state.simulations.complete.intensifications.length > 1) {
+            const newIntensifications = state.simulations.complete.intensifications.filter((_, i) => i !== index);
+            onUpdateSimulations({
+                ...state.simulations, 
+                complete: { ...state.simulations.complete, intensifications: newIntensifications }
+            });
+        }
+    };
+
+    const updateCompleteIntensification = (index: number, field: string, value: any) => {
+        const newIntensifications = [...state.simulations.complete.intensifications];
+        newIntensifications[index] = { ...newIntensifications[index], [field]: value };
+        onUpdateSimulations({
+            ...state.simulations, 
+            complete: { ...state.simulations.complete, intensifications: newIntensifications }
+        });
+    };
+
+    const toggleCompleteDay = (intensIdx: number, dayIdx: number) => {
+        const intens = state.simulations.complete.intensifications[intensIdx];
+        const days = intens.days.includes(dayIdx)
+            ? intens.days.filter(x => x !== dayIdx)
+            : [...intens.days, dayIdx];
+        updateCompleteIntensification(intensIdx, 'days', days);
+    };
+
+    // Funções auxiliares para Simulados Fragmentados
+    const addFragmentedIntensification = () => {
+        const newIntensifications = [...state.simulations.fragmented.intensifications, { startDate: '', days: [] }];
+        onUpdateSimulations({
+            ...state.simulations, 
+            fragmented: { ...state.simulations.fragmented, intensifications: newIntensifications }
+        });
+    };
+
+    const removeFragmentedIntensification = (index: number) => {
+        if (state.simulations.fragmented.intensifications.length > 1) {
+            const newIntensifications = state.simulations.fragmented.intensifications.filter((_, i) => i !== index);
+            onUpdateSimulations({
+                ...state.simulations, 
+                fragmented: { ...state.simulations.fragmented, intensifications: newIntensifications }
+            });
+        }
+    };
+
+    const updateFragmentedIntensification = (index: number, field: string, value: any) => {
+        const newIntensifications = [...state.simulations.fragmented.intensifications];
+        newIntensifications[index] = { ...newIntensifications[index], [field]: value };
+        onUpdateSimulations({
+            ...state.simulations, 
+            fragmented: { ...state.simulations.fragmented, intensifications: newIntensifications }
+        });
+    };
+
+    const toggleFragmentedDay = (intensIdx: number, dayIdx: number) => {
+        const intens = state.simulations.fragmented.intensifications[intensIdx];
+        const days = intens.days.includes(dayIdx)
+            ? intens.days.filter(x => x !== dayIdx)
+            : [...intens.days, dayIdx];
+        updateFragmentedIntensification(intensIdx, 'days', days);
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                    <Settings className="text-gray-700" />
+                    Configuração de Simulados
+                </h2>
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                        type="checkbox" 
+                        checked={state.simulations.enabled}
+                        onChange={(e) => onUpdateSimulations({...state.simulations, enabled: e.target.checked})}
+                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                    />
+                    <span className="font-medium text-gray-700">Ativar Simulados</span>
+                </label>
+            </div>
+
+            {state.simulations.enabled && (
+                <div className="space-y-8 pt-4 border-t border-gray-100">
+                    {/* Simulados Completos */}
+                    <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                        <h3 className="font-semibold text-purple-800 mb-4 flex items-center gap-2">
+                            <FileText className="w-5 h-5" />
+                            Simulados Completos (5h30)
+                        </h3>
+                        
+                        <div className="mb-4">
+                            <label className="block text-sm text-gray-600 mb-1">Data de Início:</label>
+                            <input 
+                                type="date"
+                                value={state.simulations.complete.startDate || ''}
+                                onChange={(e) => onUpdateSimulations({
+                                    ...state.simulations, 
+                                    complete: { ...state.simulations.complete, startDate: e.target.value || null }
+                                })}
+                                className="border border-gray-300 rounded px-3 py-2 w-full sm:w-auto text-sm"
+                            />
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <label className="block text-sm font-medium text-gray-700">Períodos de Frequência:</label>
+                                <button
+                                    onClick={addCompleteIntensification}
+                                    className="text-xs bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-full font-medium"
+                                >
+                                    + Adicionar Intensificação
+                                </button>
+                            </div>
+
+                            {state.simulations.complete.intensifications.map((intens, intensIdx) => (
+                                <div key={intensIdx} className="border border-purple-200 rounded-lg p-3 bg-white">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-semibold text-purple-700">
+                                            {intensIdx === 0 ? 'Frequência Inicial' : `Intensificação ${intensIdx}`}
+                                        </span>
+                                        {intensIdx > 0 && (
+                                            <button
+                                                onClick={() => removeCompleteIntensification(intensIdx)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {intensIdx > 0 && (
+                                        <div className="mb-3">
+                                            <label className="block text-xs text-gray-600 mb-1">A partir de:</label>
+                                            <input 
+                                                type="date"
+                                                value={intens.startDate || ''}
+                                                onChange={(e) => updateCompleteIntensification(intensIdx, 'startDate', e.target.value)}
+                                                className="border border-gray-300 rounded px-3 py-1.5 w-full text-sm"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Dias da semana:</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {shortDays.map((d, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => toggleCompleteDay(intensIdx, i)}
+                                                    className={`w-7 h-7 rounded-full text-xs font-bold transition-colors ${intens.days.includes(i) ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-400 hover:bg-gray-300'}`}
+                                                >
+                                                    {d}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {intens.days.length > 0 && (
+                                            <p className="text-xs text-gray-500 mt-2">
+                                                {intens.days.length} dia(s) selecionado(s): {intens.days.sort((a,b) => a-b).map(d => dayNames[d]).join(', ')}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Simulados Fragmentados */}
+                    <div className="border border-purple-200 rounded-lg p-4 bg-purple-50/50">
+                        <h3 className="font-semibold text-purple-600 mb-4 flex items-center gap-2">
+                            <Layers className="w-5 h-5" />
+                            Simulados Fragmentados (2h30)
+                        </h3>
+                        
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Data de Início:</label>
+                                <input 
+                                    type="date"
+                                    value={state.simulations.fragmented.startDate || ''}
+                                    onChange={(e) => onUpdateSimulations({
+                                        ...state.simulations, 
+                                        fragmented: { ...state.simulations.fragmented, startDate: e.target.value || null }
+                                    })}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Data de Término:</label>
+                                <input 
+                                    type="date"
+                                    value={state.simulations.fragmented.endDate || ''}
+                                    onChange={(e) => onUpdateSimulations({
+                                        ...state.simulations, 
+                                        fragmented: { ...state.simulations.fragmented, endDate: e.target.value || null }
+                                    })}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <label className="block text-sm font-medium text-gray-700">Períodos de Frequência:</label>
+                                <button
+                                    onClick={addFragmentedIntensification}
+                                    className="text-xs bg-purple-100 hover:bg-purple-200 text-purple-600 px-3 py-1 rounded-full font-medium"
+                                >
+                                    + Adicionar Intensificação
+                                </button>
+                            </div>
+
+                            {state.simulations.fragmented.intensifications.map((intens, intensIdx) => (
+                                <div key={intensIdx} className="border border-purple-200 rounded-lg p-3 bg-white">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-semibold text-purple-600">
+                                            {intensIdx === 0 ? 'Frequência Inicial' : `Intensificação ${intensIdx}`}
+                                        </span>
+                                        {intensIdx > 0 && (
+                                            <button
+                                                onClick={() => removeFragmentedIntensification(intensIdx)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {intensIdx > 0 && (
+                                        <div className="mb-3">
+                                            <label className="block text-xs text-gray-600 mb-1">A partir de:</label>
+                                            <input 
+                                                type="date"
+                                                value={intens.startDate || ''}
+                                                onChange={(e) => updateFragmentedIntensification(intensIdx, 'startDate', e.target.value)}
+                                                className="border border-gray-300 rounded px-3 py-1.5 w-full text-sm"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Dias da semana:</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {shortDays.map((d, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => toggleFragmentedDay(intensIdx, i)}
+                                                    className={`w-7 h-7 rounded-full text-xs font-bold transition-colors ${intens.days.includes(i) ? 'bg-purple-400 text-white' : 'bg-gray-200 text-gray-400 hover:bg-gray-300'}`}
+                                                >
+                                                    {d}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {intens.days.length > 0 && (
+                                            <p className="text-xs text-gray-500 mt-2">
+                                                {intens.days.length} dia(s) selecionado(s): {intens.days.sort((a,b) => a-b).map(d => dayNames[d]).join(', ')}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 // Componente para Etapa 2: Configurações
 const SettingsStep = ({ 
     state, 
@@ -1279,8 +1592,10 @@ const SettingsStep = ({
     onUpdateEndDate, 
     onUpdateRevision,
     onUpdateWriting,
-    onUpdateCorrection,
-    onUpdateGaps,
+    onUpdateCorrectionComplete,
+    onUpdateCorrectionFragmented,
+    onUpdateGapsComplete,
+    onUpdateGapsFragmented,
     onUpdateFreeDays,
     onBack, 
     onGenerate 
@@ -1289,10 +1604,12 @@ const SettingsStep = ({
     onUpdateHours: (idx: number, val: number) => void,
     onUpdateSimulations: (config: SimulationConfig) => void,
     onUpdateEndDate: (val: string) => void,
-    onUpdateRevision: (config: FixedActivityConfig) => void,
-    onUpdateWriting: (config: FixedActivityConfig) => void,
-    onUpdateCorrection: (config: FixedActivityConfig) => void,
-    onUpdateGaps: (config: FixedActivityConfig) => void,
+    onUpdateRevision: (config: SimpleActivityConfig) => void,
+    onUpdateWriting: (config: SimpleActivityConfig) => void,
+    onUpdateCorrectionComplete: (config: FixedActivityConfig) => void,
+    onUpdateCorrectionFragmented: (config: FixedActivityConfig) => void,
+    onUpdateGapsComplete: (config: FixedActivityConfig) => void,
+    onUpdateGapsFragmented: (config: FixedActivityConfig) => void,
     onUpdateFreeDays: (days: string[]) => void,
     onBack: () => void,
     onGenerate: () => void
@@ -1301,7 +1618,8 @@ const SettingsStep = ({
     const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     const shortDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
-    const renderActivityConfig = (title: string, icon: any, colorClass: string, config: FixedActivityConfig, updateFn: (c: FixedActivityConfig) => void) => (
+    // Componente simples para Revisão e Redação (sem datas e intensificação)
+    const renderSimpleActivityConfig = (title: string, icon: any, colorClass: string, config: SimpleActivityConfig, updateFn: (c: SimpleActivityConfig) => void) => (
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800">
@@ -1368,6 +1686,171 @@ const SettingsStep = ({
             )}
         </div>
     );
+
+    // Componente avançado para Correção e Lacunas (com datas e intensificação)
+    const renderAdvancedActivityConfig = (title: string, icon: any, colorClass: string, config: FixedActivityConfig, updateFn: (c: FixedActivityConfig) => void) => {
+        const addIntensification = () => {
+            const newIntensifications = [...config.intensifications, { startDate: '', days: [], durations: {} }];
+            updateFn({...config, intensifications: newIntensifications});
+        };
+
+        const removeIntensification = (index: number) => {
+            if (config.intensifications.length > 1) {
+                const newIntensifications = config.intensifications.filter((_, i) => i !== index);
+                updateFn({...config, intensifications: newIntensifications});
+            }
+        };
+
+        const updateIntensification = (index: number, field: string, value: any) => {
+            const newIntensifications = [...config.intensifications];
+            newIntensifications[index] = { ...newIntensifications[index], [field]: value };
+            updateFn({...config, intensifications: newIntensifications});
+        };
+
+        const toggleDay = (intensIdx: number, dayIdx: number) => {
+            const intens = config.intensifications[intensIdx];
+            const days = intens.days.includes(dayIdx)
+                ? intens.days.filter(x => x !== dayIdx)
+                : [...intens.days, dayIdx];
+            updateIntensification(intensIdx, 'days', days);
+            
+            // Atualizar durações
+            const newDurations = { ...(intens.durations || {}) };
+            if (days.includes(dayIdx) && !newDurations[dayIdx]) {
+                newDurations[dayIdx] = 60;
+            } else if (!days.includes(dayIdx)) {
+                delete newDurations[dayIdx];
+            }
+            updateIntensification(intensIdx, 'durations', newDurations);
+        };
+
+        const updateDuration = (intensIdx: number, dayIdx: number, duration: number) => {
+            const intens = config.intensifications[intensIdx];
+            const newDurations = { ...(intens.durations || {}), [dayIdx]: duration };
+            updateIntensification(intensIdx, 'durations', newDurations);
+        };
+
+        return (
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800">
+                        {icon}
+                        {title}
+                    </h2>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input 
+                            type="checkbox" 
+                            checked={config.enabled}
+                            onChange={(e) => updateFn({...config, enabled: e.target.checked})}
+                            className="w-4 h-4 rounded focus:ring-2"
+                        />
+                        <span className="text-sm font-medium text-gray-600">Ativar</span>
+                    </label>
+                </div>
+                {config.enabled && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                        {/* Datas de início e término */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Data de Início:</label>
+                                <input 
+                                    type="date"
+                                    value={config.startDate || ''}
+                                    onChange={(e) => updateFn({...config, startDate: e.target.value || null})}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Data de Término:</label>
+                                <input 
+                                    type="date"
+                                    value={config.endDate || ''}
+                                    onChange={(e) => updateFn({...config, endDate: e.target.value || null})}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Períodos de intensificação */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <label className="block text-sm font-medium text-gray-700">Períodos de Frequência:</label>
+                                <button
+                                    onClick={addIntensification}
+                                    className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-medium flex items-center gap-1"
+                                >
+                                    + Adicionar Período
+                                </button>
+                            </div>
+
+                            {config.intensifications.map((intens, intensIdx) => (
+                                <div key={intensIdx} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-semibold text-gray-700">
+                                            {intensIdx === 0 ? 'Frequência Inicial' : `Intensificação ${intensIdx}`}
+                                        </span>
+                                        {intensIdx > 0 && (
+                                            <button
+                                                onClick={() => removeIntensification(intensIdx)}
+                                                className="text-red-500 hover:text-red-700 text-xs"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {intensIdx > 0 && (
+                                        <div className="mb-3">
+                                            <label className="block text-xs text-gray-600 mb-1">A partir de:</label>
+                                            <input 
+                                                type="date"
+                                                value={intens.startDate || ''}
+                                                onChange={(e) => updateIntensification(intensIdx, 'startDate', e.target.value)}
+                                                className="border border-gray-300 rounded px-3 py-1.5 w-full text-sm"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="mb-3">
+                                        <label className="block text-xs text-gray-600 mb-1">Dias da semana:</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {shortDays.map((d, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => toggleDay(intensIdx, i)}
+                                                    className={`w-7 h-7 rounded-full text-xs font-bold transition-colors ${intens.days.includes(i) ? `bg-${colorClass.split('-')[1]}-500 text-white` : 'bg-gray-200 text-gray-400 hover:bg-gray-300'}`}
+                                                >
+                                                    {d}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Durações por dia */}
+                                    {intens.days.length > 0 && (
+                                        <div className="space-y-2">
+                                            {intens.days.sort((a, b) => a - b).map(dayIdx => (
+                                                <div key={dayIdx} className="flex items-center gap-2 bg-white p-2 rounded border border-gray-200">
+                                                    <span className="text-xs font-medium text-gray-600 w-16">{dayNames[dayIdx]}</span>
+                                                    <input 
+                                                        type="range" min="15" max="240" step="15"
+                                                        value={intens.durations?.[dayIdx] || 60}
+                                                        onChange={(e) => updateDuration(intensIdx, dayIdx, parseInt(e.target.value))}
+                                                        className="flex-1 h-1.5"
+                                                    />
+                                                    <span className="text-xs font-bold text-gray-700 w-12 text-right">{intens.durations?.[dayIdx] || 60} min</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     // Componente de seleção de datas livres
     const FreeDaysSelector = () => {
@@ -1449,79 +1932,30 @@ const SettingsStep = ({
 
             <FreeDaysSelector />
 
+            {/* Revisão e Redação - configuração simples */}
             <div className="grid md:grid-cols-2 gap-6">
-                {renderActivityConfig("Revisão", <Repeat className="text-pink-500 w-5 h-5" />, "text-pink-500", state.revision, onUpdateRevision)}
-                {renderActivityConfig("Redação", <Edit3 className="text-blue-500 w-5 h-5" />, "text-blue-500", state.writing, onUpdateWriting)}
-                {renderActivityConfig("Correção de Simulado", <CheckCheck className="text-purple-600 w-5 h-5" />, "text-purple-600", state.correction, onUpdateCorrection)}
-                {renderActivityConfig("Preenchimento de Lacunas", <PenTool className="text-yellow-600 w-5 h-5" />, "text-yellow-600", state.gaps, onUpdateGaps)}
+                {renderSimpleActivityConfig("Revisão", <Repeat className="text-pink-500 w-5 h-5" />, "text-pink-500", state.revision, onUpdateRevision)}
+                {renderSimpleActivityConfig("Redação", <Edit3 className="text-blue-500 w-5 h-5" />, "text-blue-500", state.writing, onUpdateWriting)}
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold flex items-center gap-2">
-                        <Settings className="text-gray-700" />
-                        Configuração de Simulados
-                    </h2>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input 
-                            type="checkbox" 
-                            checked={state.simulations.enabled}
-                            onChange={(e) => onUpdateSimulations({...state.simulations, enabled: e.target.checked})}
-                            className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
-                        />
-                        <span className="font-medium text-gray-700">Ativar Simulados</span>
-                    </label>
-                </div>
-
-                {state.simulations.enabled && (
-                    <div className="grid md:grid-cols-2 gap-8 pt-4 border-t border-gray-100">
-                        <div>
-                            <h3 className="font-semibold text-gray-800 mb-3">Simulados Completos (5h30)</h3>
-                            <div className="space-y-3">
-                                <label className="block text-sm text-gray-600">Dias da semana:</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {shortDays.map((d, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => {
-                                                const days = state.simulations.complete.days.includes(i)
-                                                    ? state.simulations.complete.days.filter(x => x !== i)
-                                                    : [...state.simulations.complete.days, i];
-                                                onUpdateSimulations({...state.simulations, complete: {...state.simulations.complete, days}});
-                                            }}
-                                            className={`w-8 h-8 rounded-full text-sm font-bold transition-colors ${state.simulations.complete.days.includes(i) ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
-                                        >
-                                            {d}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-800 mb-3">Simulados Fragmentados (2h30)</h3>
-                            <div className="space-y-3">
-                                <label className="block text-sm text-gray-600">Dias da semana:</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {shortDays.map((d, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => {
-                                                const days = state.simulations.fragmented.days.includes(i)
-                                                    ? state.simulations.fragmented.days.filter(x => x !== i)
-                                                    : [...state.simulations.fragmented.days, i];
-                                                onUpdateSimulations({...state.simulations, fragmented: {...state.simulations.fragmented, days}});
-                                            }}
-                                            className={`w-8 h-8 rounded-full text-sm font-bold transition-colors ${state.simulations.fragmented.days.includes(i) ? 'bg-purple-400 text-white' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
-                                        >
-                                            {d}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+            {/* Correção de Simulados - configuração avançada */}
+            <div className="grid md:grid-cols-2 gap-6">
+                {renderAdvancedActivityConfig("Correção de Simulado Completo", <CheckCheck className="text-purple-600 w-5 h-5" />, "text-purple-600", state.correctionComplete, onUpdateCorrectionComplete)}
+                {renderAdvancedActivityConfig("Correção de Simulado Fragmentado", <CheckCheck className="text-purple-400 w-5 h-5" />, "text-purple-400", state.correctionFragmented, onUpdateCorrectionFragmented)}
             </div>
+
+            {/* Preenchimento de Lacunas - configuração avançada */}
+            <div className="grid md:grid-cols-2 gap-6">
+                {renderAdvancedActivityConfig("Preenchimento de Lacunas - Completo", <PenTool className="text-yellow-600 w-5 h-5" />, "text-yellow-600", state.gapsComplete, onUpdateGapsComplete)}
+                {renderAdvancedActivityConfig("Preenchimento de Lacunas - Fragmentado", <PenTool className="text-yellow-400 w-5 h-5" />, "text-yellow-400", state.gapsFragmented, onUpdateGapsFragmented)}
+            </div>
+
+            <SimulationConfigSection 
+                state={state} 
+                onUpdateSimulations={onUpdateSimulations} 
+                dayNames={dayNames}
+                shortDays={shortDays}
+            />
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -2030,31 +2464,85 @@ const generateSchedule = (state: AppState): ScheduleResult => {
         const dayTasks = [];
         const dayOfWeek = studyDate.getDay();
 
-        // 1. Prioridade: Simulados
+        // 1. Prioridade: Simulados (com datas e intensificação)
         let isSimuladoCompleto = false;
         if (state.simulations.enabled) {
-            if (state.simulations.complete.days.includes(dayOfWeek)) {
-                 const duration = 330; 
-                 if (dailyMinutes >= duration) {
-                     dailyMinutes -= duration;
-                     dayTasks.push({ name: "Simulado Completo ENEM", duration, subject: "Simulado", type: "simulado_completo" });
-                     isSimuladoCompleto = true;
-                 }
-            } else if (state.simulations.fragmented.days.includes(dayOfWeek)) {
-                 const duration = 150; 
-                 if (dailyMinutes >= duration) {
-                     dailyMinutes -= duration;
-                     dayTasks.push({ name: "Simulado Fragmentado", duration, subject: "Simulado", type: "simulado_fragmentado" });
-                 }
+            // Função auxiliar para verificar se um dia está ativo considerando intensificações
+            const getActiveSimDays = (config: { startDate: string | null, endDate?: string | null, intensifications: Array<{ startDate: string, days: number[] }> }) => {
+                // Verificar data de início geral
+                if (config.startDate && studyDate < new Date(config.startDate + 'T00:00:00')) return [];
+                // Verificar data de término (se existir)
+                if (config.endDate && studyDate > new Date(config.endDate + 'T23:59:59')) return [];
+                
+                // Encontrar o período de intensificação ativo
+                let activeDays: number[] = [];
+                for (let i = config.intensifications.length - 1; i >= 0; i--) {
+                    const intens = config.intensifications[i];
+                    if (i === 0 || (intens.startDate && studyDate >= new Date(intens.startDate + 'T00:00:00'))) {
+                        activeDays = intens.days;
+                        break;
+                    }
+                }
+                return activeDays;
+            };
+
+            // Simulado Completo
+            const completeDays = getActiveSimDays(state.simulations.complete);
+            if (completeDays.includes(dayOfWeek)) {
+                const duration = 330; 
+                if (dailyMinutes >= duration) {
+                    dailyMinutes -= duration;
+                    dayTasks.push({ name: "Simulado Completo ENEM", duration, subject: "Simulado", type: "simulado_completo" });
+                    isSimuladoCompleto = true;
+                }
+            } 
+            // Simulado Fragmentado (apenas se não for dia de simulado completo)
+            if (!isSimuladoCompleto) {
+                const fragmentedDays = getActiveSimDays(state.simulations.fragmented);
+                if (fragmentedDays.includes(dayOfWeek)) {
+                    const duration = 150; 
+                    if (dailyMinutes >= duration) {
+                        dailyMinutes -= duration;
+                        dayTasks.push({ name: "Simulado Fragmentado", duration, subject: "Simulado", type: "simulado_fragmentado" });
+                    }
+                }
             }
         }
 
-        // 2. Correção de Simulado
-        if (state.correction.enabled) {
-            const correctionDuration = state.correction.durations[dayOfWeek] || 0;
+        // Função auxiliar para obter duração de atividades com intensificação
+        const getActivityDuration = (config: FixedActivityConfig, dayOfWeek: number): number => {
+            // Verificar data de início e término
+            if (config.startDate && studyDate < new Date(config.startDate + 'T00:00:00')) return 0;
+            if (config.endDate && studyDate > new Date(config.endDate + 'T23:59:59')) return 0;
+            
+            // Encontrar o período de intensificação ativo
+            for (let i = config.intensifications.length - 1; i >= 0; i--) {
+                const intens = config.intensifications[i];
+                if (i === 0 || (intens.startDate && studyDate >= new Date(intens.startDate + 'T00:00:00'))) {
+                    if (intens.days.includes(dayOfWeek)) {
+                        return intens.durations?.[dayOfWeek] || 60;
+                    }
+                    return 0;
+                }
+            }
+            return 0;
+        };
+
+        // 2. Correção de Simulado Completo
+        if (state.correctionComplete.enabled) {
+            const correctionDuration = getActivityDuration(state.correctionComplete, dayOfWeek);
             if (correctionDuration > 0 && dailyMinutes >= correctionDuration) {
                 dailyMinutes -= correctionDuration;
-                dayTasks.push({ name: "Correção de Simulado", duration: correctionDuration, subject: "Correção de Simulado", type: "correction" });
+                dayTasks.push({ name: "Correção de Simulado Completo", duration: correctionDuration, subject: "Correção de Simulado", type: "correction_complete" });
+            }
+        }
+
+        // 2b. Correção de Simulado Fragmentado
+        if (state.correctionFragmented.enabled) {
+            const correctionDuration = getActivityDuration(state.correctionFragmented, dayOfWeek);
+            if (correctionDuration > 0 && dailyMinutes >= correctionDuration) {
+                dailyMinutes -= correctionDuration;
+                dayTasks.push({ name: "Correção de Simulado Fragmentado", duration: correctionDuration, subject: "Correção de Simulado", type: "correction_fragmented" });
             }
         }
 
@@ -2076,12 +2564,21 @@ const generateSchedule = (state: AppState): ScheduleResult => {
             }
         }
 
-        // 5. Preenchimento de Lacunas
-        if (state.gaps.enabled) {
-            const gapsDuration = state.gaps.durations[dayOfWeek] || 0;
+        // 5. Preenchimento de Lacunas - Completo
+        if (state.gapsComplete.enabled) {
+            const gapsDuration = getActivityDuration(state.gapsComplete, dayOfWeek);
             if (gapsDuration > 0 && dailyMinutes >= gapsDuration) {
                 dailyMinutes -= gapsDuration;
-                dayTasks.push({ name: "Preenchimento de Lacunas", duration: gapsDuration, subject: "Preenchimento de Lacunas", type: "gaps" });
+                dayTasks.push({ name: "Preenchimento de Lacunas - Completo", duration: gapsDuration, subject: "Preenchimento de Lacunas", type: "gaps_complete" });
+            }
+        }
+
+        // 5b. Preenchimento de Lacunas - Fragmentado
+        if (state.gapsFragmented.enabled) {
+            const gapsDuration = getActivityDuration(state.gapsFragmented, dayOfWeek);
+            if (gapsDuration > 0 && dailyMinutes >= gapsDuration) {
+                dailyMinutes -= gapsDuration;
+                dayTasks.push({ name: "Preenchimento de Lacunas - Fragmentado", duration: gapsDuration, subject: "Preenchimento de Lacunas", type: "gaps_fragmented" });
             }
         }
 
@@ -2162,12 +2659,25 @@ export default function CronogramaDinamico() {
     topicPrefs: {},
     endDate: null,
     weeklyHours: { 0: 0, 1: 2, 2: 2, 3: 2, 4: 2, 5: 6, 6: 0 },
-    simulations: { enabled: false, complete: { count: 0, days: [] }, fragmented: { count: 0, days: [] } },
+    simulations: { 
+      enabled: false, 
+      complete: { 
+        startDate: null, 
+        intensifications: [{ startDate: '', days: [] }] 
+      }, 
+      fragmented: { 
+        startDate: null, 
+        endDate: null, 
+        intensifications: [{ startDate: '', days: [] }] 
+      } 
+    },
     revision: { enabled: false, durations: {} },
     writing: { enabled: false, durations: {} },
-    correction: { enabled: false, durations: {} },
-    gaps: { enabled: false, durations: {} },
-    freeDays: [], // NEW: Initialize freeDays
+    correctionComplete: { enabled: false, startDate: null, endDate: null, intensifications: [{ startDate: '', days: [], durations: {} }] },
+    correctionFragmented: { enabled: false, startDate: null, endDate: null, intensifications: [{ startDate: '', days: [], durations: {} }] },
+    gapsComplete: { enabled: false, startDate: null, endDate: null, intensifications: [{ startDate: '', days: [], durations: {} }] },
+    gapsFragmented: { enabled: false, startDate: null, endDate: null, intensifications: [{ startDate: '', days: [], durations: {} }] },
+    freeDays: [],
     schedule: [],
     completedTopics: new Set()
   });
@@ -2302,8 +2812,10 @@ export default function CronogramaDinamico() {
                 onUpdateSimulations={(config) => setState(s => ({...s, simulations: config}))}
                 onUpdateRevision={(config) => setState(s => ({...s, revision: config}))}
                 onUpdateWriting={(config) => setState(s => ({...s, writing: config}))}
-                onUpdateCorrection={(config) => setState(s => ({...s, correction: config}))}
-                onUpdateGaps={(config) => setState(s => ({...s, gaps: config}))}
+                onUpdateCorrectionComplete={(config) => setState(s => ({...s, correctionComplete: config}))}
+                onUpdateCorrectionFragmented={(config) => setState(s => ({...s, correctionFragmented: config}))}
+                onUpdateGapsComplete={(config) => setState(s => ({...s, gapsComplete: config}))}
+                onUpdateGapsFragmented={(config) => setState(s => ({...s, gapsFragmented: config}))}
                 onUpdateFreeDays={(days) => setState(s => ({...s, freeDays: days}))}
                 onUpdateEndDate={(val) => setState(s => ({...s, endDate: val}))}
                 onBack={() => setState(s => ({...s, step: 1}))}

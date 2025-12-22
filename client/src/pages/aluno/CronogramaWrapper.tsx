@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Calendar, Zap, BarChart2, CalendarDays } from "lucide-react";
+import { Calendar, Zap, BarChart2, CalendarDays, RefreshCw } from "lucide-react";
 import AlunoCronograma from "./AlunoCronograma";
 import CronogramaAnual from "./cronograma/CronogramaAnual";
 import CronogramaEstatisticas from "./cronograma/CronogramaEstatisticas";
 import CronogramaDinamico from "./CronogramaDinamico";
 
 export default function CronogramaWrapper() {
-  const [activeTab, setActiveTab] = useState<"semanal" | "anual" | "anual-dinamico" | "estatisticas">("semanal");
+  const [activeTab, setActiveTab] = useState<"semanal" | "anual-ciclos" | "anual-dinamico">("semanal");
+  const [anualSubTab, setAnualSubTab] = useState<"ciclos" | "estatisticas">("ciclos");
 
   return (
     <div className="space-y-6 pb-8 animate-fade-in">
@@ -36,7 +37,7 @@ export default function CronogramaWrapper() {
         </div>
       </div>
 
-      {/* Tabs de navegação */}
+      {/* Tabs de navegação principal */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-1.5">
         <nav className="flex flex-wrap gap-1" aria-label="Tabs">
           <button
@@ -54,18 +55,18 @@ export default function CronogramaWrapper() {
             Semanal
           </button>
           <button
-            onClick={() => setActiveTab("anual")}
+            onClick={() => setActiveTab("anual-ciclos")}
             className={`
               flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all
               ${
-                activeTab === "anual"
+                activeTab === "anual-ciclos"
                   ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-md"
                   : "text-gray-600 hover:bg-gray-100"
               }
             `}
           >
-            <CalendarDays className="w-4 h-4" />
-            Anual
+            <RefreshCw className="w-4 h-4" />
+            Anual - Ciclos
           </button>
           <button
             onClick={() => setActiveTab("anual-dinamico")}
@@ -81,29 +82,53 @@ export default function CronogramaWrapper() {
             <Zap className="w-4 h-4" />
             Anual - Dinâmico
           </button>
+        </nav>
+      </div>
+
+      {/* Sub-tabs para Anual - Ciclos */}
+      {activeTab === "anual-ciclos" && (
+        <div className="bg-gray-50 rounded-lg p-1 inline-flex gap-1">
           <button
-            onClick={() => setActiveTab("estatisticas")}
+            onClick={() => setAnualSubTab("ciclos")}
             className={`
-              flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all
+              flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-all
               ${
-                activeTab === "estatisticas"
-                  ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-md"
-                  : "text-gray-600 hover:bg-gray-100"
+                anualSubTab === "ciclos"
+                  ? "bg-white text-indigo-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }
+            `}
+          >
+            <CalendarDays className="w-4 h-4" />
+            Ciclos
+          </button>
+          <button
+            onClick={() => setAnualSubTab("estatisticas")}
+            className={`
+              flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-all
+              ${
+                anualSubTab === "estatisticas"
+                  ? "bg-white text-indigo-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
               }
             `}
           >
             <BarChart2 className="w-4 h-4" />
             Estatísticas
           </button>
-        </nav>
-      </div>
+        </div>
+      )}
 
       {/* Conteúdo das tabs */}
       <div>
         {activeTab === "semanal" && <AlunoCronograma />}
-        {activeTab === "anual" && <CronogramaAnual />}
+        {activeTab === "anual-ciclos" && (
+          <>
+            {anualSubTab === "ciclos" && <CronogramaAnual />}
+            {anualSubTab === "estatisticas" && <CronogramaEstatisticas />}
+          </>
+        )}
         {activeTab === "anual-dinamico" && <CronogramaDinamico />}
-        {activeTab === "estatisticas" && <CronogramaEstatisticas />}
       </div>
     </div>
   );
