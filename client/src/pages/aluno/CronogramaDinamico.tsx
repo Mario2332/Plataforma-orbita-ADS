@@ -1690,7 +1690,8 @@ const SettingsStep = ({
     );
 
     // Componente avançado para Correção e Lacunas (com datas e intensificação)
-    const renderAdvancedActivityConfig = (title: string, icon: any, colorClass: string, config: FixedActivityConfig, updateFn: (c: FixedActivityConfig) => void) => {
+    // showEndDate: true para versões Fragmentado (que têm data de término)
+    const renderAdvancedActivityConfig = (title: string, icon: any, colorClass: string, config: FixedActivityConfig, updateFn: (c: FixedActivityConfig) => void, showEndDate: boolean = false) => {
         const addIntensification = () => {
             const newIntensifications = [...config.intensifications, { startDate: '', days: [], durations: {} }];
             updateFn({...config, intensifications: newIntensifications});
@@ -1761,15 +1762,28 @@ const SettingsStep = ({
                 </div>
                 {config.enabled && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                        {/* Data de início (sem data de término - usa intensificações para mudar cenário) */}
-                        <div>
-                            <label className="block text-sm text-gray-600 mb-1">Data de Início:</label>
-                            <input 
-                                type="date"
-                                value={config.startDate || ''}
-                                onChange={(e) => updateFn({...config, startDate: e.target.value || null})}
-                                className="border border-gray-300 rounded px-3 py-2 w-full sm:w-auto text-sm"
-                            />
+                        {/* Datas de início e término (término apenas para versões Fragmentado) */}
+                        <div className={showEndDate ? "grid grid-cols-2 gap-4" : ""}>
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Data de Início:</label>
+                                <input 
+                                    type="date"
+                                    value={config.startDate || ''}
+                                    onChange={(e) => updateFn({...config, startDate: e.target.value || null})}
+                                    className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                                />
+                            </div>
+                            {showEndDate && (
+                                <div>
+                                    <label className="block text-sm text-gray-600 mb-1">Data de Término:</label>
+                                    <input 
+                                        type="date"
+                                        value={config.endDate || ''}
+                                        onChange={(e) => updateFn({...config, endDate: e.target.value || null})}
+                                        className="border border-gray-300 rounded px-3 py-2 w-full text-sm"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* Períodos de intensificação */}
@@ -1956,8 +1970,8 @@ const SettingsStep = ({
 
             {/* Correção de Simulado Fragmentado | Preenchimento de Lacunas - Fragmentado */}
             <div className="grid md:grid-cols-2 gap-6">
-                {renderAdvancedActivityConfig("Correção de Simulado Fragmentado", <CheckCheck className="text-purple-400 w-5 h-5" />, "text-purple-400", state.correctionFragmented, onUpdateCorrectionFragmented)}
-                {renderAdvancedActivityConfig("Preenchimento de Lacunas - Fragmentado", <PenTool className="text-yellow-400 w-5 h-5" />, "text-yellow-400", state.gapsFragmented, onUpdateGapsFragmented)}
+                {renderAdvancedActivityConfig("Correção de Simulado Fragmentado", <CheckCheck className="text-purple-400 w-5 h-5" />, "text-purple-400", state.correctionFragmented, onUpdateCorrectionFragmented, true)}
+                {renderAdvancedActivityConfig("Preenchimento de Lacunas - Fragmentado", <PenTool className="text-yellow-400 w-5 h-5" />, "text-yellow-400", state.gapsFragmented, onUpdateGapsFragmented, true)}
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -2514,10 +2528,13 @@ const generateSchedule = (state: AppState): ScheduleResult => {
 
         // Função auxiliar para obter duração de atividades com intensificação
         // A intensificação SUBSTITUI a frequência anterior (não adiciona)
-        // Não usa endDate - as intensificações controlam as mudanças de cenário
-        const getActivityDuration = (config: FixedActivityConfig, dayOfWeek: number): number => {
-            // Verificar apenas data de início (sem data de término)
+        // Para versões "Completo": não usa endDate - as intensificações controlam as mudanças de cenário
+        // Para versões "Fragmentado": usa endDate para definir quando a atividade termina
+        const getActivityDuration = (config: FixedActivityConfig, dayOfWeek: number, checkEndDate: boolean = false): number => {
+            // Verificar data de início
             if (config.startDate && studyDate < new Date(config.startDate + 'T00:00:00')) return 0;
+            // Verificar data de término (apenas para versões Fragmentado)
+            if (checkEndDate && config.endDate && studyDate > new Date(config.endDate + 'T23:59:59')) return 0;
             
             // Encontrar o período de intensificação mais recente que está ativo
             // A intensificação substitui completamente a frequência anterior
@@ -2551,17 +2568,17 @@ const generateSchedule = (state: AppState): ScheduleResult => {
             }
         }
 
-        // 2b. Correção de Simulado Fragmentado
+        // 2b. Correção de Simulado Fragmentado (usa endDate)
         if (state.correctionFragmented.enabled) {
-            const correctionDuration = getActivityDuration(state.correctionFragmented, dayOfWeek);
+            const correctionDuration = getActivityDuration(state.correctionFragmented, dayOfWeek, true);
             if (correctionDuration > 0) {
                 dayTasks.push({ name: "Correção de Simulado Fragmentado", duration: correctionDuration, subject: "Correção de Simulado", type: "correction_fragmented" });
                 dailyMinutes = Math.max(0, dailyMinutes - correctionDuration);
             }
         }
 
-        // 3. Redação
-        if (state.writing.enabled) {
+        // 3. Redação - NÃO adicionar em dias de Simulado Completo (ocupa quase todo o dia)
+        if (state.writing.enabled && !isSimuladoCompleto) {
             const writingDuration = state.writing.durations[dayOfWeek] || 0;
             if (writingDuration > 0) {
                 dayTasks.push({ name: "Prática de Redação", duration: writingDuration, subject: "Redação", type: "writing" });
@@ -2569,8 +2586,8 @@ const generateSchedule = (state: AppState): ScheduleResult => {
             }
         }
 
-        // 4. Revisão
-        if (state.revision.enabled) {
+        // 4. Revisão - NÃO adicionar em dias de Simulado Completo (ocupa quase todo o dia)
+        if (state.revision.enabled && !isSimuladoCompleto) {
             const revisionDuration = state.revision.durations[dayOfWeek] || 0;
             if (revisionDuration > 0) {
                 dayTasks.push({ name: "Sessão de Revisão", duration: revisionDuration, subject: "Revisão", type: "revision" });
@@ -2587,9 +2604,9 @@ const generateSchedule = (state: AppState): ScheduleResult => {
             }
         }
 
-        // 5b. Preenchimento de Lacunas - Fragmentado
+        // 5b. Preenchimento de Lacunas - Fragmentado (usa endDate)
         if (state.gapsFragmented.enabled) {
-            const gapsDuration = getActivityDuration(state.gapsFragmented, dayOfWeek);
+            const gapsDuration = getActivityDuration(state.gapsFragmented, dayOfWeek, true);
             if (gapsDuration > 0) {
                 dayTasks.push({ name: "Preenchimento de Lacunas - Fragmentado", duration: gapsDuration, subject: "Preenchimento de Lacunas", type: "gaps_fragmented" });
                 dailyMinutes = Math.max(0, dailyMinutes - gapsDuration);
