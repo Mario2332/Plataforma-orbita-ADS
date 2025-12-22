@@ -88,18 +88,21 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
         for (const docSnap of snapshot.docs) {
           const data = docSnap.data();
           if (data.nivel === nivelSelecionado) {
-            // Buscar dados do aluno
-            const alunoRef = doc(db, "alunos", docSnap.id);
-            const alunoSnap = await getDoc(alunoRef);
-            const alunoData = alunoSnap.data();
+            // Buscar dados do aluno na coleção 'users'
+            const userRef = doc(db, "users", docSnap.id);
+            const userSnap = await getDoc(userRef);
+            const userData = userSnap.data();
             
-            todosAlunos.push({
-              id: docSnap.id,
-              nome: alunoData?.nome || alunoData?.name || "Aluno",
-              photoURL: alunoData?.photoURL,
-              nivel: data.nivel,
-              pontosSemanais: data.pontosSemanais || 0,
-            });
+            // Só adicionar se for aluno
+            if (userData?.role === "aluno") {
+              todosAlunos.push({
+                id: docSnap.id,
+                nome: userData?.name || userData?.nome || "Aluno",
+                photoURL: userData?.photoURL,
+                nivel: data.nivel,
+                pontosSemanais: data.pontosSemanais || 0,
+              });
+            }
           }
         }
         

@@ -26,8 +26,9 @@ service cloud.firestore {
     // USERS
     // ============================================
     match /users/{userId} {
-      // Qualquer usuário autenticado pode ler seu próprio documento
-      allow read: if isAuthenticated() && request.auth.uid == userId;
+      // Qualquer usuário autenticado pode ler documentos de users (necessário para o ranking)
+      // Isso permite ver nome e foto de outros alunos no ranking
+      allow read: if isAuthenticated();
       
       // Apenas o próprio usuário pode atualizar seus dados básicos
       allow update: if isOwner(userId) && 
@@ -234,6 +235,43 @@ service cloud.firestore {
         allow read: if hasRole('mentor') && 
                        get(/databases/$(database)/documents/alunos/$(alunoId)).data.mentorId == request.auth.uid;
       }
+      
+      // ============================================
+      // DIÁRIO EMOCIONAL (subcoleção)
+      // ============================================
+      match /diario_emocional/{diarioId} {
+        // Aluno pode gerenciar seu próprio diário emocional
+        allow read, create, update, delete: if hasRole('aluno') && isOwner(alunoId);
+        
+        // Mentor pode visualizar diário emocional dos seus alunos
+        allow read: if hasRole('mentor') && 
+                       get(/databases/$(database)/documents/alunos/$(alunoId)).data.mentorId == request.auth.uid;
+      }
+    }
+    
+    // ============================================
+    // RANKING (coleção principal)
+    // ============================================
+    match /ranking/{rankingId} {
+      // Qualquer usuário autenticado pode ler o ranking (para ver todos os alunos)
+      allow read: if isAuthenticated();
+      
+      // Aluno pode atualizar apenas seu próprio registro de ranking
+      allow update: if hasRole('aluno') && isOwner(rankingId);
+      
+      // Criação e deleção apenas via Cloud Functions
+      allow create, delete: if false;
+    }
+    
+    // ============================================
+    // RANKING HISTÓRICO (coleção principal)
+    // ============================================
+    match /ranking_historico/{historicoId} {
+      // Qualquer usuário autenticado pode ler o histórico
+      allow read: if isAuthenticated();
+      
+      // Escrita apenas via Cloud Functions
+      allow write: if false;
     }
   }
 }
