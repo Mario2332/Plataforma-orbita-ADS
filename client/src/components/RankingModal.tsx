@@ -155,24 +155,24 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
     const zona = getZona(posicao);
     if (zona === "promocao") {
       return (
-        <Badge className="bg-green-500 text-white flex items-center gap-1">
+        <Badge className="bg-green-500 text-white flex items-center gap-1 text-xs px-2 py-0.5 whitespace-nowrap flex-shrink-0">
           <TrendingUp className="h-3 w-3" />
-          Promoção
+          <span className="hidden sm:inline">Promoção</span>
         </Badge>
       );
     }
     if (zona === "rebaixamento" && nivelSelecionado > 1) {
       return (
-        <Badge className="bg-red-500 text-white flex items-center gap-1">
+        <Badge className="bg-red-500 text-white flex items-center gap-1 text-xs px-2 py-0.5 whitespace-nowrap flex-shrink-0">
           <TrendingDown className="h-3 w-3" />
-          Rebaixamento
+          <span className="hidden sm:inline">Rebaixamento</span>
         </Badge>
       );
     }
     return (
-      <Badge variant="secondary" className="flex items-center gap-1">
+      <Badge variant="secondary" className="flex items-center gap-1 text-xs px-2 py-0.5 whitespace-nowrap flex-shrink-0">
         <Minus className="h-3 w-3" />
-        Manutenção
+        <span className="hidden sm:inline">Manutenção</span>
       </Badge>
     );
   };
@@ -186,7 +186,7 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden">
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-2xl">
@@ -289,7 +289,7 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
               </div>
 
               {/* Lista do Ranking */}
-              <ScrollArea className="h-[400px] pr-4">
+              <ScrollArea className="h-[300px] sm:h-[350px] pr-2">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-40">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -308,7 +308,7 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
                       return (
                         <div
                           key={aluno.id}
-                          className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                          className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg transition-all ${
                             isCurrentUser 
                               ? "bg-primary/10 border-2 border-primary" 
                               : zona === "promocao"
@@ -319,12 +319,12 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
                           }`}
                         >
                           {/* Posição */}
-                          <div className="w-10 flex justify-center">
+                          <div className="w-8 sm:w-10 flex justify-center flex-shrink-0">
                             {getPosicaoIcon(aluno.posicao!)}
                           </div>
 
                           {/* Avatar */}
-                          <Avatar className="h-10 w-10 border-2 border-white shadow">
+                          <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-white shadow flex-shrink-0">
                             {aluno.photoURL ? (
                               <AvatarImage src={aluno.photoURL} alt={aluno.nome} />
                             ) : null}
@@ -334,18 +334,18 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
                           </Avatar>
 
                           {/* Nome e Info */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="font-semibold truncate">
+                          <div className="flex-1 min-w-0 overflow-hidden">
+                            <div className="flex items-center gap-1 sm:gap-2">
+                              <p className="font-semibold truncate text-sm sm:text-base">
                                 {aluno.nome}
                                 {isCurrentUser && <span className="text-primary ml-1">(você)</span>}
                               </p>
                               {aluno.posicao === 1 && (
-                                <Sparkles className="h-4 w-4 text-yellow-500" />
+                                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
                               )}
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Flame className="h-3 w-3 text-orange-500" />
+                            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+                              <Flame className="h-3 w-3 text-orange-500 flex-shrink-0" />
                               <span>{aluno.pontosSemanais} pontos</span>
                             </div>
                           </div>
@@ -363,7 +363,7 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
         </Tabs>
 
         {/* Legenda */}
-        <div className="flex flex-wrap gap-4 pt-4 border-t text-sm">
+        <div className="flex flex-wrap gap-3 sm:gap-4 pt-3 border-t text-xs sm:text-sm flex-shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-green-500" />
             <span>Zona de Promoção (Top 5)</span>
@@ -436,7 +436,7 @@ export function RankingResumo({ onClick }: RankingResumoProps) {
           });
         }
         
-        // Buscar posição no nível
+        // Buscar posição no nível (verificando se aluno existe na coleção alunos)
         const rankingCollectionRef = collection(db, "ranking");
         const q = query(rankingCollectionRef, orderBy("pontosSemanais", "desc"));
         const snapshot = await getDocs(q);
@@ -444,15 +444,23 @@ export function RankingResumo({ onClick }: RankingResumoProps) {
         let posicao = 1;
         let totalNivel = 0;
         
-        snapshot.docs.forEach((docSnap) => {
+        // Verificar cada aluno se existe na coleção alunos
+        for (const docSnap of snapshot.docs) {
           const docData = docSnap.data();
           if (docData.nivel === nivel) {
-            totalNivel++;
-            if (docSnap.id !== userId && docData.pontosSemanais > pontosCalculados) {
-              posicao++;
+            // Verificar se o aluno existe na coleção alunos
+            const alunoRef = doc(db, "alunos", docSnap.id);
+            const alunoSnap = await getDoc(alunoRef);
+            
+            // Só contar se o aluno existir e tiver dados
+            if (alunoSnap.exists() && alunoSnap.data() && Object.keys(alunoSnap.data()).length > 0) {
+              totalNivel++;
+              if (docSnap.id !== userId && docData.pontosSemanais > pontosCalculados) {
+                posicao++;
+              }
             }
           }
-        });
+        }
         
         setRankingData({
           nivel,
