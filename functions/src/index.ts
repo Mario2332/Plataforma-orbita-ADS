@@ -28,3 +28,5 @@ export * from "./webhooks/kiwify";
 export * from "./triggers/email-sender";
 export * from "./triggers/updateMetasProgress";
 export * from "./triggers/processarMetasDiarias";
+export * from "./triggers/rankingWeeklyUpdate";
+export * from "./callable/init-ranking";

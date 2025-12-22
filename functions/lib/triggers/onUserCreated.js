@@ -69,6 +69,15 @@ exports.onUserCreated = functions
             lastSignedIn: admin.firestore.FieldValue.serverTimestamp(),
         });
         functions.logger.info(`Documento de usuário criado para: ${user.uid} com nome: ${displayName}`);
+        // Inicializar aluno no ranking (nível 1 - Vestibulando Bronze)
+        const rankingRef = db.collection("ranking").doc(user.uid);
+        await rankingRef.set({
+            nivel: 1,
+            pontosSemanais: 0,
+            ultimaAtualizacao: admin.firestore.FieldValue.serverTimestamp(),
+            criadoEm: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        functions.logger.info(`Ranking inicializado para: ${user.uid} no nível 1`);
     }
     catch (error) {
         functions.logger.error("Erro ao criar documento de usuário:", error);

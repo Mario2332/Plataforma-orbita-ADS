@@ -70,4 +70,6 @@ __exportStar(require("./webhooks/kiwify"), exports);
 __exportStar(require("./triggers/email-sender"), exports);
 __exportStar(require("./triggers/updateMetasProgress"), exports);
 __exportStar(require("./triggers/processarMetasDiarias"), exports);
+__exportStar(require("./triggers/rankingWeeklyUpdate"), exports);
+__exportStar(require("./callable/init-ranking"), exports);
 //# sourceMappingURL=index.js.map

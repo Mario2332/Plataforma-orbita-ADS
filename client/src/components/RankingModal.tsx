@@ -20,8 +20,18 @@ import {
   Loader2,
   Star,
   Flame,
-  Sparkles
+  Sparkles,
+  Info,
+  Clock,
+  BookOpen,
+  FileText,
+  PenLine
 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { db, auth } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy, doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { calcularPontuacaoSemanal, atualizarPontuacaoRanking, getRankingAluno } from "@/lib/ranking";
@@ -158,9 +168,67 @@ export function RankingModal({ open, onOpenChange, alunoAtual }: RankingModalPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <Trophy className="h-6 w-6 text-yellow-500" />
-            Ranking Semanal
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-2xl">
+              <Trophy className="h-6 w-6 text-yellow-500" />
+              Ranking Semanal
+            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Info className="h-5 w-5 text-muted-foreground" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="end">
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm flex items-center gap-2">
+                    <Star className="h-4 w-4 text-yellow-500" />
+                    Como ganhar pontos?
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-start gap-2">
+                      <Clock className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Tempo de estudo:</span>
+                        <span className="text-muted-foreground"> 10 pts/hora (máx. 100 pts/dia)</span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <BookOpen className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Questões:</span>
+                        <span className="text-muted-foreground"> 2 pts por acerto, 1 pt por erro</span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <FileText className="h-4 w-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Simulados:</span>
+                        <span className="text-muted-foreground"> 4 pts por acerto</span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <PenLine className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Redação:</span>
+                        <span className="text-muted-foreground"> 100 pts + 10 pts a cada 100 da nota</span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Flame className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Diário de bordo:</span>
+                        <span className="text-muted-foreground"> 50 pts/dia</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t text-xs text-muted-foreground">
+                    <p><strong>Top 5</strong> sobem de nível | <strong>Últimos 5</strong> descem</p>
+                    <p>Atualização: domingo ao meio-dia</p>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </DialogTitle>
         </DialogHeader>
 
