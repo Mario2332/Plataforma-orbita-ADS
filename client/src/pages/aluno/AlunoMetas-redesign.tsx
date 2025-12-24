@@ -6,7 +6,6 @@
 // 1. Header com gradiente e animação
 const newHeader = `
 <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 mb-6 border-2 border-primary/20 animate-slide-up">
-  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-none" />
   <div className="relative flex justify-between items-center">
     <div>
       <h1 className="text-2xl font-bold flex items-center gap-3">
@@ -34,7 +33,7 @@ const newSummaryCards = `
 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
   {/* Card Metas Ativas */}
   <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-500 hover:shadow-sm hover:shadow-emerald-500/20 group">
-    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    
     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
     
     <CardHeader className="pb-3">
@@ -51,7 +50,7 @@ const newSummaryCards = `
 
   {/* Card Metas Concluídas */}
   <Card className="relative overflow-hidden border-2 hover:border-green-500 transition-all duration-500 hover:shadow-sm hover:shadow-green-500/20 group">
-    <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    
     <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
     
     <CardHeader className="pb-3">
@@ -68,7 +67,7 @@ const newSummaryCards = `
 
   {/* Card Taxa de Conclusão */}
   <Card className="relative overflow-hidden border-2 hover:border-purple-500 transition-all duration-500 hover:shadow-sm hover:shadow-purple-500/20 group">
-    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    
     <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
     
     <CardHeader className="pb-3">
@@ -92,7 +91,7 @@ const newMetaCard = `
   className="relative overflow-hidden border-2 hover:border-primary transition-all duration-500 hover:shadow-sm hover:shadow-primary/20 group animate-slide-up"
   style={{ animationDelay: \`\${index * 0.1}s\` }}
 >
-  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+  
   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
   
   <CardHeader>

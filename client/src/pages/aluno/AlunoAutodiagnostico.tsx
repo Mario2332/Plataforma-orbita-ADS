@@ -330,15 +330,13 @@ export default function AlunoAutodiagnostico() {
   return (
     <div className="space-y-8 pb-8 animate-fade-in">
       {/* Elementos decorativos */}
-      <div className="fixed top-20 right-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-none animate-float pointer-events-none" />
-      <div className="fixed bottom-20 left-10 w-96 h-96 bg-teal-500/5 rounded-full blur-none animate-float-delayed pointer-events-none" />
 
       {/* Box Motivacional */}
       <Card className="border-2 border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-lg animate-slide-up shadow">
         <CardContent className="pt-4">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0">
-              <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+              <div className="p-3 bg-emerald-500 rounded-xl shadow">
                 <Lightbulb className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -355,7 +353,7 @@ export default function AlunoAutodiagnostico() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <Target className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -391,7 +389,7 @@ export default function AlunoAutodiagnostico() {
                   <Card key={questao.id} className="p-4 border-2 hover:shadow transition-shadow">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 ">Questão {originalIndex + 1}</span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white ">Questão {originalIndex + 1}</span>
                         {questoes.length > 1 && (
                           <Button type="button" onClick={() => removeQuestao(originalIndex)} size="sm" variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-red-100">
                             <Trash2 className="h-4 w-4" />
@@ -488,7 +486,7 @@ export default function AlunoAutodiagnostico() {
         <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+              <div className="p-2 bg-emerald-500 rounded-xl shadow">
                 <TrendingDown className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -579,7 +577,7 @@ export default function AlunoAutodiagnostico() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <FileText className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -603,7 +601,7 @@ export default function AlunoAutodiagnostico() {
                     <AccordionTrigger className="hover:no-underline">
                       <div className="flex items-center justify-between w-full pr-4">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg">
+                          <div className="p-2 bg-emerald-500 rounded-lg">
                             <FileText className="h-5 w-5 text-white" />
                           </div>
                           <div className="text-left">

@@ -233,12 +233,8 @@ export default function AlunoConfiguracoes() {
 
   return (
     <div className="space-y-8 pb-8 animate-fade-in">
-      <div className="fixed top-20 right-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-none animate-float pointer-events-none" />
-      <div className="fixed bottom-20 left-10 w-96 h-96 bg-teal-500/5 rounded-full blur-none animate-float-delayed pointer-events-none" />
 
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-4 text-white animate-slide-up">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-none"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-none"></div>
         <div className="relative flex items-center gap-4">
           <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
             <Settings className="w-10 h-10" />
@@ -253,7 +249,7 @@ export default function AlunoConfiguracoes() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up" style={{ animationDelay: '0.1s' }}>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <Camera className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -336,7 +332,7 @@ export default function AlunoConfiguracoes() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <User className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -437,7 +433,7 @@ export default function AlunoConfiguracoes() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up" style={{ animationDelay: '0.3s' }}>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <Lock className="w-6 h-6 text-white" />
             </div>
             <div>

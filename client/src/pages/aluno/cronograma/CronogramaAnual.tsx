@@ -208,8 +208,6 @@ export default function CronogramaAnual() {
   return (
     <div className="space-y-8 pb-8 animate-fade-in">
       {/* Elementos decorativos */}
-      <div className="fixed top-20 right-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-none animate-float pointer-events-none" />
-      <div className="fixed bottom-20 left-10 w-96 h-96 bg-teal-500/5 rounded-full blur-none animate-float-delayed pointer-events-none" />
 
       {/* Header Premium */}
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-emerald-500/10 p-8 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
@@ -258,7 +256,6 @@ export default function CronogramaAnual() {
               : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
           }`}
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-none" />
           <div className="relative flex items-center justify-center gap-3">
             <Target className="w-6 h-6" />
             <span>Cronograma Extensivo</span>
@@ -272,7 +269,6 @@ export default function CronogramaAnual() {
               : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
           }`}
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-none" />
           <div className="relative flex items-center justify-center gap-3">
             <Zap className="w-6 h-6" />
             <span>Cronograma Intensivo</span>
@@ -282,7 +278,6 @@ export default function CronogramaAnual() {
 
       {/* Seletor de cronograma ativo Premium */}
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 p-6 border-2 border-emerald-200/50 dark:border-emerald-800/50 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-none" />
         <div className="relative">
           <p className="font-semibold text-lg mb-4 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-emerald-600" />
@@ -317,8 +312,6 @@ export default function CronogramaAnual() {
 
       {/* Barra de progresso Premium */}
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-8 shadow-sm shadow-emerald-500/30 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-none" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-none" />
         
         <div className="relative">
           <div className="flex items-center justify-between mb-4">

@@ -96,12 +96,8 @@ export default function PainelGeral() {
 
   return (
     <div className="container mx-auto py-6 space-y-8 pb-8 animate-fade-in">
-      <div className="fixed top-20 right-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-none animate-float pointer-events-none" />
-      <div className="fixed bottom-20 left-10 w-96 h-96 bg-teal-500/5 rounded-full blur-none animate-float-delayed pointer-events-none" />
 
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-8 text-white animate-slide-up">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-none"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-none"></div>
         <div className="relative flex items-center gap-4">
           <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
             <BookOpen className="w-10 h-10" />

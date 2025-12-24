@@ -12,17 +12,13 @@ export default function CronogramaWrapper() {
   return (
     <div className="space-y-6 pb-8 animate-fade-in">
       {/* Elementos decorativos */}
-      <div className="fixed top-20 right-10 w-72 h-72 bg-indigo-500/5 rounded-full blur-none animate-float pointer-events-none" />
-      <div className="fixed bottom-20 left-10 w-96 h-96 bg-teal-500/5 rounded-full blur-none animate-float-delayed pointer-events-none" />
 
       {/* Header Premium */}
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-indigo-500/20 via-teal-500/10 to-emerald-500/10 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-indigo-500/30 to-teal-500/30 rounded-full blur-none" />
-        <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-gradient-to-br from-teal-500/30 to-emerald-500/30 rounded-full blur-none" />
         
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-4 rounded-lg bg-gradient-to-br from-indigo-500 to-teal-500 shadow shadow-indigo-500/25">
+            <div className="p-4 rounded-lg bg-emerald-500 shadow shadow-indigo-500/25">
               <Calendar className="h-5 w-5 text-white" />
             </div>
             <div>

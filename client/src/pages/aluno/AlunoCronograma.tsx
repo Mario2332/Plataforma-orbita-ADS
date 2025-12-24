@@ -342,7 +342,7 @@ export default function AlunoCronograma() {
       <Card className="border-2 hover:shadow-sm transition-shadow animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-2xl font-semibold">
-            <div className="p-2 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <Clock className="h-5 w-5 text-white" />
             </div>
             Grade Semanal

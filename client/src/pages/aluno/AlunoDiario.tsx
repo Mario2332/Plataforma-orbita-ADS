@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 
 const ESTADOS_EMOCIONAIS = [
-  { value: "otimo", label: "Ótimo", emoji: "😄", color: "bg-gradient-to-br from-emerald-500 to-teal-500" },
+  { value: "otimo", label: "Ótimo", emoji: "😄", color: "bg-emerald-500" },
   { value: "bom", label: "Bom", emoji: "🙂", color: "bg-emerald-500" },
   { value: "neutro", label: "Neutro", emoji: "😐", color: "bg-gray-500" },
   { value: "ruim", label: "Ruim", emoji: "😟", color: "bg-emerald-400" },
@@ -19,7 +19,7 @@ const ESTADOS_EMOCIONAIS = [
 ];
 
 const NIVEIS_CANSACO = [
-  { value: "descansado", label: "Descansado", icon: Battery, color: "bg-gradient-to-br from-emerald-500 to-teal-500", level: 100 },
+  { value: "descansado", label: "Descansado", icon: Battery, color: "bg-emerald-500", level: 100 },
   { value: "normal", label: "Normal", icon: Battery, color: "bg-emerald-500", level: 75 },
   { value: "cansado", label: "Cansado", icon: Battery, color: "bg-teal-500", level: 50 },
   { value: "muito_cansado", label: "Muito Cansado", icon: Battery, color: "bg-emerald-500", level: 25 },
@@ -247,12 +247,8 @@ export default function AlunoDiario() {
 
   return (
     <div className="space-y-8 pb-8 animate-fade-in">
-      <div className="fixed top-20 right-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-none animate-float pointer-events-none" />
-      <div className="fixed bottom-20 left-10 w-96 h-96 bg-teal-500/5 rounded-full blur-none animate-float-delayed pointer-events-none" />
 
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-4 text-white animate-slide-up">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-none"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-none"></div>
         <div className="relative flex items-center gap-4">
           <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
             <BookHeart className="w-10 h-10" />
@@ -267,7 +263,7 @@ export default function AlunoDiario() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <Heart className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -336,7 +332,7 @@ export default function AlunoDiario() {
                 Fez atividade física hoje? (opcional)
               </Label>
               <div className="grid grid-cols-2 gap-3">
-                <button type="button" onClick={() => setFormData({ ...formData, atividadeFisica: true })} className={`p-4 rounded-xl border-2 transition-all hover:scale-[1.01] ${formData.atividadeFisica === true ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white border-transparent shadow" : "border-gray-200 hover:border-emerald-300"}`}>
+                <button type="button" onClick={() => setFormData({ ...formData, atividadeFisica: true })} className={`p-4 rounded-xl border-2 transition-all hover:scale-[1.01] ${formData.atividadeFisica === true ? "bg-emerald-500 text-white border-transparent shadow" : "border-gray-200 hover:border-emerald-300"}`}>
                   <div className="text-3xl mb-2">✅</div>
                   <div className="text-sm font-bold">Sim</div>
                 </button>
@@ -394,7 +390,7 @@ export default function AlunoDiario() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+                  <div className="p-2 bg-emerald-500 rounded-xl shadow">
                     <BarChart3 className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -501,7 +497,7 @@ export default function AlunoDiario() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up" style={{ animationDelay: '0.3s' }}>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -557,7 +553,7 @@ export default function AlunoDiario() {
                           )}
                           {registro.atividadeFisica !== undefined && registro.atividadeFisica !== null && (
                             <div className="flex items-center gap-3">
-                              <div className={`w-12 h-12 rounded-xl ${registro.atividadeFisica ? 'bg-gradient-to-br from-emerald-500 to-teal-500' : 'bg-gray-500'} flex items-center justify-center text-2xl shadow`}>
+                              <div className={`w-12 h-12 rounded-xl ${registro.atividadeFisica ? 'bg-emerald-500' : 'bg-gray-500'} flex items-center justify-center text-2xl shadow`}>
                                 {registro.atividadeFisica ? '✅' : '❌'}
                               </div>
                               <div>

@@ -299,7 +299,7 @@ export default function AlunoPlanoAcao() {
             >
               <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-gray-50 dark:hover:bg-gray-800">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg">
+                  <div className="p-2 bg-emerald-500 rounded-lg">
                     <Target className="h-5 w-5 text-white" />
                   </div>
                   <div className="text-left">

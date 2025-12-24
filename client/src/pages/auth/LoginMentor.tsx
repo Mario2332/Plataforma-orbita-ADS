@@ -53,7 +53,6 @@ export default function LoginMentor() {
       {/* Elementos decorativos flutuantes */}
       <div className="absolute top-20 left-20 w-64 h-64 bg-emerald-400/20 rounded-full blur-none animate-float" />
       <div className="absolute bottom-20 right-20 w-96 h-96 bg-teal-400/20 rounded-full blur-none animate-float-delayed" />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-400/10 rounded-full blur-none" />
 
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center relative z-10">
         {/* Lado Esquerdo - Informações Premium */}

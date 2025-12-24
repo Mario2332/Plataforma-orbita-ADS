@@ -399,25 +399,23 @@ export default function AlunoEstudos() {
   return (
     <div className="space-y-8 pb-8 animate-fade-in">
       {/* Elementos decorativos */}
-      <div className="fixed top-20 right-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-none animate-float pointer-events-none" />
-      <div className="fixed bottom-20 left-10 w-96 h-96 bg-teal-500/5 rounded-full blur-none animate-float-delayed pointer-events-none" />
 
       {/* Header Premium */}
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-emerald-500/10 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-none animate-pulse-slow" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-teal-500/20 to-transparent rounded-full blur-none animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        
+        
         
         <div className="relative flex items-center justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur-none opacity-50 animate-pulse-slow" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur-none opacity-50" />
                 <div className="relative bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-4 rounded-lg shadow-sm">
                   <BookOpen className="h-10 w-10 text-white" />
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600  animate-gradient">
+                <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 ">
                   Estudos
                 </h1>
               </div>
@@ -577,8 +575,8 @@ export default function AlunoEstudos() {
             <div>
               <CardTitle className="flex items-center gap-3 text-2xl font-semibold">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur-md opacity-50" />
-                  <div className="relative p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-sm">
+                  <div className="absolute inset-0 bg-emerald-500 rounded-xl blur-md opacity-50" />
+                  <div className="relative p-3 bg-emerald-500 rounded-xl shadow-sm">
                     <Timer className="h-4 w-4 text-white" />
                   </div>
                 </div>
@@ -594,7 +592,7 @@ export default function AlunoEstudos() {
           <div className="flex flex-col items-center gap-4">
             {/* Display do tempo com design moderno */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 rounded-lg blur-none animate-pulse-slow" />
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 rounded-lg blur-none" />
               <div className="relative px-12 py-8 bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-lg border-2 border-emerald-200 dark:border-emerald-800">
                 <div className="text-7xl font-mono font-semibold tabular-nums bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 ">
                   {formatarTempo(tempoDecorrido)}
@@ -691,7 +689,7 @@ export default function AlunoEstudos() {
             )}
             
             {cronometroAtivo && (
-              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 rounded-full border-2 border-teal-500/30 backdrop-blur-sm animate-pulse-slow">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 rounded-full border-2 border-teal-500/30 backdrop-blur-sm">
                 <div className="w-3 h-3 bg-teal-500 rounded-full animate-ping" />
                 <p className="text-sm font-bold text-teal-700 dark:text-teal-300">
                   Cronômetro ativo - Continue estudando!
@@ -720,7 +718,7 @@ export default function AlunoEstudos() {
           {estudos.length === 0 ? (
             <div className="text-center py-16">
               <div className="relative mx-auto w-24 h-24 mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-indigo-500 rounded-full blur-none opacity-30" />
+                
                 <div className="relative p-4 bg-gradient-to-br from-emerald-500/10 to-indigo-500/10 rounded-full flex items-center justify-center border-2 border-emerald-200 dark:border-emerald-800">
                   <BookOpen className="h-12 w-12 text-emerald-500" />
                 </div>
@@ -908,8 +906,8 @@ export default function AlunoEstudos() {
       {modoFoco && (
         <div className="fixed inset-0 z-50 bg-gradient-to-br from-emerald-950 via-indigo-950 to-teal-950 flex items-center justify-center">
           {/* Elementos decorativos */}
-          <div className="absolute top-20 right-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-none animate-float" />
-          <div className="absolute bottom-20 left-20 w-96 h-96 bg-teal-500/10 rounded-full blur-none animate-float-delayed" />
+          
+          <div className="absolute bottom-20 left-20 w-96 h-96 bg-teal-500/10 rounded-full blur-none-delayed" />
           
           <div className="relative z-10 flex flex-col items-center gap-12 p-4">
             {/* Botão fechar */}
@@ -930,7 +928,7 @@ export default function AlunoEstudos() {
             
             {/* Cronômetro gigante */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-emerald-500/30 rounded-[4rem] blur-none animate-pulse-slow" />
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-emerald-500/30 rounded-[4rem] blur-none" />
               <div className="relative px-20 py-16 bg-gradient-to-br from-emerald-900/50 to-teal-900/50 rounded-[4rem] border-4 border-emerald-400/30 backdrop-blur-none">
                 <div className="text-[10rem] font-mono font-semibold tabular-nums text-white drop-shadow-sm">
                   {formatarTempo(tempoDecorrido)}
@@ -989,7 +987,7 @@ export default function AlunoEstudos() {
             
             {/* Indicador de cronômetro ativo */}
             {cronometroAtivo && (
-              <div className="flex items-center gap-3 px-8 py-4 bg-teal-500/20 rounded-full border-2 border-teal-400/30 backdrop-blur-sm animate-pulse-slow">
+              <div className="flex items-center gap-3 px-8 py-4 bg-teal-500/20 rounded-full border-2 border-teal-400/30 backdrop-blur-sm">
                 <div className="w-4 h-4 bg-teal-400 rounded-full animate-ping" />
                 <p className="text-lg font-bold text-teal-100">
                   Cronômetro ativo - Continue estudando!

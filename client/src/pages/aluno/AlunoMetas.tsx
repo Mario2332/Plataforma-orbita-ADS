@@ -394,7 +394,6 @@ export default function AlunoMetas() {
     <div className="container mx-auto p-4 space-y-6">
       {/* Header */}
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 mb-6 border-2 border-primary/20 animate-slide-up">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-none" />
         <div className="relative flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-3">
@@ -477,7 +476,7 @@ export default function AlunoMetas() {
                   className="relative overflow-hidden border-2 hover:border-primary transition-all duration-500 hover:shadow-sm hover:shadow-primary/20 group animate-slide-up bg-yellow-50/30 dark:bg-yellow-900/10"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  
                   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-none group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
                   
                   <CardHeader className="relative z-10">
@@ -720,7 +719,6 @@ export default function AlunoMetas() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <div className="relative">
-            <div className="absolute -top-4 -right-4 w-32 h-32 bg-primary/10 rounded-full blur-none" />
             <DialogHeader className="relative">
               <DialogTitle className="text-2xl font-bold flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">

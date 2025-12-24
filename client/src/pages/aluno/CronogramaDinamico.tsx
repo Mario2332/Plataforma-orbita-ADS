@@ -1415,7 +1415,7 @@ const TopicsStep = ({
             <div className="flex justify-end">
                 <button 
                     onClick={onNext}
-                    className="group bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-4 rounded-lg font-bold text-lg flex items-center gap-3 transition-all shadow-sm shadow-emerald-300/50 hover:shadow-sm hover:shadow-emerald-400/50 hover:scale-[1.02] active:scale-[0.98]"
+                    className="group text-gray-900 dark:text-white hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-4 rounded-lg font-bold text-lg flex items-center gap-3 transition-all shadow-sm shadow-emerald-300/50 hover:shadow-sm hover:shadow-emerald-400/50 hover:scale-[1.02] active:scale-[0.98]"
                 >
                     Próximo: Ajustes 
                     <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center group-hover:translate-x-1 transition-transform">
