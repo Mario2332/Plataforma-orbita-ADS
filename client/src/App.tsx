@@ -33,6 +33,7 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { TenantProvider } from "./contexts/TenantContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import DashboardLayout from "./components/DashboardLayout";
@@ -86,6 +87,12 @@ const GestorMentores = lazy(() => import("./pages/gestor/GestorMentores"));
 const GestorAlunos = lazy(() => import("./pages/gestor/GestorAlunos"));
 const GestorConfiguracoes = lazy(() => import("./pages/gestor/GestorConfiguracoes"));
 
+// Lazy load de páginas públicas
+const Sobre = lazy(() => import("./pages/public/Sobre"));
+const Termos = lazy(() => import("./pages/public/Termos"));
+const Privacidade = lazy(() => import("./pages/public/Privacidade"));
+const Contato = lazy(() => import("./pages/public/Contato"));
+
 // Componente de loading
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -97,6 +104,28 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      
+      {/* Páginas Públicas */}
+      <Route path="/sobre">
+        <Suspense fallback={<PageLoader />}>
+          <Sobre />
+        </Suspense>
+      </Route>
+      <Route path="/termos">
+        <Suspense fallback={<PageLoader />}>
+          <Termos />
+        </Suspense>
+      </Route>
+      <Route path="/privacidade">
+        <Suspense fallback={<PageLoader />}>
+          <Privacidade />
+        </Suspense>
+      </Route>
+      <Route path="/contato">
+        <Suspense fallback={<PageLoader />}>
+          <Contato />
+        </Suspense>
+      </Route>
       
       {/* Rotas de Login */}
       <Route path="/login/aluno">
@@ -407,14 +436,16 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <Router />
-            <Toaster />
-          </TooltipProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <TenantProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              <Router />
+              <Toaster />
+            </TooltipProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </TenantProvider>
     </ErrorBoundary>
   );
 }
