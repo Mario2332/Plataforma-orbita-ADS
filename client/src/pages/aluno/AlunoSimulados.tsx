@@ -616,6 +616,9 @@ export default function AlunoSimulados() {
         </TabsContent>
       </Tabs>
 
+      {/* Anúncio no final */}
+      <InContentAd className="mt-6" />
+
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }

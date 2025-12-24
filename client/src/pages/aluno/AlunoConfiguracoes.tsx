@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { InContentAd, ResponsiveAd } from "@/components/ads";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { alunoApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";

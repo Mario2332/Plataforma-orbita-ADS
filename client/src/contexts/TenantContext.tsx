@@ -171,7 +171,7 @@ export function TenantProvider({ children }: TenantProviderProps) {
       const { corPrimaria, corPrimariaHover, corSecundaria } = tenant.branding;
       
       // Função para converter hex para oklch (aproximação)
-      const hexToOklch = (hex: string): string => {
+      const hexToOklch = (hex: string, lightnessAdjust: number = 0): string => {
         // Remove # se presente
         const cleanHex = hex.replace('#', '');
         const r = parseInt(cleanHex.substr(0, 2), 16) / 255;
@@ -179,22 +179,87 @@ export function TenantProvider({ children }: TenantProviderProps) {
         const b = parseInt(cleanHex.substr(4, 2), 16) / 255;
         
         // Conversão simplificada para oklch
-        const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        const c = Math.sqrt(Math.pow(r - l, 2) + Math.pow(g - l, 2) + Math.pow(b - l, 2)) * 0.4;
-        const h = Math.atan2(b - l, r - l) * (180 / Math.PI);
+        const l = Math.min(1, Math.max(0, (0.2126 * r + 0.7152 * g + 0.0722 * b) * 0.8 + 0.2 + lightnessAdjust));
+        const c = Math.sqrt(Math.pow(r - (r+g+b)/3, 2) + Math.pow(g - (r+g+b)/3, 2) + Math.pow(b - (r+g+b)/3, 2)) * 0.5;
+        const h = Math.atan2(b - g, r - g) * (180 / Math.PI);
         
-        return `oklch(${(l * 0.8 + 0.2).toFixed(2)} ${c.toFixed(2)} ${((h + 360) % 360).toFixed(0)})`;
+        return `oklch(${l.toFixed(2)} ${c.toFixed(2)} ${((h + 360) % 360).toFixed(0)})`;
       };
       
-      // Aplicar como variáveis CSS customizadas
+      // Aplicar como variáveis CSS customizadas (hex direto)
       root.style.setProperty('--tenant-primary', corPrimaria);
       root.style.setProperty('--tenant-primary-hover', corPrimariaHover);
       root.style.setProperty('--tenant-secondary', corSecundaria);
       
-      // Aplicar cor primária na sidebar-accent (para aba selecionada)
-      const oklchColor = hexToOklch(corPrimaria);
-      root.style.setProperty('--sidebar-accent', oklchColor);
+      // Aplicar cor primária em OKLCH para variáveis do sistema
+      const oklchPrimary = hexToOklch(corPrimaria);
+      const oklchPrimaryHover = hexToOklch(corPrimariaHover);
+      const oklchPrimaryLight = hexToOklch(corPrimaria, 0.35); // Versão mais clara
+      const oklchPrimaryVeryLight = hexToOklch(corPrimaria, 0.45); // Versão muito clara
+      
+      // Sidebar
+      root.style.setProperty('--sidebar-accent', oklchPrimary);
       root.style.setProperty('--sidebar-accent-foreground', 'oklch(0.98 0 0)');
+      root.style.setProperty('--sidebar-primary', oklchPrimary);
+      root.style.setProperty('--sidebar-primary-foreground', 'oklch(0.98 0 0)');
+      root.style.setProperty('--sidebar-ring', oklchPrimary);
+      
+      // Cores primárias do sistema (botões, links, etc.)
+      root.style.setProperty('--primary', oklchPrimary);
+      root.style.setProperty('--primary-foreground', 'oklch(0.98 0 0)');
+      root.style.setProperty('--ring', oklchPrimary);
+      
+      // Charts
+      root.style.setProperty('--chart-1', oklchPrimaryLight);
+      root.style.setProperty('--chart-2', oklchPrimary);
+      root.style.setProperty('--chart-3', oklchPrimaryHover);
+      
+      // Injetar CSS dinâmico para classes Tailwind que usam emerald
+      const styleId = 'tenant-dynamic-styles';
+      let styleEl = document.getElementById(styleId) as HTMLStyleElement;
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        document.head.appendChild(styleEl);
+      }
+      
+      styleEl.textContent = `
+        /* Botões e elementos com bg-emerald */
+        .bg-emerald-500, .bg-emerald-600 { background-color: ${corPrimaria} !important; }
+        .bg-emerald-50, .bg-emerald-100 { background-color: ${corPrimaria}15 !important; }
+        .hover\\:bg-emerald-600:hover, .hover\\:bg-emerald-700:hover { background-color: ${corPrimariaHover} !important; }
+        .hover\\:bg-emerald-50:hover, .hover\\:bg-emerald-100:hover { background-color: ${corPrimaria}20 !important; }
+        
+        /* Texto com text-emerald */
+        .text-emerald-500, .text-emerald-600, .text-emerald-700 { color: ${corPrimaria} !important; }
+        .text-emerald-400 { color: ${corSecundaria} !important; }
+        
+        /* Bordas com border-emerald */
+        .border-emerald-200, .border-emerald-300 { border-color: ${corPrimaria}40 !important; }
+        .border-emerald-500, .border-emerald-600 { border-color: ${corPrimaria} !important; }
+        
+        /* Ring com ring-emerald */
+        .ring-emerald-200, .ring-emerald-300 { --tw-ring-color: ${corPrimaria}40 !important; }
+        .ring-emerald-500, .ring-emerald-600 { --tw-ring-color: ${corPrimaria} !important; }
+        
+        /* Gradientes de/para emerald */
+        .from-emerald-500, .from-emerald-600 { --tw-gradient-from: ${corPrimaria} !important; }
+        .to-emerald-500, .to-emerald-600 { --tw-gradient-to: ${corPrimaria} !important; }
+        .via-emerald-500, .via-emerald-600 { --tw-gradient-via: ${corPrimaria} !important; }
+        
+        /* Teal como secundário */
+        .bg-teal-500, .bg-teal-600 { background-color: ${corSecundaria} !important; }
+        .text-teal-500, .text-teal-600 { color: ${corSecundaria} !important; }
+        .from-teal-500, .from-teal-600 { --tw-gradient-from: ${corSecundaria} !important; }
+        .to-teal-500, .to-teal-600 { --tw-gradient-to: ${corSecundaria} !important; }
+        
+        /* Dark mode adjustments */
+        .dark .bg-emerald-900\\/30, .dark .bg-emerald-900\\/20 { background-color: ${corPrimaria}20 !important; }
+        .dark .text-emerald-400 { color: ${corSecundaria} !important; }
+        .dark .border-emerald-900\\/30 { border-color: ${corPrimaria}30 !important; }
+        .dark .ring-emerald-800 { --tw-ring-color: ${corPrimaria}60 !important; }
+        .dark .hover\\:bg-emerald-900\\/30:hover { background-color: ${corPrimaria}30 !important; }
+      `;
       
       // Atualizar favicon se disponível
       if (tenant.branding.favicon) {

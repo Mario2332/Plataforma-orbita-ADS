@@ -892,6 +892,9 @@ export default function AlunoMetas() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Anúncio no final */}
+      <InContentAd className="mt-6" />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { InContentAd, ResponsiveAd } from "@/components/ads";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -589,7 +590,10 @@ export default function AlunoDiario() {
           )}
         </CardContent>
       </Card>
-
+      
+      {/* Anúncio no final da página */}
+      <ResponsiveAd className="mt-6" />
+      
       <style>{`
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
         @keyframes float-delayed { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-30px); } }

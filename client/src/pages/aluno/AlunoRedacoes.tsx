@@ -1266,6 +1266,9 @@ export default function AlunoRedacoes() {
           </CardContent>
         </Card>
       )}
+
+      {/* Anúncio no final */}
+      <InContentAd className="mt-6" />
     </div>
   );
 }

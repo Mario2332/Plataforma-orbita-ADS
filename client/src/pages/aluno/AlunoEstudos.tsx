@@ -851,6 +851,9 @@ export default function AlunoEstudos() {
         </CardContent>
       </Card>
 
+      {/* Anúncio após histórico */}
+      <InContentAd className="animate-slide-up" />
+
       {/* Dialog para definir tempo meta */}
       <Dialog open={dialogTempoOpen} onOpenChange={setDialogTempoOpen}>
         <DialogContent className="border-2">

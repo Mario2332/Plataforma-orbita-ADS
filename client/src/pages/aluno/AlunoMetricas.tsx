@@ -420,6 +420,9 @@ export default function AlunoMetricas() {
         </Card>
       </div>
 
+      {/* Anúncio entre seções */}
+      <InContentAd className="my-6" />
+
       {/* Gráficos Premium */}
       <Tabs defaultValue="evolucao" className="space-y-6 animate-slide-up" style={{ animationDelay: '0.35s' }}>
         <TabsList className="grid w-full grid-cols-3 p-1 bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-800">
@@ -717,6 +720,9 @@ export default function AlunoMetricas() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Anúncio no final */}
+      <InContentAd className="mt-6" />
 
       <style>{`
         @keyframes float {

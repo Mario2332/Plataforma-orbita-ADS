@@ -29,20 +29,41 @@ import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import Notificacoes from './Notificacoes';
 
-const getMenuItems = (role?: string) => {
+import { TenantFeatures } from "@/types/tenant";
+
+type FeatureKey = keyof TenantFeatures;
+
+interface MenuItem {
+  icon: any;
+  label: string;
+  path: string;
+  feature?: FeatureKey; // Feature requerida para mostrar este item
+  submenu?: { label: string; path: string }[];
+  subItems?: { label: string; path: string }[];
+}
+
+const getMenuItems = (role?: string, features?: TenantFeatures): MenuItem[] => {
   if (!role) return [];
+  
+  const filterByFeature = (items: MenuItem[]): MenuItem[] => {
+    if (!features) return items; // Se não tem features, mostra tudo
+    return items.filter(item => {
+      if (!item.feature) return true; // Sem feature requerida, sempre mostra
+      return features[item.feature] === true;
+    });
+  };
   
   switch (role) {
     case "aluno":
-      return [
+      return filterByFeature([
         { icon: Home, label: "Início", path: "/aluno" },
-        { icon: BookOpen, label: "Estudos", path: "/aluno/estudos" },
-        { icon: LayoutDashboard, label: "Cronograma", path: "/aluno/cronograma" },
-        { icon: BarChart3, label: "Métricas", path: "/aluno/metricas" },
-        { icon: Target, label: "Metas", path: "/aluno/metas" },
-        { icon: FileText, label: "Simulados", path: "/aluno/simulados" },
-        { icon: PenTool, label: "Redações", path: "/aluno/redacoes" },
-        { icon: Heart, label: "Diário de Bordo", path: "/aluno/diario" },
+        { icon: BookOpen, label: "Estudos", path: "/aluno/estudos", feature: "estudos" },
+        { icon: LayoutDashboard, label: "Cronograma", path: "/aluno/cronograma", feature: "cronograma" },
+        { icon: BarChart3, label: "Métricas", path: "/aluno/metricas", feature: "metricas" },
+        { icon: Target, label: "Metas", path: "/aluno/metas", feature: "metas" },
+        { icon: FileText, label: "Simulados", path: "/aluno/simulados", feature: "simulados" },
+        { icon: PenTool, label: "Redações", path: "/aluno/redacoes", feature: "redacoes" },
+        { icon: Heart, label: "Diário de Bordo", path: "/aluno/diario", feature: "diarioBordo" },
         { 
           icon: GraduationCap, 
           label: "Conteúdos", 
@@ -61,7 +82,7 @@ const getMenuItems = (role?: string) => {
           ]
         },
         { icon: Settings, label: "Configurações", path: "/aluno/configuracoes" },
-      ];
+      ]);
     case "mentor":
       return [
         { icon: Users, label: "Alunos", path: "/mentor/alunos" },
@@ -235,14 +256,14 @@ function DashboardLayoutContent({
   const sidebarRef = useRef<HTMLDivElement>(null);
   
   const menuItems = useMemo(() => {
-    const items = getMenuItems(userData?.role);
+    const items = getMenuItems(userData?.role, tenant?.features);
     console.log('[DashboardLayoutContent] menuItems recalculado:', {
       role: userData?.role,
       itemCount: items.length,
       items: items.map(i => i.label)
     });
     return items;
-  }, [userData?.role]);
+  }, [userData?.role, tenant?.features]);
   
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();

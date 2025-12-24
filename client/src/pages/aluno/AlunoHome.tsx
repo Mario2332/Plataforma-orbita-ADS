@@ -765,6 +765,9 @@ export default function AlunoHome() {
           </CardContent>
         </Card>
 
+        {/* Anúncio entre seções */}
+        <InContentAd className="col-span-full" />
+
         {/* Atividade Recente Premium */}
         <Card className="hover:shadow-sm transition-shadow candy-cane-border">
           <CardHeader>
