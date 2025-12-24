@@ -17,8 +17,22 @@ import {
   Building2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 type AssuntoType = 'duvida' | 'bug' | 'sugestao' | 'comercial' | 'outro';
+
+export interface MensagemContato {
+  id?: string;
+  nome: string;
+  email: string;
+  assunto: AssuntoType;
+  mensagem: string;
+  status: 'nova' | 'lida' | 'respondida' | 'arquivada';
+  criadoEm: Date;
+  respondidoEm?: Date;
+  resposta?: string;
+}
 
 export default function Contato() {
   const { appTitle, appLogo } = useBranding();
@@ -43,12 +57,26 @@ export default function Contato() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simular envio (em produção, integrar com backend)
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Salvar mensagem no Firestore
+      const mensagensRef = collection(db, 'mensagens_contato');
+      await addDoc(mensagensRef, {
+        nome: formData.nome,
+        email: formData.email,
+        assunto: formData.assunto,
+        mensagem: formData.mensagem,
+        status: 'nova',
+        criadoEm: serverTimestamp(),
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast.success('Mensagem enviada com sucesso!');
+      setIsSubmitted(true);
+      toast.success('Mensagem enviada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      toast.error('Erro ao enviar mensagem. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {

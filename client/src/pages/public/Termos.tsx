@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 
 export default function Termos() {
   const { appTitle, appLogo } = useBranding();
-  const dataAtualizacao = '24 de dezembro de 2024';
+  const dataAtualizacao = '24 de dezembro de 2025';
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
