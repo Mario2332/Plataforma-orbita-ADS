@@ -76,7 +76,7 @@ exports.enviarEmailPendente = functions
         const transporter = criarTransport();
         // Enviar email
         const info = await transporter.sendMail({
-            from: `"Mentoria Mário Machado" <${process.env.EMAIL_USER}>`,
+            from: `"Plataforma Órbita" <${process.env.EMAIL_USER}>`,
             to: emailData.to,
             subject: emailData.subject,
             html: emailData.html,

@@ -308,5 +308,30 @@ service cloud.firestore {
       // Apenas mentores podem escrever
       allow write: if hasRole('mentor');
     }
+    
+    // ============================================
+    // MENSAGENS DE CONTATO (coleção principal)
+    // ============================================
+    match /mensagens_contato/{mensagemId} {
+      // Qualquer pessoa pode criar uma mensagem (formulário público)
+      allow create: if true;
+      
+      // Apenas gestores podem ler e atualizar mensagens
+      allow read, update: if hasRole('gestor');
+      
+      // Apenas gestores podem deletar mensagens
+      allow delete: if hasRole('gestor');
+    }
+    
+    // ============================================
+    // TENANTS / CLIENTES WHITE-LABEL (coleção principal)
+    // ============================================
+    match /tenants/{tenantId} {
+      // Qualquer pessoa pode ler (para carregar configurações do tenant pelo domínio)
+      allow read: if true;
+      
+      // Apenas gestores podem criar, atualizar e deletar tenants
+      allow create, update, delete: if hasRole('gestor');
+    }
   }
 }

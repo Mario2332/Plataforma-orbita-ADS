@@ -51,7 +51,7 @@ function gerarSenhaInicial() {
  */
 async function enviarEmailBoasVindas(email, nome, senha) {
     const primeiroNome = nome.split(" ")[0];
-    const assunto = "Bem-vindo à Mentoria Mário Machado! 🎓";
+    const assunto = "Bem-vindo à Plataforma Órbita! 🎓";
     const corpo = `
 <!DOCTYPE html>
 <html>
@@ -105,11 +105,11 @@ async function enviarEmailBoasVindas(email, nome, senha) {
       
       <p>Bons estudos! 📚✨</p>
       
-      <p><strong>Equipe Mentoria Mário Machado</strong></p>
+      <p><strong>Equipe Plataforma Órbita</strong></p>
     </div>
     <div class="footer">
       <p>Este é um email automático. Por favor, não responda.</p>
-      <p>© ${new Date().getFullYear()} Mentoria Mário Machado. Todos os direitos reservados.</p>
+      <p>© ${new Date().getFullYear()} Plataforma Órbita. Todos os direitos reservados.</p>
     </div>
   </div>
 </body>
