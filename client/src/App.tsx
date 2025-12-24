@@ -78,6 +78,7 @@ const MentorGeografia = lazy(() => import("./pages/mentor/conteudos/Geografia"))
 const MentorLinguagens = lazy(() => import("./pages/mentor/conteudos/Linguagens"));
 const MentorFilosofia = lazy(() => import("./pages/mentor/conteudos/Filosofia"));
 const MentorSociologia = lazy(() => import("./pages/mentor/conteudos/Sociologia"));
+const MentorDiagnosticoPerfil = lazy(() => import("./pages/mentor/MentorDiagnosticoPerfil"));
 
 // Lazy load de páginas do Gestor
 const GestorHome = lazy(() => import("./pages/gestor/GestorHome"));
@@ -284,6 +285,13 @@ function Router() {
         <DashboardLayout>
           <Suspense fallback={<PageLoader />}>
             <MentorConfiguracoes />
+          </Suspense>
+        </DashboardLayout>
+      </Route>
+      <Route path="/mentor/diagnostico-perfil">
+        <DashboardLayout>
+          <Suspense fallback={<PageLoader />}>
+            <MentorDiagnosticoPerfil />
           </Suspense>
         </DashboardLayout>
       </Route>

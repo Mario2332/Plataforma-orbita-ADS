@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { verificarECriarNotificacoesMeta } from "../helpers/metaNotificacoes";
+// BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
+// import { verificarECriarNotificacoesMeta } from "../helpers/metaNotificacoes";
 
 const db = admin.firestore();
 
@@ -171,22 +172,23 @@ export const onEstudoWrite = functions
           updatedAt: now,
         };
 
+        // BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
         // Verificar e criar notificações
-        const notifResult = await verificarECriarNotificacoesMeta(
-          alunoId,
-          metaDoc.id,
-          meta.nome,
-          meta.status,
-          meta.valorAtual || 0,
-          valorAtual,
-          meta.valorAlvo,
-          'updateMetasProgress'
-        );
+        // const notifResult = await verificarECriarNotificacoesMeta(
+        //   alunoId,
+        //   metaDoc.id,
+        //   meta.nome,
+        //   meta.status,
+        //   meta.valorAtual || 0,
+        //   valorAtual,
+        //   meta.valorAlvo,
+        //   'updateMetasProgress'
+        // );
         
-        // Aplicar mudanças de status se meta foi concluída
-        if (notifResult.status) {
-          updateData.status = notifResult.status;
-          updateData.dataConclusao = notifResult.dataConclusao;
+        // Verificar se meta foi concluída (sem notificação)
+        if (valorAtual >= meta.valorAlvo && meta.status === 'ativa') {
+          updateData.status = 'concluida';
+          updateData.dataConclusao = now;
         }
 
         batch.update(metaDoc.ref, updateData);
@@ -340,22 +342,23 @@ export const onSimuladoWrite = functions
           updatedAt: now,
         };
 
+        // BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
         // Verificar e criar notificações
-        const notifResult = await verificarECriarNotificacoesMeta(
-          alunoId,
-          metaDoc.id,
-          meta.nome,
-          meta.status,
-          meta.valorAtual || 0,
-          valorAtual,
-          meta.valorAlvo,
-          'updateMetasProgress'
-        );
+        // const notifResult = await verificarECriarNotificacoesMeta(
+        //   alunoId,
+        //   metaDoc.id,
+        //   meta.nome,
+        //   meta.status,
+        //   meta.valorAtual || 0,
+        //   valorAtual,
+        //   meta.valorAlvo,
+        //   'updateMetasProgress'
+        // );
         
-        // Aplicar mudanças de status se meta foi concluída
-        if (notifResult.status) {
-          updateData.status = notifResult.status;
-          updateData.dataConclusao = notifResult.dataConclusao;
+        // Verificar se meta foi concluída (sem notificação)
+        if (valorAtual >= meta.valorAlvo && meta.status === 'ativa') {
+          updateData.status = 'concluida';
+          updateData.dataConclusao = now;
         }
 
         batch.update(metaDoc.ref, updateData);
@@ -460,22 +463,23 @@ export const onConteudoProgressoWrite = functions
           updatedAt: now,
         };
 
+        // BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
         // Verificar e criar notificações
-        const notifResult = await verificarECriarNotificacoesMeta(
-          alunoId,
-          metaDoc.id,
-          meta.nome,
-          meta.status,
-          meta.valorAtual || 0,
-          valorAtual,
-          meta.valorAlvo,
-          'updateMetasProgress'
-        );
+        // const notifResult = await verificarECriarNotificacoesMeta(
+        //   alunoId,
+        //   metaDoc.id,
+        //   meta.nome,
+        //   meta.status,
+        //   meta.valorAtual || 0,
+        //   valorAtual,
+        //   meta.valorAlvo,
+        //   'updateMetasProgress'
+        // );
         
-        // Aplicar mudanças de status se meta foi concluída
-        if (notifResult.status) {
-          updateData.status = notifResult.status;
-          updateData.dataConclusao = notifResult.dataConclusao;
+        // Verificar se meta foi concluída (sem notificação)
+        if (valorAtual >= meta.valorAlvo && meta.status === 'ativa') {
+          updateData.status = 'concluida';
+          updateData.dataConclusao = now;
         }
 
         batch.update(metaDoc.ref, updateData);

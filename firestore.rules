@@ -201,6 +201,18 @@ service cloud.firestore {
       }
       
       // ============================================
+      // DIAGNÓSTICO DE PERFIL (subcoleção)
+      // ============================================
+      match /diagnostico/{diagnosticoId} {
+        // Aluno pode gerenciar seu próprio diagnóstico de perfil
+        allow read, create, update, delete: if hasRole('aluno') && isOwner(alunoId);
+        
+        // Mentor pode visualizar diagnóstico de perfil dos seus alunos
+        allow read: if hasRole('mentor') && 
+                       get(/databases/$(database)/documents/alunos/$(alunoId)).data.mentorId == request.auth.uid;
+      }
+      
+      // ============================================
       // AUTODIAGNÓSTICOS (subcoleção)
       // ============================================
       match /autodiagnosticos/{autodiagnosticoId} {
@@ -284,6 +296,17 @@ service cloud.firestore {
       
       // Escrita apenas via Cloud Functions
       allow write: if false;
+    }
+    
+    // ============================================
+    // CONFIGURAÇÃO DO DIAGNÓSTICO DE PERFIL (coleção principal)
+    // ============================================
+    match /diagnostico_perfil_config/{configId} {
+      // Qualquer usuário autenticado pode ler a configuração
+      allow read: if isAuthenticated();
+      
+      // Apenas mentores podem escrever
+      allow write: if hasRole('mentor');
     }
   }
 }

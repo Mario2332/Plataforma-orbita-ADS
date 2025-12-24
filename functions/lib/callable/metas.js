@@ -37,7 +37,8 @@ exports.metasFunctions = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const auth_1 = require("../utils/auth");
-const notificacoes_1 = require("./notificacoes");
+// BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
+// import { criarNotificacao } from "./notificacoes";
 const db = admin.firestore();
 /**
  * Helper para converter string de data para Date com horário meio-dia UTC
@@ -276,11 +277,20 @@ const createMeta = functions
                 .collection("metas")
                 .add(instanciaDiaria);
         }
+        // BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
         // Criar notificação de meta criada
-        const mensagemNotificacao = status === 'concluida'
-            ? `Meta "${nome}" foi criada e já está concluída com base no seu histórico!`
-            : `Nova meta "${nome}" criada com sucesso. Vamos alcançá-la juntos!`;
-        await (0, notificacoes_1.criarNotificacao)(auth.uid, status === 'concluida' ? 'meta_concluida' : 'meta_criada', status === 'concluida' ? '🎉 Meta Concluída!' : '⭐ Nova Meta Criada', mensagemNotificacao, metaRef.id, nome);
+        // const mensagemNotificacao = status === 'concluida' 
+        //   ? `Meta "${nome}" foi criada e já está concluída com base no seu histórico!`
+        //   : `Nova meta "${nome}" criada com sucesso. Vamos alcançá-la juntos!`;
+        // 
+        // await criarNotificacao(
+        //   auth.uid,
+        //   status === 'concluida' ? 'meta_concluida' : 'meta_criada',
+        //   status === 'concluida' ? '🎉 Meta Concluída!' : '⭐ Nova Meta Criada',
+        //   mensagemNotificacao,
+        //   metaRef.id,
+        //   nome
+        // );
         return { success: true, metaId: metaRef.id };
     }
     catch (error) {

@@ -15,7 +15,8 @@ export { gestorFunctions } from "./callable/gestor";
 export { mentorFunctions } from "./callable/mentor";
 export { alunoFunctions } from "./callable/aluno";
 export { metasFunctions } from "./callable/metas";
-export { notificacoesFunctions } from "./callable/notificacoes";
+// BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
+// export { notificacoesFunctions } from "./callable/notificacoes";
 export * from "./callable/aluno-extras";
 export * from "./callable/mentor-conteudos";
 export * from "./callable/conteudos-simples";

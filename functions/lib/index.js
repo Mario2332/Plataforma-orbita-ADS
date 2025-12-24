@@ -36,7 +36,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.notificacoesFunctions = exports.metasFunctions = exports.alunoFunctions = exports.mentorFunctions = exports.gestorFunctions = exports.onUserCreated = void 0;
+exports.metasFunctions = exports.alunoFunctions = exports.mentorFunctions = exports.gestorFunctions = exports.onUserCreated = void 0;
 const admin = __importStar(require("firebase-admin"));
 const dotenv = __importStar(require("dotenv"));
 // Carregar variáveis de ambiente
@@ -56,8 +56,8 @@ var aluno_1 = require("./callable/aluno");
 Object.defineProperty(exports, "alunoFunctions", { enumerable: true, get: function () { return aluno_1.alunoFunctions; } });
 var metas_1 = require("./callable/metas");
 Object.defineProperty(exports, "metasFunctions", { enumerable: true, get: function () { return metas_1.metasFunctions; } });
-var notificacoes_1 = require("./callable/notificacoes");
-Object.defineProperty(exports, "notificacoesFunctions", { enumerable: true, get: function () { return notificacoes_1.notificacoesFunctions; } });
+// BACKUP: Sistema de notificações removido temporariamente - ver pasta backup_notificacoes
+// export { notificacoesFunctions } from "./callable/notificacoes";
 __exportStar(require("./callable/aluno-extras"), exports);
 __exportStar(require("./callable/mentor-conteudos"), exports);
 __exportStar(require("./callable/conteudos-simples"), exports);
