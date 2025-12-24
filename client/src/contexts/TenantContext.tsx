@@ -1,12 +1,17 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, currentProject, isFreePlan, isWhiteLabel } from '@/lib/firebase';
 import { TenantConfig, DEFAULT_TENANT_CONFIG } from '@/types/tenant';
 
 interface TenantContextType {
   tenant: TenantConfig | null;
   isLoading: boolean;
   error: string | null;
+  
+  // Informações do projeto Firebase
+  firebaseProject: string;
+  isFreePlan: boolean;
+  isWhiteLabel: boolean;
   
   // Helpers
   hasFeature: (feature: keyof TenantConfig['features']) => boolean;
@@ -17,11 +22,11 @@ interface TenantContextType {
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
-// Configuração padrão para desenvolvimento/fallback
-const getDefaultTenant = (): TenantConfig => ({
+// Configuração padrão para plataforma-orbita (White-label)
+const getDefaultTenantOrbita = (): TenantConfig => ({
   id: 'default',
   slug: 'orbita',
-  dominios: ['localhost', 'plataforma-orbita.web.app'],
+  dominios: ['localhost', 'plataforma-orbita.web.app', 'plataforma-orbita.firebaseapp.com'],
   dominioPrincipal: 'plataforma-orbita.web.app',
   plano: 'white-label',
   status: 'ativo',
@@ -55,6 +60,59 @@ const getDefaultTenant = (): TenantConfig => ({
   atualizadoEm: new Date(),
 });
 
+// Configuração padrão para orbita-free (Gratuito com anúncios)
+const getDefaultTenantFree = (): TenantConfig => ({
+  id: 'orbita-free',
+  slug: 'orbita-free',
+  dominios: ['orbita-free.web.app', 'orbita-free.firebaseapp.com', 'orbitafree.com.br'],
+  dominioPrincipal: 'orbita-free.web.app',
+  plano: 'free',
+  status: 'ativo',
+  branding: {
+    logo: '/logo.png',
+    corPrimaria: '#10b981',
+    corPrimariaHover: '#059669',
+    corSecundaria: '#14b8a6',
+    nomeExibicao: 'Órbita Estudos',
+  },
+  features: {
+    estudos: true,
+    cronograma: true,
+    cronogramaDinamico: false, // Premium
+    metricas: true,
+    metas: true,
+    simulados: true,
+    redacoes: true,
+    diarioBordo: true,
+    planoAcao: false, // Premium
+    autodiagnostico: false, // Premium
+    mentoria: false, // Premium
+    relatoriosAvancados: false, // Premium
+    exportacaoPDF: false, // Premium
+    integracaoCalendario: false, // Premium
+  },
+  ads: {
+    exibirAnuncios: true,
+    googleAdsClientId: '', // Será preenchido após aprovação do AdSense
+    slots: {
+      header: '',
+      sidebar: '',
+      inContent: '',
+      footer: '',
+    },
+  },
+  criadoEm: new Date(),
+  atualizadoEm: new Date(),
+});
+
+// Retorna configuração padrão baseada no projeto Firebase
+const getDefaultTenant = (): TenantConfig => {
+  if (isFreePlan) {
+    return getDefaultTenantFree();
+  }
+  return getDefaultTenantOrbita();
+};
+
 interface TenantProviderProps {
   children: ReactNode;
 }
@@ -71,6 +129,7 @@ export function TenantProvider({ children }: TenantProviderProps) {
         setError(null);
 
         const hostname = window.location.hostname;
+        console.log('[Tenant] Projeto Firebase:', currentProject);
         console.log('[Tenant] Detectando tenant para domínio:', hostname);
 
         // Tentar buscar tenant pelo domínio no Firestore
@@ -87,8 +146,8 @@ export function TenantProvider({ children }: TenantProviderProps) {
             id: tenantDoc.id,
           });
         } else {
-          // Fallback para configuração padrão
-          console.log('[Tenant] Nenhum tenant encontrado, usando padrão');
+          // Fallback para configuração padrão baseada no projeto
+          console.log('[Tenant] Nenhum tenant encontrado, usando padrão para', currentProject);
           setTenant(getDefaultTenant());
         }
       } catch (err) {
@@ -109,7 +168,6 @@ export function TenantProvider({ children }: TenantProviderProps) {
     if (tenant?.branding) {
       const root = document.documentElement;
       
-      // Converter hex para valores que o Tailwind pode usar
       const { corPrimaria, corPrimariaHover, corSecundaria } = tenant.branding;
       
       // Aplicar como variáveis CSS customizadas
@@ -137,7 +195,8 @@ export function TenantProvider({ children }: TenantProviderProps) {
 
   const shouldShowAds = (): boolean => {
     if (!tenant) return false;
-    return tenant.ads.exibirAnuncios && tenant.plano === 'free';
+    // Mostrar anúncios se: está habilitado E (é plano free OU está no projeto orbita-free)
+    return tenant.ads.exibirAnuncios || isFreePlan;
   };
 
   const getPrimaryColor = (): string => {
@@ -152,6 +211,9 @@ export function TenantProvider({ children }: TenantProviderProps) {
     tenant,
     isLoading,
     error,
+    firebaseProject: currentProject,
+    isFreePlan,
+    isWhiteLabel,
     hasFeature,
     shouldShowAds,
     getPrimaryColor,

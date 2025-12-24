@@ -9,6 +9,7 @@ import { useAlunoApi } from "@/hooks/useAlunoApi";
 import { BookOpen, Clock, Edit, Play, Plus, Trash2, Pause, RotateCcw, Save, ArrowUpDown, Zap, Timer, CheckCircle2, Target, Maximize2, X, AlertCircle } from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { toast } from "sonner";
+import { SidebarAd, InContentAd } from "@/components/ads";
 
 const CRONOMETRO_STORAGE_KEY = "aluno_cronometro_estado";
 
@@ -699,6 +700,9 @@ export default function AlunoEstudos() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Anúncio entre seções */}
+      <InContentAd className="animate-slide-up" />
 
       {/* Lista de Estudos Premium */}
       <Card className="border-2 hover:shadow-sm transition-shadow animate-slide-up" style={{ animationDelay: '0.2s' }}>

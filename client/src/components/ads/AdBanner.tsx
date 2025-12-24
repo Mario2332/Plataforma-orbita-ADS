@@ -84,16 +84,21 @@ export function AdBanner({
   const { width, height } = AD_SIZES[size];
   const isResponsive = size === 'responsive';
 
-  // Modo de teste - mostra placeholder
+  // Modo de teste - mostra placeholder visual
   if (testMode || !clientId) {
     return (
       <div 
-        className={`bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center ${className}`}
-        style={isResponsive ? { minHeight: 90 } : { width, height }}
+        className={`bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center overflow-hidden ${className}`}
+        style={isResponsive ? { minHeight: 90, width: '100%' } : { width, height }}
       >
-        <div className="text-center text-gray-500 dark:text-gray-400 p-4">
-          <p className="text-sm font-medium">Espaço para Anúncio</p>
-          <p className="text-xs">{isResponsive ? 'Responsivo' : `${width}x${height}`}</p>
+        <div className="text-center text-gray-400 dark:text-gray-500 p-4">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+            <span className="text-xs font-medium uppercase tracking-wide">Publicidade</span>
+          </div>
+          <p className="text-[10px] opacity-60">{isResponsive ? 'Anúncio Responsivo' : `${width}×${height}`}</p>
         </div>
       </div>
     );

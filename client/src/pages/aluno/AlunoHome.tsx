@@ -27,6 +27,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { RankingModal, RankingResumo } from "@/components/RankingModal";
+import { InContentAd, ResponsiveAd } from "@/components/ads";
 
 // Função auxiliar para formatar data no fuso horário brasileiro (GMT-3)
 const formatarDataBrasil = (date: Date): string => {
@@ -584,6 +585,9 @@ export default function AlunoHome() {
         </Card>
       </div>
 
+      {/* Anúncio entre seções */}
+      <InContentAd className="animate-slide-up" />
+
       {/* Mapa de Calor Premium */}
       <Card className="hover:shadow-sm transition-all duration-500 animate-slide-up candy-cane-border" style={{ animationDelay: '0.6s' }}>
         <CardHeader>
@@ -921,6 +925,9 @@ export default function AlunoHome() {
         }
       `}</style>
       
+      {/* Anúncio no final da página */}
+      <ResponsiveAd className="mt-6" />
+
       {/* Modal de Ranking */}
       <RankingModal 
         open={rankingModalOpen} 

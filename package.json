@@ -15,7 +15,12 @@
     "functions:deploy": "cd functions && npm run deploy",
     "firebase:emulators": "firebase emulators:start",
     "firebase:deploy": "firebase deploy",
-    "hosting:deploy": "pnpm run build && firebase deploy --only hosting"
+    "hosting:deploy": "pnpm run build && firebase deploy --only hosting",
+    "build:orbita": "VITE_FIREBASE_PROJECT=plataforma-orbita vite build",
+    "build:free": "VITE_FIREBASE_PROJECT=orbita-free vite build",
+    "deploy:orbita": "pnpm run build:orbita && firebase use orbita && firebase deploy --only hosting",
+    "deploy:free": "pnpm run build:free && firebase use free && firebase deploy --only hosting",
+    "deploy:all": "pnpm run deploy:orbita && pnpm run deploy:free"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",

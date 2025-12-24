@@ -1,1 +1,23 @@
-{"projects": {"default": "plataforma-orbita"}}
+{
+  "projects": {
+    "default": "plataforma-orbita",
+    "orbita": "plataforma-orbita",
+    "free": "orbita-free"
+  },
+  "targets": {
+    "plataforma-orbita": {
+      "hosting": {
+        "orbita": [
+          "plataforma-orbita"
+        ]
+      }
+    },
+    "orbita-free": {
+      "hosting": {
+        "free": [
+          "orbita-free"
+        ]
+      }
+    }
+  }
+}

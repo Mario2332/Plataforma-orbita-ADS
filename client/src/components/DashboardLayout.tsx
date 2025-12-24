@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { BarChart3, BookOpen, ChevronDown, FileText, GraduationCap, Heart, Home, LayoutDashboard, LogOut, Moon, PanelLeft, PenTool, Settings, Sun, Users, Sparkles, Target, MessageSquare } from "lucide-react";
+import { BarChart3, BookOpen, ChevronDown, FileText, GraduationCap, Heart, Home, LayoutDashboard, LogOut, Moon, PanelLeft, PenTool, Settings, Sun, Users, Sparkles, Target, MessageSquare, Palette } from "lucide-react";
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -89,6 +89,7 @@ const getMenuItems = (role?: string) => {
         { icon: Users, label: "Mentores", path: "/gestor/mentores" },
         { icon: GraduationCap, label: "Alunos", path: "/gestor/alunos" },
         { icon: MessageSquare, label: "Mensagens", path: "/gestor/mensagens" },
+        { icon: Palette, label: "Personalização", path: "/gestor/branding" },
         { icon: Settings, label: "Configurações", path: "/gestor/configuracoes" },
       ];
     default:

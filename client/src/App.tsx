@@ -87,6 +87,7 @@ const GestorMentores = lazy(() => import("./pages/gestor/GestorMentores"));
 const GestorAlunos = lazy(() => import("./pages/gestor/GestorAlunos"));
 const GestorConfiguracoes = lazy(() => import("./pages/gestor/GestorConfiguracoes"));
 const GestorMensagens = lazy(() => import("./pages/gestor/GestorMensagens"));
+const GestorBranding = lazy(() => import("./pages/gestor/GestorBranding"));
 
 // Lazy load de páginas públicas
 const Sobre = lazy(() => import("./pages/public/Sobre"));
@@ -431,6 +432,13 @@ function Router() {
         <DashboardLayout>
           <Suspense fallback={<PageLoader />}>
             <GestorMensagens />
+          </Suspense>
+        </DashboardLayout>
+      </Route>
+      <Route path="/gestor/branding">
+        <DashboardLayout>
+          <Suspense fallback={<PageLoader />}>
+            <GestorBranding />
           </Suspense>
         </DashboardLayout>
       </Route>
