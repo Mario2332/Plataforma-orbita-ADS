@@ -111,7 +111,7 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
   const getIncidenceBadgeColor = (level: string) => {
     switch (level) {
       case "Muito alta!": return "bg-gradient-to-r from-emerald-600 to-indigo-600 text-white hover:from-emerald-700 hover:to-indigo-700 shadow";
-      case "Alta!": return "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow";
+      case "Alta!": return "bg-emerald-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow";
       case "Média": return "bg-teal-500 text-white hover:bg-teal-600 shadow-md";
       case "Baixa": return "bg-emerald-500 text-white hover:bg-emerald-600 shadow-md";
       case "Muito baixa": return "bg-gray-400 text-white hover:bg-gray-500";
@@ -163,11 +163,11 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up">
         <CardHeader>
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow">
+            <div className="p-3 bg-emerald-500 rounded-lg shadow">
               <BookOpen className="w-8 h-8 text-white" />
             </div>
             <div className="flex-1">
-              <CardTitle className="text-2xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                 {materia?.displayName}
               </CardTitle>
               <p className="text-muted-foreground font-semibold mt-2">
@@ -179,24 +179,24 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-xl border-2 border-emerald-200/50">
               <div className="text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-1">Total de Tópicos</div>
-              <div className="text-3xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <div className="text-3xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                 {topics.length}
               </div>
             </div>
             <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-xl border-2 border-emerald-200/50">
               <div className="text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-1">Estudados</div>
-              <div className="text-3xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <div className="text-3xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                 {topicosEstudados}
               </div>
             </div>
             <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-xl border-2 border-emerald-200/50">
               <div className="text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-1">Progresso</div>
-              <div className="text-3xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <div className="text-3xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                 {percentualEstudado}%
               </div>
               <div className="mt-2 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000"
+                  className="h-full bg-emerald-500 rounded-full transition-all duration-1000"
                   style={{ width: `${percentualEstudado}%` }}
                 />
               </div>
@@ -207,7 +207,7 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-xl border-2 border-emerald-200/50">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow-md">
+              <div className="p-2 bg-emerald-500 rounded-lg shadow-md">
                 <Filter className="w-4 h-4 text-white" />
               </div>
               <span className="text-sm font-semibold">Filtros:</span>
@@ -293,7 +293,7 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
                 {filteredAndSortedTopics.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="p-12 text-center">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full flex items-center justify-center">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
                         <Sparkles className="w-12 h-12 text-emerald-500" />
                       </div>
                       <p className="text-lg font-semibold text-gray-600 dark:text-gray-400">
@@ -332,7 +332,7 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
                                 variant={hasNotes ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => handleOpenDialog(topic.id)}
-                                className={hasNotes ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold shadow" : "border-2 font-bold hover:bg-emerald-100"}
+                                className={hasNotes ? "bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold shadow" : "border-2 font-bold hover:bg-emerald-100"}
                               >
                                 <FileText className="w-4 h-4 mr-1" />
                                 {hasNotes ? "Ver" : "Adicionar"}
@@ -340,7 +340,7 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
                             </DialogTrigger>
                             <DialogContent className="max-w-2xl border-2 rounded-lg">
                               <DialogHeader>
-                                <DialogTitle className="text-2xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                                <DialogTitle className="text-2xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                                   Anotações - {topic.name}
                                 </DialogTitle>
                               </DialogHeader>
@@ -355,7 +355,7 @@ export default function MateriaPage({ materiaKey }: MateriaPageProps) {
                                   <Button variant="outline" onClick={() => setOpenDialog(null)} className="border-2 font-bold">
                                     Cancelar
                                   </Button>
-                                  <Button onClick={() => handleSaveNotes(topic.id)} className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
+                                  <Button onClick={() => handleSaveNotes(topic.id)} className="bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
                                     Salvar
                                   </Button>
                                 </div>

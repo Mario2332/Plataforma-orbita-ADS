@@ -12,7 +12,7 @@ export default function AlunoCronogramaPage() {
       {/* Elementos decorativos */}
 
       {/* Header Premium */}
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-indigo-500/20 via-teal-500/10 to-emerald-500/10 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
+      <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
         
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">

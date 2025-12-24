@@ -377,7 +377,7 @@ export default function AlunoAutodiagnostico() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="font-bold">Questões Erradas</Label>
-                <Button type="button" onClick={addQuestao} size="sm" className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
+                <Button type="button" onClick={addQuestao} size="sm" className="bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
                   <Plus className="h-4 w-4 mr-1" />
                   Adicionar Questão
                 </Button>
@@ -473,7 +473,7 @@ export default function AlunoAutodiagnostico() {
                   Cancelar
                 </Button>
               )}
-              <Button type="submit" disabled={isSaving} className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold text-lg py-3">
+              <Button type="submit" disabled={isSaving} className="flex-1 bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold text-lg py-3">
                 {isSaving ? "Salvando..." : editandoId ? "Atualizar Autodiagnóstico" : "Salvar Autodiagnóstico"}
               </Button>
             </div>
@@ -717,7 +717,7 @@ export default function AlunoAutodiagnostico() {
             </Accordion>
           ) : (
             <div className="text-center py-12">
-              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full flex items-center justify-center">
+              <div className="w-24 h-24 mx-auto mb-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
                 <FileText className="w-12 h-12 text-emerald-500" />
               </div>
               <p className="text-lg font-semibold text-gray-600 dark:text-gray-400">Nenhum autodiagnóstico registrado</p>

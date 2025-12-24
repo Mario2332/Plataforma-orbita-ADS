@@ -192,20 +192,18 @@ export default function CronogramaEstatisticas() {
       {/* Elementos decorativos */}
 
       {/* Header Premium */}
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-emerald-500/10 p-8 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-none animate-pulse-slow" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-teal-500/20 to-transparent rounded-full blur-none animate-pulse-slow" style={{ animationDelay: '1s' }} />
+      <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
         
         <div className="relative">
           <div className="flex items-center gap-4 mb-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur-none opacity-50 animate-pulse-slow" />
+              <div className="absolute inset-0 bg-emerald-500 rounded-lg blur-none opacity-50" />
               <div className="relative bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-4 rounded-lg shadow-sm">
                 <BarChart3 className="h-10 w-10 text-white" />
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent animate-gradient">
+              <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent">
                 Estatísticas
               </h1>
             </div>
@@ -222,7 +220,7 @@ export default function CronogramaEstatisticas() {
           onClick={() => setTipo("extensive")}
           className={`relative overflow-hidden p-6 rounded-lg border-2 font-bold text-lg transition-all hover:shadow-sm hover:-translate-y-1 ${
             tipo === "extensive"
-              ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
+              ? "bg-emerald-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
               : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
           }`}
         >
@@ -235,7 +233,7 @@ export default function CronogramaEstatisticas() {
           onClick={() => setTipo("intensive")}
           className={`relative overflow-hidden p-6 rounded-lg border-2 font-bold text-lg transition-all hover:shadow-sm hover:-translate-y-1 ${
             tipo === "intensive"
-              ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
+              ? "bg-emerald-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
               : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
           }`}
         >
@@ -272,7 +270,7 @@ export default function CronogramaEstatisticas() {
       {/* Estatísticas por Área Premium */}
       <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-8 border-2 border-gray-100 dark:border-gray-800 animate-slide-up" style={{ animationDelay: '0.3s' }}>
         <h3 className="text-2xl font-semibold mb-6 flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+          <div className="p-2 bg-emerald-500 rounded-xl shadow">
             <PieChart className="w-6 h-6 text-white" />
           </div>
           Progresso por Área de Conhecimento
@@ -287,12 +285,11 @@ export default function CronogramaEstatisticas() {
                 className="relative overflow-hidden border-2 border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-sm hover:-translate-y-1 transition-all group"
                 style={{ animationDelay: `${0.4 + index * 0.05}s` }}
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-full blur-none group-hover:scale-150 transition-transform" />
                 
                 <div className="relative">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="font-semibold text-lg">{area}</h4>
-                    <span className="text-3xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                    <span className="text-3xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                       {data.percentage}%
                     </span>
                   </div>
@@ -314,7 +311,7 @@ export default function CronogramaEstatisticas() {
       {/* Estatísticas por Ciclo Premium */}
       <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-8 border-2 border-gray-100 dark:border-gray-800 animate-slide-up" style={{ animationDelay: '0.4s' }}>
         <h3 className="text-2xl font-semibold mb-6 flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+          <div className="p-2 bg-emerald-500 rounded-xl shadow">
             <TrendingUp className="w-6 h-6 text-white" />
           </div>
           Progresso por Ciclo
@@ -326,18 +323,17 @@ export default function CronogramaEstatisticas() {
               className="relative overflow-hidden border-2 border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-sm hover:-translate-y-0.5 transition-all group"
               style={{ animationDelay: `${0.5 + index * 0.05}s` }}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-full blur-none group-hover:scale-150 transition-transform" />
               
               <div className="relative">
                 <div className="flex items-center justify-between mb-3">
                   <span className="font-semibold text-lg">Ciclo {cycle.cycle}</span>
-                  <span className="text-2xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  <span className="text-2xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                     {cycle.percentage}%
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3.5 mb-3 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3.5 rounded-full transition-all duration-500 shadow"
+                    className="bg-emerald-500 h-3.5 rounded-full transition-all duration-500 shadow"
                     style={{ width: `${cycle.percentage}%` }}
                   />
                 </div>

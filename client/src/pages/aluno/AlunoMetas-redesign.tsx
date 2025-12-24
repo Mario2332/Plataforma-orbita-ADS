@@ -34,8 +34,6 @@ const newSummaryCards = `
   {/* Card Metas Ativas */}
   <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-500 hover:shadow-sm hover:shadow-emerald-500/20 group">
     
-    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
-    
     <CardHeader className="pb-3">
       <CardTitle className="text-sm font-semibold flex items-center gap-2">
         <Target className="h-5 w-5 text-emerald-500" />
@@ -51,8 +49,6 @@ const newSummaryCards = `
   {/* Card Metas Concluídas */}
   <Card className="relative overflow-hidden border-2 hover:border-green-500 transition-all duration-500 hover:shadow-sm hover:shadow-green-500/20 group">
     
-    <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
-    
     <CardHeader className="pb-3">
       <CardTitle className="text-sm font-semibold flex items-center gap-2">
         <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -67,8 +63,6 @@ const newSummaryCards = `
 
   {/* Card Taxa de Conclusão */}
   <Card className="relative overflow-hidden border-2 hover:border-purple-500 transition-all duration-500 hover:shadow-sm hover:shadow-purple-500/20 group">
-    
-    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
     
     <CardHeader className="pb-3">
       <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -91,8 +85,6 @@ const newMetaCard = `
   className="relative overflow-hidden border-2 hover:border-primary transition-all duration-500 hover:shadow-sm hover:shadow-primary/20 group animate-slide-up"
   style={{ animationDelay: \`\${index * 0.1}s\` }}
 >
-  
-  <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
   
   <CardHeader>
     <div className="flex items-start justify-between">
@@ -141,7 +133,7 @@ const newMetaCard = `
         <span>Até {toDate(meta.dataFim).toLocaleDateString('pt-BR')}</span>
       </div>
       {meta.repetirDiariamente && (
-        <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 shadow">
+        <Badge className="bg-emerald-500 shadow">
           <Flame className="h-3 w-3 mr-1" />
           Meta diária
         </Badge>

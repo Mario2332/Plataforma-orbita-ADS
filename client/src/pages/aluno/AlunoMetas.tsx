@@ -477,8 +477,6 @@ export default function AlunoMetas() {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-none group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
-                  
                   <CardHeader className="relative z-10">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
@@ -525,7 +523,7 @@ export default function AlunoMetas() {
                         <span>Até {formatDateBR(meta.dataFim)}</span>
                       </div>
                       {meta.repetirDiariamente && (
-                        <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 shadow">
+                        <Badge className="bg-emerald-500 shadow">
                           <Flame className="h-3 w-3 mr-1" />
                           Meta diária
                         </Badge>

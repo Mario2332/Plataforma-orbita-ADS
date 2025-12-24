@@ -454,15 +454,12 @@ export default function AlunoRedacoes() {
       {/* Elementos decorativos flutuantes */}
 
       {/* Header Premium com Glassmorphism */}
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-orange-500/20 via-red-500/10 to-amber-500/10 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
+      <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
         {/* Efeitos de luz */}
         
         
         
         {/* Partículas decorativas */}
-        <div className="absolute top-10 right-20 w-2 h-2 bg-orange-500 rounded-full animate-ping" />
-        <div className="absolute top-20 right-40 w-1.5 h-1.5 bg-red-500 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute bottom-10 left-20 w-2 h-2 bg-amber-500 rounded-full animate-ping" style={{ animationDelay: '1s' }} />
         
         <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -938,7 +935,7 @@ export default function AlunoRedacoes() {
       {/* Gráfico de Evolução */}
       {redacoesFiltradas.length > 0 && (
         <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-500 hover:shadow-sm animate-slide-up" style={{ animationDelay: '0.6s' }}>
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent pointer-events-none" />
+          
           
           <CardHeader>
             <CardTitle className="text-lg font-bold flex items-center gap-2">
@@ -1003,7 +1000,7 @@ export default function AlunoRedacoes() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Gráfico de Radar */}
           <Card className="relative overflow-hidden border-2 hover:border-purple-500 transition-all duration-500 hover:shadow-sm animate-slide-up" style={{ animationDelay: '0.7s' }}>
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent pointer-events-none" />
+            
             
             <CardHeader>
               <CardTitle className="text-lg font-bold flex items-center gap-2">
@@ -1056,7 +1053,7 @@ export default function AlunoRedacoes() {
 
           {/* Gráfico de Barras */}
           <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-500 hover:shadow-sm animate-slide-up" style={{ animationDelay: '0.8s' }}>
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent pointer-events-none" />
+            
             
             <CardHeader>
               <CardTitle className="text-lg font-bold flex items-center gap-2">
@@ -1278,7 +1275,7 @@ export default function AlunoRedacoes() {
       {/* Mensagem quando não há redações */}
       {redacoes.length === 0 && !isLoading && (
         <Card className="relative overflow-hidden border-2 border-dashed border-orange-300 animate-slide-up" style={{ animationDelay: '0.5s' }}>
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-red-500/5 to-amber-500/5" />
+          
           
           <CardContent className="py-16">
             <div className="text-center">

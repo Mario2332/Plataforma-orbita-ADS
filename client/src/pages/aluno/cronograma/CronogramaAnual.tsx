@@ -210,22 +210,20 @@ export default function CronogramaAnual() {
       {/* Elementos decorativos */}
 
       {/* Header Premium */}
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-emerald-500/10 p-8 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-none animate-pulse-slow" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-teal-500/20 to-transparent rounded-full blur-none animate-pulse-slow" style={{ animationDelay: '1s' }} />
+      <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
         
         <div className="relative">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
             <div className="space-y-3">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur-none opacity-50 animate-pulse-slow" />
+                  <div className="absolute inset-0 bg-emerald-500 rounded-lg blur-none opacity-50" />
                   <div className="relative bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-4 rounded-lg shadow-sm">
                     <Calendar className="h-10 w-10 text-white" />
                   </div>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent animate-gradient">
+                  <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent">
                     Cronograma Anual
                   </h1>
                 </div>
@@ -252,7 +250,7 @@ export default function CronogramaAnual() {
           onClick={() => setTipo("extensive")}
           className={`relative overflow-hidden p-6 rounded-lg border-2 font-bold text-lg transition-all hover:shadow-sm hover:-translate-y-1 ${
             tipo === "extensive"
-              ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
+              ? "bg-emerald-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
               : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
           }`}
         >
@@ -265,7 +263,7 @@ export default function CronogramaAnual() {
           onClick={() => setTipo("intensive")}
           className={`relative overflow-hidden p-6 rounded-lg border-2 font-bold text-lg transition-all hover:shadow-sm hover:-translate-y-1 ${
             tipo === "intensive"
-              ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
+              ? "bg-emerald-500 text-white border-emerald-400 shadow-sm shadow-emerald-500/30"
               : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
           }`}
         >
@@ -394,7 +392,7 @@ export default function CronogramaAnual() {
                 onClick={() => toggleCycle(cycle.cycle)}
                 className="w-full bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 px-6 py-5 border-b-2 border-emerald-100 dark:border-emerald-900 flex items-center justify-between hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-900/30 dark:hover:to-teal-900/30 transition-all group"
               >
-                <h3 className="text-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
                   Ciclo {cycle.cycle}
                 </h3>
                 <div className="p-2 bg-emerald-500 rounded-xl group-hover:scale-[1.01] transition-transform">
@@ -464,7 +462,7 @@ export default function CronogramaAnual() {
 
       {cyclesToDisplay.length === 0 && !searchTerm.trim() && (
         <div className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-lg p-12 text-center">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full flex items-center justify-center">
+          <div className="w-24 h-24 mx-auto mb-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
             <Calendar className="w-12 h-12 text-emerald-500" />
           </div>
           <p className="text-lg font-semibold text-gray-600 dark:text-gray-400">Nenhum ciclo disponível</p>

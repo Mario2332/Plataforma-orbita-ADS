@@ -495,7 +495,7 @@ export default function AlunoMetricas() {
                 </ResponsiveContainer>
               ) : (
                 <div className="flex flex-col items-center justify-center h-[400px]">
-                  <div className="p-4 bg-gradient-to-br from-emerald-500/10 to-purple-500/10 rounded-full mb-4">
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-full mb-4">
                     <BarChart3 className="h-12 w-12 text-emerald-500" />
                   </div>
                   <p className="text-lg font-semibold text-muted-foreground">Nenhum dado disponível</p>
@@ -539,7 +539,7 @@ export default function AlunoMetricas() {
                 </ResponsiveContainer>
               ) : (
                 <div className="flex flex-col items-center justify-center h-[400px]">
-                  <div className="p-4 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-full mb-4">
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-full mb-4">
                     <BarChart3 className="h-12 w-12 text-emerald-500" />
                   </div>
                   <p className="text-lg font-semibold text-muted-foreground">Nenhum dado disponível</p>
@@ -574,9 +574,9 @@ export default function AlunoMetricas() {
                             item.percentual >= 80
                               ? "bg-gradient-to-r from-emerald-500 to-green-500 text-white"
                               : item.percentual >= 60
-                              ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white"
+                              ? "bg-emerald-500 text-white"
                               : item.percentual >= 40
-                              ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+                              ? "bg-amber-500 text-white"
                               : "bg-gradient-to-r from-red-500 to-rose-500 text-white"
                           }`}>
                             {item.percentual}%
@@ -589,9 +589,9 @@ export default function AlunoMetricas() {
                             item.percentual >= 80
                               ? "bg-gradient-to-r from-emerald-500 to-green-500"
                               : item.percentual >= 60
-                              ? "bg-gradient-to-r from-emerald-500 to-teal-500"
+                              ? "bg-emerald-500"
                               : item.percentual >= 40
-                              ? "bg-gradient-to-r from-amber-500 to-orange-500"
+                              ? "bg-amber-500"
                               : "bg-gradient-to-r from-red-500 to-rose-500"
                           }`}
                           style={{ width: `${item.percentual}%` }}
@@ -602,7 +602,7 @@ export default function AlunoMetricas() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-[300px]">
-                  <div className="p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full mb-4">
+                  <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-full mb-4">
                     <Target className="h-12 w-12 text-purple-500" />
                   </div>
                   <p className="text-lg font-semibold text-muted-foreground">Nenhum dado disponível</p>
@@ -705,7 +705,7 @@ export default function AlunoMetricas() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-[450px]">
-                  <div className="p-4 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-full mb-4">
+                  <div className="p-4 bg-pink-50 dark:bg-pink-900/20 rounded-full mb-4">
                     <PieChart className="h-12 w-12 text-pink-500" />
                   </div>
                   <p className="text-lg font-semibold text-muted-foreground">Nenhum dado disponível</p>

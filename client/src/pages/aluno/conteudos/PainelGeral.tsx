@@ -113,12 +113,12 @@ export default function PainelGeral() {
         <Card className="border-2 hover:shadow-sm transition-all rounded-lg group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Total de Tópicos</CardTitle>
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow group-hover:scale-[1.01] transition-transform">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow group-hover:scale-[1.01] transition-transform">
               <BookOpen className="h-5 w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <div className="text-2xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
               {stats.totalTopicos}
             </div>
             <p className="text-sm text-muted-foreground font-semibold mt-2">
@@ -130,12 +130,12 @@ export default function PainelGeral() {
         <Card className="border-2 hover:shadow-sm transition-all rounded-lg group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Tópicos Estudados</CardTitle>
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow group-hover:scale-[1.01] transition-transform">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow group-hover:scale-[1.01] transition-transform">
               <CheckCircle2 className="h-5 w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <div className="text-2xl font-semibold text-gray-900 dark:text-white bg-clip-text text-transparent">
               {stats.topicosEstudados}
             </div>
             <p className="text-sm text-muted-foreground font-semibold mt-2">
@@ -143,7 +143,7 @@ export default function PainelGeral() {
             </p>
             <div className="mt-3 w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000"
+                className="h-full bg-emerald-500 rounded-full transition-all duration-1000"
                 style={{ width: `${percentualGeral}%` }}
               />
             </div>
@@ -155,7 +155,7 @@ export default function PainelGeral() {
         <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+              <div className="p-2 bg-emerald-500 rounded-xl shadow">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <CardTitle className="text-2xl font-semibold">Progresso por Matéria</CardTitle>
@@ -178,7 +178,7 @@ export default function PainelGeral() {
         <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+              <div className="p-2 bg-emerald-500 rounded-xl shadow">
                 <PieChartIcon className="w-6 h-6 text-white" />
               </div>
               <CardTitle className="text-2xl font-semibold">Distribuição de Tópicos Estudados</CardTitle>
@@ -211,7 +211,7 @@ export default function PainelGeral() {
       <Card className="border-2 hover:shadow-sm transition-shadow rounded-lg animate-slide-up" style={{ animationDelay: '0.3s' }}>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow">
+            <div className="p-2 bg-emerald-500 rounded-xl shadow">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <CardTitle className="text-2xl font-semibold">Resumo por Matéria</CardTitle>
@@ -236,12 +236,12 @@ export default function PainelGeral() {
                     <td className="p-4 text-center font-semibold">{m.estudados}</td>
                     <td className="p-4 text-center">
                       <div className="inline-flex items-center gap-2">
-                        <span className="font-semibold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                        <span className="font-semibold text-lg text-gray-900 dark:text-white bg-clip-text text-transparent">
                           {m.percentualEstudado}%
                         </span>
                         <div className="w-20 bg-gray-200 rounded-full h-2 overflow-hidden">
                           <div 
-                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+                            className="h-full bg-emerald-500 rounded-full"
                             style={{ width: `${m.percentualEstudado}%` }}
                           />
                         </div>

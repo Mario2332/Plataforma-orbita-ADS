@@ -82,8 +82,6 @@ export function EstatisticasMetasCards({ metas }: EstatisticasMetasCardsProps) {
       {/* Metas Ativas */}
       <Card className="relative overflow-hidden border-2 hover:border-emerald-500 transition-all duration-500 hover:shadow-sm hover:shadow-emerald-500/20 group">
         
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
-        
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Target className="h-5 w-5 text-emerald-500" />
@@ -99,8 +97,6 @@ export function EstatisticasMetasCards({ metas }: EstatisticasMetasCardsProps) {
       {/* Metas Concluídas */}
       <Card className="relative overflow-hidden border-2 hover:border-green-500 transition-all duration-500 hover:shadow-sm hover:shadow-green-500/20 group">
         
-        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
-        
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -115,8 +111,6 @@ export function EstatisticasMetasCards({ metas }: EstatisticasMetasCardsProps) {
 
       {/* Taxa de Conclusão */}
       <Card className="relative overflow-hidden border-2 hover:border-purple-500 transition-all duration-500 hover:shadow-sm hover:shadow-purple-500/20 group">
-        
-        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-none group-hover:scale-150 transition-transform duration-700" />
         
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">

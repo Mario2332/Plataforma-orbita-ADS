@@ -401,7 +401,7 @@ export default function AlunoEstudos() {
       {/* Elementos decorativos */}
 
       {/* Header Premium */}
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-emerald-500/10 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
+      <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
         
         
         
@@ -409,7 +409,7 @@ export default function AlunoEstudos() {
           <div className="space-y-3">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur-none opacity-50" />
+                <div className="absolute inset-0 bg-emerald-500 rounded-lg blur-none opacity-50" />
                 <div className="relative bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-4 rounded-lg shadow-sm">
                   <BookOpen className="h-10 w-10 text-white" />
                 </div>
@@ -557,7 +557,7 @@ export default function AlunoEstudos() {
                   <Button 
                     type="submit" 
                     disabled={isSaving}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold"
+                    className="bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold"
                   >
                     {isSaving ? "Salvando..." : "Salvar"}
                   </Button>
@@ -681,7 +681,7 @@ export default function AlunoEstudos() {
                 </div>
                 <div className="relative h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
                   <div 
-                    className="absolute h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300 rounded-full"
+                    className="absolute h-full bg-emerald-500 transition-all duration-300 rounded-full"
                     style={{ width: `${progressoPercentual}%` }}
                   />
                 </div>
@@ -719,7 +719,7 @@ export default function AlunoEstudos() {
             <div className="text-center py-16">
               <div className="relative mx-auto w-24 h-24 mb-6">
                 
-                <div className="relative p-4 bg-gradient-to-br from-emerald-500/10 to-indigo-500/10 rounded-full flex items-center justify-center border-2 border-emerald-200 dark:border-emerald-800">
+                <div className="relative p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center border-2 border-emerald-200 dark:border-emerald-800">
                   <BookOpen className="h-12 w-12 text-emerald-500" />
                 </div>
               </div>
@@ -895,7 +895,7 @@ export default function AlunoEstudos() {
             <Button variant="outline" onClick={() => setDialogTempoOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={definirTempoMeta} className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
+            <Button onClick={definirTempoMeta} className="bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
               Definir Meta
             </Button>
           </DialogFooter>
@@ -906,8 +906,6 @@ export default function AlunoEstudos() {
       {modoFoco && (
         <div className="fixed inset-0 z-50 bg-gradient-to-br from-emerald-950 via-indigo-950 to-teal-950 flex items-center justify-center">
           {/* Elementos decorativos */}
-          
-          <div className="absolute bottom-20 left-20 w-96 h-96 bg-teal-500/10 rounded-full blur-none-delayed" />
           
           <div className="relative z-10 flex flex-col items-center gap-12 p-4">
             {/* Botão fechar */}
@@ -945,7 +943,7 @@ export default function AlunoEstudos() {
                 </div>
                 <div className="relative h-6 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
                   <div 
-                    className="absolute h-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all duration-300 rounded-full shadow shadow-teal-500/50"
+                    className="absolute h-full bg-emerald-400 transition-all duration-300 rounded-full shadow shadow-teal-500/50"
                     style={{ width: `${progressoPercentual}%` }}
                   />
                 </div>

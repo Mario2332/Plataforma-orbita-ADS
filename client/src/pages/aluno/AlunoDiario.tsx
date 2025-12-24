@@ -346,7 +346,7 @@ export default function AlunoDiario() {
               <Label htmlFor="observacoes" className="font-bold">Observações (opcional)</Label>
               <Textarea id="observacoes" placeholder="Alguma observação sobre o dia? O que te deixou assim?" value={formData.observacoes} onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })} rows={3} className="border-2" />
             </div>
-            <Button type="submit" disabled={isSaving} className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold text-lg py-3">
+            <Button type="submit" disabled={isSaving} className="w-full bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold text-lg py-3">
               {isSaving ? "Salvando..." : "Salvar Registro"}
             </Button>
           </form>
@@ -580,7 +580,7 @@ export default function AlunoDiario() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full flex items-center justify-center">
+              <div className="w-24 h-24 mx-auto mb-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
                 <Heart className="w-12 h-12 text-emerald-500" />
               </div>
               <p className="text-lg font-semibold text-gray-600 dark:text-gray-400">Nenhum registro ainda.</p>

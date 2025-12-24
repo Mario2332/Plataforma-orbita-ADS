@@ -240,13 +240,13 @@ export default function AlunoSimulados() {
       {/* Elementos decorativos */}
 
       {/* Header Premium */}
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-emerald-500/10 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
+      <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 border-2 border-white/20 dark:border-white/10 backdrop-blur-none shadow-sm animate-slide-up">
         
         
         <div className="relative">
           <div className="flex items-center gap-4 mb-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur-none opacity-50" />
+              <div className="absolute inset-0 bg-emerald-500 rounded-lg blur-none opacity-50" />
               <div className="relative bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-500 p-4 rounded-lg shadow-sm">
                 <FileText className="h-10 w-10 text-white" />
               </div>
@@ -266,21 +266,21 @@ export default function AlunoSimulados() {
         <TabsList className="grid w-full grid-cols-3 p-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 border-2 border-emerald-200/50 dark:border-emerald-800/50 rounded-lg h-auto">
           <TabsTrigger 
             value="simulados" 
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-bold text-base py-3 rounded-xl transition-all"
+            className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-bold text-base py-3 rounded-xl transition-all"
           >
             <FileText className="w-5 h-5 mr-2" />
             Meus Simulados
           </TabsTrigger>
           <TabsTrigger 
             value="autodiagnostico" 
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-bold text-base py-3 rounded-xl transition-all"
+            className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-bold text-base py-3 rounded-xl transition-all"
           >
             <Target className="w-5 h-5 mr-2" />
             Autodiagnóstico
           </TabsTrigger>
           <TabsTrigger 
             value="planos" 
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-bold text-base py-3 rounded-xl transition-all"
+            className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-bold text-base py-3 rounded-xl transition-all"
           >
             <ClipboardList className="w-5 h-5 mr-2" />
             Planos de Ação
@@ -303,7 +303,7 @@ export default function AlunoSimulados() {
                 </div>
                 <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
                   <DialogTrigger asChild>
-                    <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-sm hover:shadow-sm font-bold hover:-translate-y-0.5 transition-all">
+                    <Button className="bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 shadow-sm hover:shadow-sm font-bold hover:-translate-y-0.5 transition-all">
                       <Plus className="mr-2 h-5 w-5" />
                       Novo Simulado
                     </Button>
@@ -437,7 +437,7 @@ export default function AlunoSimulados() {
 
                       <DialogFooter className="gap-2">
                         <Button type="button" variant="outline" onClick={() => handleDialogClose(false)} className="border-2">Cancelar</Button>
-                        <Button type="submit" disabled={isSaving} className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
+                        <Button type="submit" disabled={isSaving} className="bg-emerald-500 hover:from-emerald-600 hover:to-teal-600 font-bold">
                           {isSaving ? "Salvando..." : editandoId ? "Atualizar" : "Salvar"}
                         </Button>
                       </DialogFooter>
@@ -449,7 +449,7 @@ export default function AlunoSimulados() {
             <CardContent>
               {simulados.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full flex items-center justify-center">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
                     <FileText className="w-12 h-12 text-emerald-500" />
                   </div>
                   <p className="text-lg font-semibold text-gray-600 dark:text-gray-400">Nenhum simulado registrado</p>

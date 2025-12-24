@@ -807,7 +807,7 @@ export default function AlunoHome() {
                 <div className="text-center py-16">
                   <div className="relative mx-auto w-20 h-20 mb-6">
                     
-                    <div className="relative p-5 bg-gradient-to-br from-primary/10 to-purple-500/10 rounded-full flex items-center justify-center">
+                    <div className="relative p-5 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
                       <BookOpen className="h-10 w-10 text-primary" />
                     </div>
                   </div>

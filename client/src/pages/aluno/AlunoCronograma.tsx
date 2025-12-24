@@ -356,11 +356,11 @@ export default function AlunoCronograma() {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="border-2 border-border bg-gradient-to-br from-indigo-500/20 to-teal-500/20 p-3 text-sm font-semibold sticky left-0 z-10">
+                  <th className="border-2 border-border bg-emerald-100 dark:bg-emerald-900/30 p-3 text-sm font-semibold sticky left-0 z-10">
                     Horário
                   </th>
                   {DAYS.map((day, index) => (
-                    <th key={index} className="border-2 border-border bg-gradient-to-br from-indigo-500/20 to-teal-500/20 p-3 text-sm font-semibold">
+                    <th key={index} className="border-2 border-border bg-emerald-100 dark:bg-emerald-900/30 p-3 text-sm font-semibold">
                       {day}
                     </th>
                   ))}
