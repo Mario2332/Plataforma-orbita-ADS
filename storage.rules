@@ -29,6 +29,17 @@ service firebase.storage {
     }
     
     // ============================================
+    // LOGOS DE TENANTS (CLIENTES WHITE-LABEL)
+    // ============================================
+    match /tenants/{tenantId}/{fileName} {
+      // Gestor pode fazer upload de logos para tenants
+      allow write: if hasRole('gestor') && isImage() && isValidSize();
+      
+      // Qualquer pessoa pode ler logos de tenants (para carregar branding)
+      allow read: if true;
+    }
+    
+    // ============================================
     // LOGOS DE MENTORES
     // ============================================
     match /mentores/{mentorId}/logo/{fileName} {
