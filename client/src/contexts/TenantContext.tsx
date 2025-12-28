@@ -203,6 +203,7 @@ export function TenantProvider({ children }: TenantProviderProps) {
       root.style.setProperty('--sidebar-primary', oklchPrimary);
       root.style.setProperty('--sidebar-primary-foreground', 'oklch(0.98 0 0)');
       root.style.setProperty('--sidebar-ring', oklchPrimary);
+      root.style.setProperty('--sidebar-hover', oklchPrimaryVeryLight);
       
       // Cores primárias do sistema (botões, links, etc.)
       root.style.setProperty('--primary', oklchPrimary);
@@ -397,6 +398,24 @@ export function TenantProvider({ children }: TenantProviderProps) {
         .bg-emerald-900\\/10 .text-emerald-400,
         .bg-emerald-900\\/20 .text-emerald-300,
         .bg-emerald-900\\/20 .text-emerald-400 { color: ${corPrimaria} !important; }
+        
+        /* ===== SIDEBAR HOVER ===== */
+        /* Fundo claro na sidebar quando hover - usar cor do tenant */
+        .hover\\:bg-emerald-50:hover,
+        .hover\\:bg-sidebar-accent:hover { background-color: ${corPrimaria}15 !important; }
+        
+        /* Sidebar footer e areas com fundo verde claro */
+        .bg-sidebar-accent\\/50,
+        .bg-emerald-50\\/30,
+        .bg-emerald-50\\/20 { background-color: ${corPrimaria}12 !important; }
+        
+        /* Garantir que areas da sidebar usem cor do tenant */
+        [data-sidebar] .bg-emerald-50,
+        [data-sidebar] .bg-emerald-100 { background-color: ${corPrimaria}15 !important; }
+        
+        /* Sidebar menu item hover */
+        [data-sidebar] .hover\\:bg-emerald-50:hover { background-color: ${corPrimaria}18 !important; }
+        [data-sidebar] .hover\\:bg-emerald-900\\/20:hover { background-color: ${corPrimaria}25 !important; }
       `;
       
       // Atualizar favicon se disponível
