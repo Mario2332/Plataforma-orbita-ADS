@@ -10,6 +10,9 @@ import { BookOpen, Clock, Edit, Play, Plus, Trash2, Pause, RotateCcw, Save, Arro
 import { useState, useEffect, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import { SidebarAd, InContentAd } from "@/components/ads";
+import LoginCTA from "@/components/LoginCTA";
+import { useTenant } from "@/contexts/TenantContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 const CRONOMETRO_STORAGE_KEY = "aluno_cronometro_estado";
 
@@ -42,6 +45,9 @@ type DirecaoOrdenacao = "asc" | "desc";
 
 export default function AlunoEstudos() {
   const api = useAlunoApi();
+  const { user } = useAuthContext();
+  const { isFreePlan } = useTenant();
+  const isReadOnly = isFreePlan && !user;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [cronometroAtivo, setCronometroAtivo] = useState(false);
   const [tempoDecorrido, setTempoDecorrido] = useState(0);
@@ -399,6 +405,11 @@ export default function AlunoEstudos() {
 
   return (
     <div className="space-y-8 pb-8 animate-fade-in">
+      {isReadOnly && (
+        <div className="mb-6">
+          <LoginCTA />
+        </div>
+      )}
       {/* Elementos decorativos */}
 
       {/* Header Premium */}

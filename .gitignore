@@ -118,3 +118,4 @@ functions/serviceAccountKey.json
 
 functions/libfunctions/.env
 functions/.env.local
+firebase-service-account.json

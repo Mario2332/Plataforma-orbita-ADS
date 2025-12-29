@@ -3,20 +3,15 @@ import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus } from "lucide-react";
 import { useLocation } from "wouter";
 
-interface LoginCTAProps {
-  title: string;
-  description: string;
-}
-
-export default function LoginCTA({ title, description }: LoginCTAProps) {
+export default function LoginCTA() {
   const [, navigate] = useLocation();
 
   return (
     <Card className="border-2 border-dashed border-primary/50 bg-primary/5 shadow-lg animate-slide-up">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl text-primary">{title}</CardTitle>
+        <CardTitle className="text-2xl text-primary">Faça Login ou Crie sua Conta</CardTitle>
         <CardDescription className="text-lg text-muted-foreground">
-          {description}
+          Para usar todas as funcionalidades da plataforma e criar, editar ou salvar qualquer progresso, faça login ou crie sua conta gratuita.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col sm:flex-row gap-4 justify-center">

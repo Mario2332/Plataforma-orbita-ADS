@@ -28,6 +28,8 @@ import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { RankingModal, RankingResumo } from "@/components/RankingModal";
 import { InContentAd, ResponsiveAd } from "@/components/ads";
+import LoginCTA from "@/components/LoginCTA";
+import { useTenant } from "@/contexts/TenantContext";
 
 // Função auxiliar para formatar data no fuso horário brasileiro (GMT-3)
 const formatarDataBrasil = (date: Date): string => {
@@ -54,7 +56,9 @@ export default function AlunoHome() {
   console.log('[AlunoHome] Componente montado!');
   // Removido useAlunoApi - usando acesso direto ao Firestore para eliminar cold start
   const [, setLocation] = useLocation();
-  const { userData } = useAuthContext();
+  const { userData, user } = useAuthContext();
+  const { isFreePlan } = useTenant();
+  const isReadOnly = isFreePlan && !user;
   const [estudos, setEstudos] = useState<any[]>([]);
   const [simulados, setSimulados] = useState<any[]>([]);
   const [metas, setMetas] = useState<any[]>([]);
@@ -309,6 +313,11 @@ export default function AlunoHome() {
 
     return (
     <div className="space-y-6 pb-6">
+      {isReadOnly && (
+        <div className="mb-6">
+          <LoginCTA />
+        </div>
+      )}
       
       {/* Header Clean e Elegante */}
       <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">

@@ -321,9 +321,7 @@ export default function CronogramaAnual() {
 
       {isReadOnly && (
         <div className="mb-6">
-          <LoginCTA 
-            title="Cronograma: Interação Exclusiva para Usuários Logados"
-            description="Para marcar tópicos como concluídos e salvar seu progresso, faça login ou crie sua conta gratuita."
+          <LoginCTA
           />
         </div>
       )}

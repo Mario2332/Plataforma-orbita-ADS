@@ -440,9 +440,7 @@ export default function AlunoMetas() {
       </div>
       
       {isReadOnly && (
-        <LoginCTA 
-          title="Metas: Ação Exclusiva para Usuários Logados"
-          description="Para criar, editar ou salvar seu progresso em metas, faça login ou crie sua conta gratuita."
+        <LoginCTA
         />
       )}
 
