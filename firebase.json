@@ -22,6 +22,7 @@
     "rules": "storage.rules"
   },
   "hosting": {
+    "site": "orbita-free",
     "public": "dist",
     "ignore": [
       "firebase.json",

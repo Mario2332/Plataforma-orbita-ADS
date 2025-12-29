@@ -11,19 +11,8 @@ import {
 import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
 import { getFunctions, connectFunctionsEmulator, Functions } from "firebase/functions";
 
-// Configuração do Firebase - Plataforma Órbita (White-label B2B)
-const firebaseConfigOrbita = {
-  apiKey: "AIzaSyAQkK8xj-WXb0IVBh3rDJbUrJgb0wC75-U",
-  authDomain: "plataforma-orbita.firebaseapp.com",
-  projectId: "plataforma-orbita",
-  storageBucket: "plataforma-orbita.firebasestorage.app",
-  messagingSenderId: "896953885758",
-  appId: "1:896953885758:web:06d5dc91e80cfa13bd9d6f",
-  measurementId: "G-FQL285W4M6"
-};
-
 // Configuração do Firebase - Órbita Free (Gratuito com anúncios)
-const firebaseConfigFree = {
+const firebaseConfig = {
   apiKey: "AIzaSyCFbjDY4Qxm4Doh21skK14McK6ICejIITA",
   authDomain: "orbita-free.firebaseapp.com",
   projectId: "orbita-free",
@@ -32,49 +21,10 @@ const firebaseConfigFree = {
   appId: "1:912900770930:web:0e722969c008b38fe1c6eb"
 };
 
-// Determinar qual projeto usar baseado no domínio ou variável de ambiente
-function getFirebaseConfig() {
-  // Verificar variável de ambiente primeiro (para builds específicos)
-  const envProject = import.meta.env.VITE_FIREBASE_PROJECT;
-  
-  if (envProject === 'orbita-free') {
-    console.log('[Firebase] Usando projeto: orbita-free');
-    return firebaseConfigFree;
-  }
-  
-  if (envProject === 'plataforma-orbita') {
-    console.log('[Firebase] Usando projeto: plataforma-orbita');
-    return firebaseConfigOrbita;
-  }
-  
-  // Se não houver variável de ambiente, determinar pelo domínio
-  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
-  
-  // Domínios do projeto orbita-free
-  const freeHostnames = [
-    'orbita-free.web.app',
-    'orbita-free.firebaseapp.com',
-    'orbitafree.com.br',
-    'www.orbitafree.com.br',
-  ];
-  
-  if (freeHostnames.includes(hostname)) {
-    console.log('[Firebase] Usando projeto: orbita-free (detectado por domínio)');
-    return firebaseConfigFree;
-  }
-  
-  // Default: plataforma-orbita (white-label)
-  console.log('[Firebase] Usando projeto: plataforma-orbita (default)');
-  return firebaseConfigOrbita;
-}
-
-// Obter configuração atual
-const firebaseConfig = getFirebaseConfig();
-
 // Exportar informações do projeto atual
 export const currentProject = firebaseConfig.projectId;
-export const isFreePlan = currentProject === 'orbita-free';
-export const isWhiteLabel = currentProject === 'plataforma-orbita';
+export const isFreePlan = true;
+export const isWhiteLabel = false;
 
 // Inicializar Firebase
 export const app: FirebaseApp = initializeApp(firebaseConfig);
