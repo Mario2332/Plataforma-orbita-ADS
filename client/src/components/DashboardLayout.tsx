@@ -271,7 +271,7 @@ function DashboardLayoutContent({
   toggleTheme,
 }: DashboardLayoutContentProps) {
   const { user, userData, signOut } = useAuthContext();
-  const { tenant } = useTenant();
+  const { tenant, isFreePlan } = useTenant();
   
   // Usar branding do tenant ou fallback para constantes
   const logoUrl = tenant?.branding?.logo || APP_LOGO;
@@ -284,14 +284,18 @@ function DashboardLayoutContent({
   const sidebarRef = useRef<HTMLDivElement>(null);
   
   const menuItems = useMemo(() => {
-    const items = getMenuItems(userData?.role, tenant?.features);
+    // Se for Free Plan e não houver usuário logado, usar 'aluno' como role padrão
+    const effectiveRole = userData?.role || (isFreePlan ? 'aluno' : undefined);
+    const items = getMenuItems(effectiveRole, tenant?.features);
     console.log('[DashboardLayoutContent] menuItems recalculado:', {
       role: userData?.role,
+      effectiveRole,
+      isFreePlan,
       itemCount: items.length,
       items: items.map(i => i.label)
     });
     return items;
-  }, [userData?.role, tenant?.features]);
+  }, [userData?.role, isFreePlan, tenant?.features]);
   
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
