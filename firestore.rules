@@ -9,12 +9,14 @@ service cloud.firestore {
     
     // Função auxiliar para obter dados do usuário
     function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) 
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data 
+        : null;
     }
     
     // Função auxiliar para verificar role
     function hasRole(role) {
-      return isAuthenticated() && getUserData().role == role;
+      return isAuthenticated() && getUserData() != null && getUserData().role == role;
     }
     
     // Função auxiliar para verificar se é o próprio usuário
