@@ -173,13 +173,22 @@ export default function AlunoMetas() {
   const [metasNaoAlcancadasExpanded, setMetasNaoAlcancadasExpanded] = useState(false);
 
   const loadMetas = async () => {
+    // Não carregar dados se o usuário não estiver autenticado no plano Free
+    if (isReadOnly) {
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       await api.checkExpiredMetas(); // Verificar metas expiradas
       const metasData = await api.getMetas();
       setMetas(metasData as Meta[]);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao carregar metas");
+      // Silenciar erro se o usuário não estiver autenticado
+      if (!isReadOnly) {
+        toast.error(error.message || "Erro ao carregar metas");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -187,7 +196,7 @@ export default function AlunoMetas() {
 
   useEffect(() => {
     loadMetas();
-  }, []);
+  }, [isReadOnly]);
 
   const handleOpenDialog = (meta?: Meta) => {
     if (isReadOnly) {

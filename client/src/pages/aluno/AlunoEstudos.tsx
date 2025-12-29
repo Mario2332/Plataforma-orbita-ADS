@@ -151,12 +151,21 @@ export default function AlunoEstudos() {
   }, [cronometroAtivo, tempoDecorrido]);
 
   const loadEstudos = async () => {
+    // Não carregar dados se o usuário não estiver autenticado no plano Free
+    if (isReadOnly) {
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       const data = await api.getEstudos();
       setEstudos(data as any[]);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao carregar estudos");
+      // Silenciar erro se o usuário não estiver autenticado
+      if (!isReadOnly) {
+        toast.error(error.message || "Erro ao carregar estudos");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -164,7 +173,7 @@ export default function AlunoEstudos() {
 
   useEffect(() => {
     loadEstudos();
-  }, []);
+  }, [isReadOnly]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

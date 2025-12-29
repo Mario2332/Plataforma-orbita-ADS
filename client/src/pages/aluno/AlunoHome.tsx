@@ -66,6 +66,12 @@ export default function AlunoHome() {
   const [rankingModalOpen, setRankingModalOpen] = useState(false);
 
   const loadData = async () => {
+    // Não carregar dados se o usuário não estiver autenticado no plano Free
+    if (isReadOnly) {
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       // Acesso direto ao Firestore (elimina cold start)
@@ -78,7 +84,10 @@ export default function AlunoHome() {
       setSimulados(simuladosData as any[]);
       setMetas(metasData as any[]);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao carregar dados");
+      // Silenciar erro se o usuário não estiver autenticado
+      if (!isReadOnly) {
+        toast.error(error.message || "Erro ao carregar dados");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +95,7 @@ export default function AlunoHome() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [isReadOnly]);
 
   if (isLoading) {
     return (

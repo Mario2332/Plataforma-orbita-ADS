@@ -68,7 +68,10 @@ export default function CronogramaAnual() {
       setSearchTerm("");
     } catch (err: any) {
       console.error("Erro ao carregar cronograma:", err);
-      setError("Erro ao carregar cronograma. Tente novamente.");
+      // Silenciar erro se o usuário não estiver autenticado
+      if (!isReadOnly) {
+        setError("Erro ao carregar cronograma. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }

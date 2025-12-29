@@ -16,7 +16,7 @@ export default function LoginCTA() {
       </CardHeader>
       <CardContent className="flex flex-col sm:flex-row gap-4 justify-center">
         <Button 
-          onClick={() => navigate("/login")} 
+          onClick={() => navigate("/login/aluno")} 
           className="gap-2 bg-primary hover:bg-primary/90"
           size="lg"
         >
@@ -24,7 +24,7 @@ export default function LoginCTA() {
           Fazer Login
         </Button>
         <Button 
-          onClick={() => navigate("/cadastro")} 
+          onClick={() => navigate("/login/aluno")} 
           variant="outline" 
           className="gap-2 border-primary text-primary hover:bg-primary/10"
           size="lg"
