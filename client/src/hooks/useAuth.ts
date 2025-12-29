@@ -216,11 +216,21 @@ export function useAuth() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Atualizar perfil com nome (antes do trigger disparar)
+      // Atualizar perfil com nome
       await updateProfile(user, { displayName: name });
 
-      // Aguardar um momento para o trigger onUserCreated criar o documento users
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Criar documento users (não depender de Cloud Functions)
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        email: email,
+        name: name,
+        nome: name,  // Manter compatibilidade
+        role: "aluno",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastSignedIn: serverTimestamp(),
+      });
 
       // Criar documento do aluno
       const alunoDocRef = doc(db, "alunos", user.uid);
@@ -236,10 +246,10 @@ export function useAuth() {
         updatedAt: serverTimestamp(),
       });
 
-      // Buscar userData recém-criado
+      // Aguardar um momento para garantir que os documentos foram criados
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      const userDocRef = doc(db, "users", user.uid);
+      // Buscar userData recém-criado
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
