@@ -236,7 +236,13 @@ export default function DashboardLayout({
   if (!userRole) {
     // Caso de fallback, não deve acontecer se a lógica acima estiver correta
     return <DashboardLayoutSkeleton />
-  }`,
+  }
+
+  return (
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": `${sidebarWidth}px`,
         } as CSSProperties
       }
     >
