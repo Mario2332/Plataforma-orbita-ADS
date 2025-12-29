@@ -398,19 +398,15 @@ function DashboardLayoutContent({
                           }
                         }}
                         tooltip={item.label}
-                        className={`h-11 transition-all font-semibold rounded-xl mb-1 ${
-                          isActive 
-                            ? "bg-emerald-500 text-white shadow hover:from-emerald-600 hover:to-teal-600" 
-                            : "hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-md"
-                        }`}
+                        className={"h-11 transition-all font-semibold rounded-xl mb-1 " + (isActive ? "bg-emerald-500 text-white shadow hover:from-emerald-600 hover:to-teal-600" : "hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-md")}
                       >
                         <item.icon
-                          className={`h-5 w-5 ${isActive ? "text-white" : "text-emerald-600 dark:text-emerald-400"}`}
+                          className={"h-5 w-5 " + (isActive ? "text-white" : "text-emerald-600 dark:text-emerald-400")}
                         />
                         <span>{item.label}</span>
                         {hasSubmenu && (
                             <ChevronDown
-                              className={`ml-auto h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                              className={"ml-auto h-4 w-4 transition-transform " + (isExpanded ? "rotate-180" : "")}
                             />
                         )}
                       </SidebarMenuButton>
@@ -424,11 +420,7 @@ function DashboardLayoutContent({
                               <SidebarMenuButton
                                 isActive={isSubActive}
                                 onClick={() => setLocation(subItem.path)}
-                                tooltip={subItem.label}                                  className={`h-10 text-sm font-semibold rounded-lg ${
-                                  isSubActive 
-                                    ? "bg-emerald-400 text-white shadow-md" 
-                                    : "hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-                                }`}
+                                tooltip={subItem.label}                                  className={"h-10 text-sm font-semibold rounded-lg " + (isSubActive ? "bg-emerald-400 text-white shadow-md" : "hover:bg-emerald-50 dark:hover:bg-emerald-900/20")}
                               >
                                 <span>{subItem.label}</span>
                               </SidebarMenuButton>
@@ -507,7 +499,7 @@ function DashboardLayoutContent({
                 {(userData?.curso || userData?.faculdade) && (
                   <p className="text-xs font-semibold text-red-600 dark:text-red-400 truncate mt-0.5">
                     {userData?.curso && userData?.faculdade 
-                      ? `${userData.curso} - ${userData.faculdade}`
+                      ? userData.curso + ' - ' + userData.faculdade
                       : userData?.curso || userData?.faculdade}
                   </p>
                 )}
@@ -519,7 +511,7 @@ function DashboardLayoutContent({
           </SidebarFooter>
         </Sidebar>
         <div
-          className={`absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-emerald-500/50 transition-colors ${isCollapsed ? "hidden" : ""}`}
+          className={"absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-emerald-500/50 transition-colors " + (isCollapsed ? "hidden" : "")}
           onMouseDown={() => {
             if (isCollapsed) return;
             setIsResizing(true);
